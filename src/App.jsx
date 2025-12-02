@@ -3,6 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { useNavigate } from 'react-router'
+import Footer from './components/Footer'
+import Header from './components/Header'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -10,6 +12,7 @@ function App() {
 
   return (
     <>
+     <Header />
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -30,6 +33,7 @@ function App() {
       <p className="text-3xl font-bold underline">
         Click on the Vite and React logos to learn more
       </p>
+      <Footer />
     </>
   )
 }
