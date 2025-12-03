@@ -2,6 +2,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import Home from './pages/Home.jsx'
+import Login from './pages/Login.jsx'
+import Reservas from './pages/Reservations.jsx'
+import Market from './pages/Market.jsx'
+import SignUp from './pages/SignUp.jsx'
+import About from './pages/about.jsx'
+
 import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
 
