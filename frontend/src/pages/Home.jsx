@@ -12,10 +12,12 @@ function App() {
 
   return (
     <>
-      <Header />
-      <Sales />
-      <WhoWeAre />
-      <Footer />
+      <div className='min-h-screen flex flex-col bg-gray-900'>
+        <Header />
+        <Sales />
+        <WhoWeAre />
+        <Footer />
+      </div>
     </>
   )
 }

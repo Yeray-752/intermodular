@@ -2,7 +2,8 @@ function Sales() {
 
     return (
         <div>
-            1
+            <h1>Ofertas</h1>
+            <p>Esto son nuestras ofertas</p>
         </div>
     );
 }
