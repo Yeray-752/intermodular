@@ -12,7 +12,7 @@ function Header(){
         <header className="bg-cyan-500 flex items-center justify-between">
           <img src={logo} className="w-32 h-32 object-cover" alt="logo de la web" />
       <h1 onClick={() => navigate('/')} className="text-xl font-bold text-black">
-        Titulo Taller
+        Ekotan
       </h1>
 
       
