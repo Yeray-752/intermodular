@@ -1,0 +1,22 @@
+name: deploy
+# --- INICIO DE LA MODIFICACIÓN ---
+on:
+  push:
+    branches:
+      - main
+# --- FIN DE LA MODIFICACIÓN ---
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-22.04 # Se recomienda usar 'ubuntu-latest'
+    
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.IP}}
+          port: 2222
+          username: negro
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: "cd /var/www/html/intermodular; git reset; git pull; cd /fronted; npm i; npm run build"
