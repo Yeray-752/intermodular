@@ -24,7 +24,7 @@ function App() {
 
 
             <div>
-              <h2 className="text-4xl font-bold text-white mb-4">Personalización y Reparación de Motocicletas</h2>
+              <h2 className="text-4xl font-bold text-white mb-4">Personalizaciónn y Reparación de Motocicletas</h2>
               <p className="text-lg text-white mb-6">
                 En Akotan nos especializamos en transformar tu moto en una obra de arte. Desde mantenimiento hasta modificaciones únicas, trabajamos con pasión y precisión.
               </p>
