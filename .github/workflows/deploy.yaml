@@ -3,7 +3,7 @@ name: deploy
 on:
   push:
     branches:
-      - main
+      - master
 # --- FIN DE LA MODIFICACIÓN ---
 
 jobs:
