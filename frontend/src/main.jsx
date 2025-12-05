@@ -18,6 +18,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/login' element={<Login />} />
       <Route path='/reservas' element={<Reservas />} />
       <Route path='/productos' element={<Market />} />
+
+      {/*Cuando exista una base de datos, en las cartas de los productos habrá que poner el
+      id del mismo para construir la página correspondiente*/}
+      <Route path="/producto/:id" element={<Producto />} />
+      
       <Route path='/registro' element={<SignUp />} />
       <Route path='/sobre-nosotros' element={<About />} />
     </Routes>
