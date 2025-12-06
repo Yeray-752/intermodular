@@ -19,4 +19,4 @@ jobs:
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
-          script: "cd /var/www/html/intermodular; git reset; git pull; cd fronted; npm i; npm run build"
+          script: "cd /var/www/html/intermodular; git reset --hard HEAD; git clean -df; git pull; cd frontend; npm i; npm run build"
