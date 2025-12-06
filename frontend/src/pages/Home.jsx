@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 import Sales from '../components/Sales'
 import WhoWeAre from '../components/WhoWeAre'
-import Imagenprincipal from '../assets/img/Imagenprincipal.webp'
+import ImagenPrincipal from '../assets/img/ImagenPrincipal.webp'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,7 +19,7 @@ function App() {
           <section className="p-10 rounded-lg bg-gray-700 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             <div className="rounded-lg overflow-hidden shadow-lg">
-              <img src={Imagenprincipal} alt="Motocicleta en taller" className="w-full h-auto object-cover" />
+              <img src={ImagenPrincipal} alt="Motocicleta en taller" className="w-full h-auto object-cover" />
             </div>
 
 
@@ -58,7 +58,7 @@ function App() {
           <section className="mt-10 p-10 rounded-lg bg-gray-700 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             <div className="rounded-lg overflow-hidden shadow-lg">
-              <img src={Imagenprincipal} alt="Motocicleta en taller" className="w-full h-auto object-cover" />
+              <img src={ImagenPrincipal} alt="Motocicleta en taller" className="w-full h-auto object-cover" />
             </div>
 
 
