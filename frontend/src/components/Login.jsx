@@ -1,5 +1,5 @@
 import fondo from "../assets/img/fondo_log.webp";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 function Login() {
     const navigate = useNavigate();
