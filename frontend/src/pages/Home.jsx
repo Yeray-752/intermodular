@@ -14,7 +14,7 @@ function App() {
   return (
     <>
       <div className='min-h-screen flex flex-col bg-gray-900'>
-        <Header />
+        <Header/>
         <main className="bg-gray-200 py-12 px-6">
           <section className="p-10 rounded-lg bg-gray-700 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 

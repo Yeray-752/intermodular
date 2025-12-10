@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import logo from '../assets/img/logo_no_background.webp'
+import logo from '../assets/img/logo_background.png'
 
 
 function Header(){

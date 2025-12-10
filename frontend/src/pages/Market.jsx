@@ -3,8 +3,7 @@ import '../App.css'
 import { useNavigate } from 'react-router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
-import Sales from '../components/Sales'
-import WhoWeAre from '../components/WhoWeAre'
+import TableProducts from '../components/TableProducts'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,6 +12,8 @@ function App() {
   return (
     <>
       <Header />
+      <TableProducts />
+
       <Footer />
     </>
   )

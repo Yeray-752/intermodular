@@ -7,6 +7,7 @@ import Reservas from './pages/Reservations.jsx'
 import Market from './pages/Market.jsx'
 import SignUp from './pages/SignUp.jsx'
 import About from './pages/about.jsx'
+import Producto from './pages/Product.jsx'
 
 import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
@@ -20,8 +21,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/productos' element={<Market />} />
 
       {/*Cuando exista una base de datos, en las cartas de los productos habrá que poner el
-      id del mismo para construir la página correspondiente*/}
-      <Route path="/producto/:id" element={<Producto />} />
+      id del mismo para construir la página correspondiente
+      ej: <Route path="/producto/:id" element={<Producto />} />*/}
+      <Route path="/producto" element={<Producto />} />
       
       <Route path='/registro' element={<SignUp />} />
       <Route path='/sobre-nosotros' element={<About />} />

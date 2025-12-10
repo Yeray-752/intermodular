@@ -5,15 +5,17 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 
 function Producto() {
+  //Producto es cuando le doy adentro de una carta de producto
   const [count, setCount] = useState(0)
   const navigate = useNavigate()
 
   return (
     <>
       <Header />
+      
       <Footer />
     </>
   )
 }
 
-export default App
+export default Producto
