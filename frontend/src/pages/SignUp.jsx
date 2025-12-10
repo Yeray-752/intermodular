@@ -1,4 +1,4 @@
-/* import fondo from "../assets/img/fondo_Registro.jpg"; */
+import fondo from "../assets/img/fondo_Registro.jpg";
 import { useNavigate } from "react-router";
 
 function SignUp() {
