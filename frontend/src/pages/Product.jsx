@@ -1,20 +1,21 @@
 import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router'
-import Login from '../components/Login'
-import Header from '../components/Header'
 import Footer from '../components/Footer'
+import Header from '../components/Header'
 
-function App() {
+function Producto() {
+  //Producto es cuando le doy adentro de una carta de producto
   const [count, setCount] = useState(0)
   const navigate = useNavigate()
 
   return (
     <>
       <Header />
-      <Login />
+      
+      <Footer />
     </>
   )
 }
 
-export default App
+export default Producto

@@ -113,7 +113,7 @@ export default function App() {
                     </span>
                   </div>
                   <button className="w-full py-3 bg-linear-to-r from-gray-900 to-gray-800 text-white rounded-xl font-bold hover:from-gray-800 hover:to-gray-700 transition-all duration-300">
-                    Reservar Ahoraa
+                    Reservar Ahora
                   </button>
                 </div>
               ))}

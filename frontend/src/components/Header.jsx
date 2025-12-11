@@ -40,7 +40,6 @@ function Header() {
                         <ul className="flex items-center space-x-1 ">
                             {[
                                 { label: 'Inicio', path: '/' },
-                                { label: 'Servicios', path: '/servicios' },
                                 { label: 'Reservas', path: '/reservas' },
                                 { label: 'Productos', path: '/productos' },
                                 { label: 'Sobre Nosotros', path: '/sobre-nosotros' },
