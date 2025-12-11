@@ -1,14 +1,13 @@
 import { Facebook, Instagram, MapPin, Phone, Mail } from 'lucide-react';
-import logo from "../assets/img/logo_no_background.webp";
+import logo from "../assets/img/logo_background.png";
 
 function Footer() {
     return (
         <footer className="bg-linear-to-r from-gray-900 to-gray-800 text-white pt-12 pb-8 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Main Footer Content */}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
                     
-                    {/* Logo and Description */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="relative">
@@ -30,7 +29,6 @@ function Footer() {
                             para resultados excepcionales.
                         </p>
                         
-                        {/* Social Media */}
                         <div className="flex items-center space-x-4 pt-2">
                             <a 
                                 href="#" 
@@ -56,7 +54,6 @@ function Footer() {
                         </div>
                     </div>
 
-                    {/* Contact Information */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-orange-600 rounded-full"></div>
@@ -66,8 +63,8 @@ function Footer() {
                             <div className="flex items-start gap-3">
                                 <MapPin size={20} className="text-orange-500 mt-1 shrink-0" />
                                 <span className="text-gray-400">
-                                    Calle Taller, 123<br />
-                                    28001 Madrid, España
+                                    Calle Taller, 123, 35600 <br /> 
+                                    Puerto del Rosario, España.
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
@@ -85,7 +82,6 @@ function Footer() {
                         </div>
                     </div>
 
-                    {/* Quick Links */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-orange-600 rounded-full"></div>
@@ -94,7 +90,6 @@ function Footer() {
                         <ul className="space-y-3">
                             {[
                                 { label: 'Inicio', href: '/' },
-                                { label: 'Servicios', href: '/servicios' },
                                 { label: 'Reservas Online', href: '/reservas' },
                                 { label: 'Tienda', href: '/productos' },
                                 { label: 'Sobre Nosotros', href: '/sobre-nosotros' },
@@ -112,7 +107,6 @@ function Footer() {
                         </ul>
                     </div>
 
-                    {/* Business Hours */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-orange-600 rounded-full"></div>
@@ -130,15 +124,9 @@ function Footer() {
                                 </div>
                             ))}
                         </div>
-                        <div className="pt-4">
-                            <button className="w-full py-3 bg-linear-to-r from-orange-600 to-orange-700 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-300 shadow-lg">
-                                Reservar Cita
-                            </button>
-                        </div>
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
                 <div className="border-t border-gray-800 pt-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-gray-500 text-sm text-center md:text-left">
