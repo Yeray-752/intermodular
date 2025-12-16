@@ -11,7 +11,6 @@ export default function App() {
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
-        {/* HERO SECTION */}
         <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mb-20 md:mb-28">
           <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -53,7 +52,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* OFERTAS */}
         <section className="mb-20 md:mb-28">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 md:mb-16">
@@ -121,7 +119,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* NUESTRA FILOSOFÍA */}
         <section className="mb-10">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
             <div className="relative">
