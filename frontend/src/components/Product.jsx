@@ -2,7 +2,7 @@
 function Product() {
     return (
         <div>
-            <div className="hero bg-base-200 min-h-screen">
+            <div className="hero min-h-screen">
                 <div className="hero-content flex-col lg:flex-row shadow-2xl">
                     <img
                         src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"

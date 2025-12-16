@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import ProductoInfo from '../components/Product'
+import Valorations from "../components/ValorationsAndComments"
 
 function Producto() {
   //Producto es cuando le doy adentro de una carta de producto
@@ -13,8 +14,15 @@ function Producto() {
   return (
     <>
       <Header />
-      <ProductoInfo/>
-      <Footer />
+      
+      <div className='bg-base-200'>
+        <ProductoInfo />
+        <Valorations />
+        <Footer />
+      </div>
+
+
+
     </>
   )
 }
