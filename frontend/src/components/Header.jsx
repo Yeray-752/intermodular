@@ -59,7 +59,7 @@ function Header() {
                         
                         <button
                             onClick={() => navigate('/login')}
-                            className="ml-4 px-6 py-2.5 bg-linear-to-r from-orange-600 to-orange-700 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="ml-4 px-6 py-2.5 bg-orange-600 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                             Iniciar Sesión
                         </button>
@@ -103,7 +103,7 @@ function Header() {
                                         navigate('/login');
                                         setIsMenuOpen(false);
                                     }}
-                                    className="w-full px-4 py-3 bg-linear-to-r from-orange-600 to-orange-700 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-300"
+                                    className="w-full px-4 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-orange-800 transition-all duration-300"
                                 >
                                     Iniciar Sesión
                                 </button>
@@ -114,7 +114,7 @@ function Header() {
             </div>
 
             {/* CSS for animation */}
-            <style jsx>{`
+            <style>{`
                 @keyframes fadeIn {
                     from {
                         opacity: 0;
