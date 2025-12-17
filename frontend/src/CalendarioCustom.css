@@ -1,0 +1,40 @@
+/* Ajustar tamaño del calendario para que quepa en la card */
+.mi-contenedor-calendario .react-calendar {
+    width: 100% !important;
+    border: none !important;
+    font-family: inherit;
+    font-size: 0.7rem; /* Texto más pequeño */
+}
+
+/* Colores de estado */
+.dia-rojo {
+    background-color: #ff4d4f !important; /* Rojo */
+    color: white !important;
+    border-radius: 4px;
+}
+
+.dia-amarillo {
+    background-color: #ffec3d !important; /* Amarillo */
+    color: black !important;
+    border-radius: 4px;
+}
+
+.dia-verde {
+    background-color: #73d13d !important; /* Verde */
+    color: white !important;
+    border-radius: 4px;
+}
+
+/* Quitar el hover grisáceo por defecto para que se vean los colores */
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    filter: brightness(0.9);
+}
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,92 +1,86 @@
 import { useState } from 'react'
+import React, { useRef } from 'react';
 import '../App.css'
 import { useNavigate } from 'react-router'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import TableReservations from '../components/TableReservations'
 
+
 function App() {
-  const [search, setSearch] = useState('')
-  const navigate = useNavigate()
+  const [search, setSearch] = useState('');
+  const [categoriaActiva, setCategoriaActiva] = useState(""); // Único estado necesario
+
+  const categorias = [
+    "Mantenimiento Básico", "Sistema de Frenos", "Neumáticos", "Sistema Eléctrico",
+    "Suspensión", "Motor", "Transmisión", "Climatización", "Sistema de Escape", "Diagnóstico", "Carrocería"
+  ];
+
+  // Recibe el nombre de la categoría clickeada directamente
+  const manejarClickCategoria = (nombreSeleccionado) => {
+    if (categoriaActiva === nombreSeleccionado) {
+      setCategoriaActiva(""); // Desactiva si es la misma
+    } else {
+      setCategoriaActiva(nombreSeleccionado); // Activa la nueva
+    }
+  };
+
+  const scrollRef = useRef(null);
+  const scroll = (offset) => {
+    if (scrollRef.current) scrollRef.current.scrollLeft += offset;
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
-
       <Header />
-
-
       <main className="grow">
+        <div className="flex-col grow p-4 justify-items-center">
+          {/* ... tu buscador ... */}
+          <input className='input' type="search" onChange={(e) => setSearch(e.target.value)} placeholder="Search" />
 
-        <div className=" w-full min-h-screen">
+          <h1 className='mt-10 font-bold text-2xl'>Categorias</h1>
 
+          <nav className='space-x-1.5 mt-4 mb-5'>
+            <div className="relative group w-80 lg:w-225 2xl:w-276 max-w-6xl mx-auto px-10">
+              <button onClick={() => scroll(-200)} className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+                <ChevronLeft size={24} />
+              </button>
 
-          {/* <nav>
-            <form className='mt-5'>
-              <input className="btn btn-square" type="reset" value="×" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Mantenimiento Básico" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Sistema de Frenos" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Neumáticos" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Sistema Eléctrico" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Suspensión" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Motor" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Transmisión" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Climatización" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Sistema de Escape" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Diagnóstico" />
-              <input className="btn" type="checkbox" name="frameworks" aria-label="Carrocería" />
-            </form>
-          </nav> */}
-
-
-          <div className="flex-col grow p-4 justify-items-center">
-
-
-            <label className="input mt-10">
-              <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
-              </svg>
-              <input type="search" onChange={(e) => setSearch(e.target.value)} required placeholder="Search" />
-            </label>
-
-            <nav className='space-x-1.5 mt-8 mb-5'>
-              <span className='btn rounded-2xl mt-2'>Mantenimiento Básico</span>
-              <span className='btn rounded-2xl mt-2'>Sistema de Frenos</span>
-              <span className='btn rounded-2xl mt-2'>Neumáticos</span>
-              <span className='btn rounded-2xl mt-2'>Sistema Eléctrico</span>
-              <span className='btn rounded-2xl mt-2'>Suspensión</span>
-              <span className='btn rounded-2xl mt-2'>Motor</span>
-              <span className='btn rounded-2xl mt-2'>Transmisión</span>
-              <span className='btn rounded-2xl mt-2'>Climatización</span>
-              <span className='btn rounded-2xl mt-2'>Sistema de Escape</span>
-              <span className='btn rounded-2xl mt-2'>Diagnóstico</span>
-              <span className='btn rounded-2xl mt-2'>Carrocería</span>
-            </nav>
-            <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4 ">
-              <div className="grid lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
-                <TableReservations search={search}/>
-                {console.log(search)}
-                
+              <div ref={scrollRef} className="flex overflow-x-auto gap-3 py-4 scroll-smooth no-scrollbar" style={{ scrollbarWidth: 'none' }}>
+                {categorias.map((cat, index) => (
+                  <div key={index} className="shrink-0">
+                    <button 
+                      onClick={() => manejarClickCategoria(cat)} // Pasamos 'cat' directamente
+                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
+                        categoriaActiva === cat 
+                          ? "bg-orange-600 text-white border-orange-600 hover:bg-orange-700" 
+                          : "btn-outline btn-primary"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  </div>
+                ))}
               </div>
-            </div>
 
-            
+              <button onClick={() => scroll(200)} className="absolute -right-5 ml-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </nav>
+
+          <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4 ">
+            <div className="grid lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
+              {/* IMPORTANTE: Usamos categoriaActiva aquí */}
+              <TableReservations search={search} props={categoriaActiva} />
+            </div>
           </div>
         </div>
-
       </main>
-
       <Footer />
     </div>
-  )
+  );
 }
 
 export default App
