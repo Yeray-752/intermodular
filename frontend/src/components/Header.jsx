@@ -43,6 +43,7 @@ function Header() {
                                 { label: 'Reservas', path: '/reservas' },
                                 { label: 'Productos', path: '/productos' },
                                 { label: 'Sobre Nosotros', path: '/sobre-nosotros' },
+                                { label: '⚙️', path: '/perfil' },
                             ].map((item) => (
                                 <li key={item.path} className="text-blue-700">
                                     <button
@@ -63,6 +64,7 @@ function Header() {
                         >
                             Iniciar Sesión
                         </button>
+                        
                     </nav>
 
                     {/* Mobile menu button */}
