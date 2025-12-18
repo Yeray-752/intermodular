@@ -89,28 +89,38 @@ function TableReservations({ search, props }) {
                                                     <h3 className="font-bold text-2xl text-primary">Reservar Cita</h3>
                                                     <span className="badge badge-ghost p-3">{servicios.nombre}</span>
                                                 </div>
-                                               
+
                                                 <div className="form-control w-full mb-6">
                                                     <label className="label">
-                                                        <span className="label-text font-semibold">¿Qué vehículo traerás?</span>
+                                                        <span className="label-text font-semibold mb-5">¿Qué vehículo traerás?</span>
                                                     </label>
-                                                    <select className="select select-bordered w-full bg-base-200 focus:outline-primary" id="ns" name="Vehiculrewrewos">
+                                                    <select className="select select-bordered w-full bg-base-200" id="ns" name="Vehiculrewrewos">
                                                         <option disabled selected>Selecciona un vehículo</option>
                                                         <option value="ewr">Toyota - Corolla</option>
                                                         <option value="rewrew">Toyota - Hilux</option>
                                                     </select>
                                                 </div>
-                                            
+
                                                 <div className="flex flex-col items-center bg-base-200 rounded-xl p-4 mb-4">
                                                     <label className="label self-start pb-2">
                                                         <span className="label-text font-semibold">Selecciona la fecha:</span>
                                                     </label>
                                                     <Calendar
                                                         tileClassName={obtenerClaseDia}
-                                                        className="rounded-lg border-none shadow-md"
+                                                        className="custom-calendar" // Usaremos esta clase en el CSS
+                                                        locale="es-ES"
+                                                        minDetail="month"
+                                                        next2Label={null} // Quita las flechas dobles >>
+                                                        prev2Label={null} // Quita las flechas dobles <<
+                                                        navigationLabel={({ date }) => (
+                                                            <span className="font-bold text-lg capitalize">
+                                                                {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                                                            </span>
+                                                        )}
                                                     />
+                                                    
                                                 </div>
-                                              
+
                                                 <div className="grid grid-cols-1 gap-2 bg-base-200/50 p-4 rounded-lg">
                                                     <p className="text-xs font-bold uppercase text-gray-400 mb-1">Estado de disponibilidad:</p>
                                                     <div className="flex items-center gap-2 text-xs">
@@ -126,7 +136,7 @@ function TableReservations({ search, props }) {
                                                         <span className="font-medium">Alta demanda (Sujeto a cancelación)</span>
                                                     </div>
                                                 </div>
-                                             
+
                                                 <div className="modal-action flex gap-2">
                                                     <form method="dialog" className="flex-1">
                                                         <button className="btn btn-ghost w-full">Cancelar</button>
@@ -136,7 +146,7 @@ function TableReservations({ search, props }) {
                                                     </button>
                                                 </div>
                                             </div>
-                                           
+
                                             <form method="dialog" className="modal-backdrop backdrop-blur-sm bg-black/30">
                                                 <button>close</button>
                                             </form>

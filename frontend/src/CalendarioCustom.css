@@ -1,40 +1,137 @@
-/* Ajustar tamaño del calendario para que quepa en la card */
+/* ================================
+   CONTENEDOR GENERAL
+================================ */
 .mi-contenedor-calendario .react-calendar {
-    width: 100% !important;
-    border: none !important;
-    font-family: inherit;
-    font-size: 0.7rem; /* Texto más pequeño */
+  width: 100% !important;
+  max-width: 350px; /* Ajusta según tu diseño */
+  border: none !important;
+  background: white;
+  font-family: sans-serif;
+  padding: 1rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-/* Colores de estado */
+/* ================================
+   NAVEGACIÓN (MES + FLECHAS)
+================================ */
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  margin-bottom: 1rem;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================================
+   DÍAS DE LA SEMANA
+================================ */
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+/* ================================
+   GRILLA DE DÍAS (IMPORTANTE)
+================================ */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr); /* Crea 7 columnas iguales */
+  justify-items: center; /* Centra el botón dentro de su celda */
+  gap: 6px 0; /* Espaciado entre filas */
+}
+
+/* ================================
+   DÍAS (TILES) - TAMAÑO REDUCIDO
+================================ */
+.react-calendar__tile {
+  /* Control de tamaño */
+  width: 34px !important; 
+  height: 34px !important;
+  max-width: 34px !important;
+  padding: 0 !important;
+  margin: 2px !important;
+  
+  /* Forma y Texto */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 50% !important; /* Cambia a 50% si los quieres circulares */
+  
+  /* Reset */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover */
+.react-calendar__tile:enabled:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* ================================
+   ESTADOS DE COLOR (PEQUEÑOS)
+=============================== */
+
+/* Día Actual */
+.react-calendar__tile--now {
+  border: 1.5px solid #3b82f6 !important;
+  color: #3b82f6 !important;
+  background: transparent !important;
+}
+
+/* Día Seleccionado */
+.react-calendar__tile--active {
+  background: #4b5563 !important; /* Gris oscuro */
+  color: white !important;
+}
+
+/* Estados personalizados */
 .dia-rojo {
-    background-color: #ff4d4f !important; /* Rojo */
-    color: white !important;
-    border-radius: 4px;
+  background-color: #ef4444 !important;
+  color: white !important;
 }
 
 .dia-amarillo {
-    background-color: #ffec3d !important; /* Amarillo */
-    color: black !important;
-    border-radius: 4px;
+  background-color: #fbbf24 !important;
+  color: #374151 !important;
 }
 
 .dia-verde {
-    background-color: #73d13d !important; /* Verde */
-    color: white !important;
-    border-radius: 4px;
+  background-color: #22c55e !important;
+  color: white !important;
 }
 
-/* Quitar el hover grisáceo por defecto para que se vean los colores */
-.react-calendar__tile:enabled:hover,
-.react-calendar__tile:enabled:focus {
-    filter: brightness(0.9);
+/* Días de otros meses */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #d1d5db !important;
 }
-.animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+
+/* ================================
+   ANIMACIÓN (Opcional)
+================================ */
+.react-calendar__tile {
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }

@@ -37,12 +37,12 @@ function App() {
       <main className="grow">
         <div className="flex-col grow p-4 justify-items-center">
           {/* ... tu buscador ... */}
-          <input className='input' type="search" onChange={(e) => setSearch(e.target.value)} placeholder="Search" />
+          <input className='input mt-6' type="search" onChange={(e) => setSearch(e.target.value)} placeholder="Search" />
 
           <h1 className='mt-10 font-bold text-2xl'>Categorias</h1>
 
           <nav className='space-x-1.5 mt-4 mb-5'>
-            <div className="relative group w-80 lg:w-225 2xl:w-276 max-w-6xl mx-auto px-10">
+            <div className="relative group w-80 lg:w-225 2xl:w-290 max-w-6xl mx-auto px-10">
               <button onClick={() => scroll(-200)} className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
                 <ChevronLeft size={24} />
               </button>
