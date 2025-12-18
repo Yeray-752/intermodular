@@ -2,6 +2,11 @@
   margin: 0 auto;
   text-align: center;
 }
+html, body, #root {
+  height: 100%;
+  scrollbar-width: none;
+}
+
 
 .logo {
   height: 6em;
