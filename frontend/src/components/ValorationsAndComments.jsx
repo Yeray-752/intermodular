@@ -11,7 +11,7 @@ function App() {
 
     return (
         <>
-            <div>
+            <div className='mx-8'>
                 <div className="grid grid-cols-2 items-start gap-8">
                     <div className="card bg-base-100 shadow-sm">
                         <div className="card-body">
@@ -48,9 +48,29 @@ function App() {
                         </div>
                     </div>
 
+                    {/* Hacer un while para cada uno de los comentarios */}
+                    <div className='card bg-base-100 shadow-sm'>
+                        <div className='grid grid-cols-3'>
+                            <p>Imagen de perfil</p>
+                            <p>Nombre del usuario</p>
+                            <div className="rating rating-md rating-half pointer-events-none">
+                                <input type="radio" className="rating-hidden" />
 
-                    <div>
-                        <p>Aquí van los comentarios</p>
+                                <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
+                                <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" disabled />
+                            </div>
+
+                        </div>
+
+                        <p className='pt-5 text-left'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
                     </div>
                 </div>
             </div>

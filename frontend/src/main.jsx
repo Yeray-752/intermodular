@@ -31,6 +31,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/sobre-nosotros' element={<About />} />
       <Route path='/servicios' element={<Services />} />
       <Route path='/sobre-nosotros' element={<About />} />
+
+      
+      {/*Página por si hay algún error*/}
       <Route path='*' element={<Error />} />
     </Routes>
   </BrowserRouter>,
