@@ -22,20 +22,6 @@ export default function App() {
               mantenimiento profesional hasta modificaciones exclusivas, cada proyecto 
               recibe atención experta y dedicación total.
             </p>
-            {/* <div className="mt-15 flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => navigate("/servicios")}
-                className="px-8 py-4 bg-linear-to-r from-orange-600 to-orange-700 text-white rounded-xl font-bold hover:from-orange-700 hover:to-orange-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Ver Servicios
-              </button>
-              <button
-                onClick={() => navigate("/contacto")}
-                className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-800"
-              >
-                Contactar
-              </button>
-            </div> */}
           </div>
           
           <div className="order-1 lg:order-2 relative">
@@ -133,10 +119,6 @@ export default function App() {
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              {/* <div className="inline-flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
-                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                <span className="text-sm font-semibold text-gray-700">SOBRE NOSOTROS</span>
-              </div> */}
               
               <h2 className="text-3xl md:text-4xl font-bold leading-tight">
                 Pasión por la <span className="text-blue-700">Precisión</span>, 
@@ -164,13 +146,6 @@ export default function App() {
                   </li>
                 ))}
               </ul>
-              
-              {/* <button
-                onClick={() => navigate("/servicios")}
-                className="px-8 py-4 bg-linear-to-r from-blue-700 to-blue-800 text-white rounded-xl font-bold hover:from-blue-800 hover:to-blue-900 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                Descubrir Servicios
-              </button> */}
             </div>
           </div>
         </section>

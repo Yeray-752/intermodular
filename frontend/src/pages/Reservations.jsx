@@ -36,7 +36,6 @@ function App() {
       <Header />
       <main className="grow">
         <div className="flex-col grow p-4 justify-items-center">
-          {/* ... tu buscador ... */}
           <input className='input mt-6' type="search" onChange={(e) => setSearch(e.target.value)} placeholder="Search" />
 
           <h1 className='mt-10 font-bold text-2xl'>Categorias</h1>
@@ -51,7 +50,7 @@ function App() {
                 {categorias.map((cat, index) => (
                   <div key={index} className="shrink-0">
                     <button 
-                      onClick={() => manejarClickCategoria(cat)} // Pasamos 'cat' directamente
+                      onClick={() => manejarClickCategoria(cat)}
                       className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
                         categoriaActiva === cat 
                           ? "bg-orange-600 text-white border-orange-600 hover:bg-orange-700" 
@@ -72,7 +71,6 @@ function App() {
 
           <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4 ">
             <div className="grid lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
-              {/* IMPORTANTE: Usamos categoriaActiva aquí */}
               <TableReservations search={search} props={categoriaActiva} />
             </div>
           </div>

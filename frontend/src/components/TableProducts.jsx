@@ -1,42 +1,55 @@
-import { useState } from 'react'
-import '../App.css'
-import { useNavigate } from 'react-router'
-import ProductCard from "./ProductCard"
+import { useState } from 'react';
+import '../App.css';
+import { useNavigate } from "react-router";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import '../CalendarioCustom.css';
+import serviciosTaller from "../assets/data/productosTaller.json";
 
-function TableProducts() {
-    const [search, setSearch] = useState("");
+function TableProducts({ search, props }) {
+    const [datosTaller] = useState(serviciosTaller);
+    const filtroBusqueda = (search || '').toLowerCase();
+    const categorias = (props || '');
+
+    const navigate = useNavigate();
+
     return (
-        <div>
+        <>
+            {datosTaller.filter((servicio) => {
+                const coincideNombre = servicio.nombre.toLowerCase().includes(filtroBusqueda);
+                const coincideCategoria = categorias === "" || categorias === "X" || servicio.categoria === categorias;
+                return coincideNombre && coincideCategoria;
+            })
+                .map(servicios => {
+                    return (
+                        
+                        <div key={servicios.id} onClick={() => navigate(`/Producto/${servicios.id}`)}  className='card bg-base-100 shadow-xl w-80 flex flex-col cursor-pointer hover:shadow-2xl transition-all duration-300'>
 
-            <div className="TableProducts">
+                            <figure className="h-[140px] w-[250px]">
+                                <img
+                                    src={servicios.imagen}
+                                    alt={servicios.nombre}
+                                    className="h-[150px] w-[250px] object-contain"
+                                />
+                            </figure>
 
-                <input className='input mt-20 w-100' type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Motor 4 tiempos..." />
+                            <div className="card-body p-2 grow flex flex-col items-center text-center">
+
+                                <h2 className="card-title text-lg text-center mb-2">{servicios.nombre}</h2>
 
 
-                <div className="container-Produts mt-20">
-                    <div className="grid grid-cols-3 justify-items-center">
-                        {/*Hacer un while para mostrar todos los productos con el paginador incluido,
-                        Dentro del elemento producto creamos el link hacia la página del mismoproducto según el id*/}
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                        <ProductCard />
-                    </div>
-                </div>
-            </div>
+                                <div className=" border-t border-gray-200 pt-3 w-full">
 
-            <div className="join">
-                <button className="join-item btn">1</button>
-                <button className="join-item btn btn-active">2</button>
-                <button className="join-item btn">3</button>
-                <button className="join-item btn">4</button>
-            </div>
-        </div>
+                                    <div className="card-actions items-center grid grid-cols-2">
+                                            <p> Precio: <span className='text-xl font-extrabold text-orange-600'>{servicios.precio}€</span></p>
+                                            <p> Unidades: <span className='text-xl font-extrabold text-orange-600'>{servicios.stock}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+        </>
     );
 }
 
