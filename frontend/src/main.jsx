@@ -11,6 +11,7 @@ import Producto from './pages/Product.jsx'
 import Error from "./pages/404.jsx"
 import Services from "./pages/services.jsx"
 import Perfil from "./pages/perfil.jsx"
+import Texto from "./pages/texto.jsx"
 
 import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/servicios' element={<Services />} />
       <Route path='/sobre-nosotros' element={<About />} />
       <Route path='/perfil' element={<Perfil />} />
+      <Route path='/Aviso-legal' element={<Texto />} />
       <Route path='*' element={<Error />} />
     </Routes>
   </BrowserRouter>,

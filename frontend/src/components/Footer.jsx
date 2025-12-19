@@ -137,9 +137,9 @@ function Footer() {
                             Desarrollado por <span className="text-orange-500 font-medium">Yeray Carrión</span> y <span className="text-orange-500 font-medium">Óscar Gordillo</span>
                         </p>
                         <div className="flex items-center gap-6 text-sm text-gray-500">
-                            <a href="#" className="hover:text-orange-500 transition-colors">Política de Privacidad</a>
-                            <a href="#" className="hover:text-orange-500 transition-colors">Términos y Condiciones</a>
-                            <a href="#" className="hover:text-orange-500 transition-colors">Aviso Legal</a>
+                            <a href="/Aviso-legal" className="hover:text-orange-500 transition-colors">Política de Privacidad</a>
+                            <a href="/Aviso-legal" className="hover:text-orange-500 transition-colors">Términos y Condiciones</a>
+                            <a href="/Aviso-legal" className="hover:text-orange-500 transition-colors">Aviso Legal</a>
                         </div>
                     </div>
                 </div>
