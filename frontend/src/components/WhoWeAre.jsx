@@ -1,4 +1,4 @@
-import coche from '../assets/img/coche.jpg'
+import coche from '/img/web/coche.jpg'
 
 function WhoWeAre() {
   return (

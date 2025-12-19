@@ -1,5 +1,5 @@
 import { Facebook, Instagram, MapPin, Phone, Mail } from 'lucide-react';
-import logo from "../assets/img/logo_background.png";
+import logo from "/img/web/logo_background.png";
 
 function Footer() {
     return (

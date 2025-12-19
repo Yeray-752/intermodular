@@ -1,4 +1,4 @@
-import fondo from "../assets/img/fondo_log.webp";
+import fondo from "/img/web/fondo_log.webp";
 import { useNavigate } from "react-router";
 import { Link } from "react-router";
 
