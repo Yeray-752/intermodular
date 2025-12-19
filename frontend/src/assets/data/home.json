@@ -1,0 +1,52 @@
+{
+  "en": {
+    "heroTitle": "<span class='text-primary'>Customization</span> & <span class='text-secondary'>Vehicle Repair</span>",
+    "heroDescription": "At Akotan we transform your vehicle with precision and quality. From professional maintenance to exclusive modifications, every project receives expert attention and full dedication.",
+    "heroAlt": "Professional mechanical workshop",
+    "offersTitle": "<span class='text-base-content'>Special</span> <span class='text-primary'>Offers</span>",
+    "offersDescription": "Take advantage of our monthly promotions with guaranteed quality",
+    "offer1Title": "Premium Oil Change",
+    "offer1Desc": "Includes full inspection and diagnostics",
+    "offer2Title": "General Check-up",
+    "offer2Desc": "Complete 50-point inspection",
+    "offer3Title": "Alignment & Balancing",
+    "offer3Desc": "Complete steering adjustment",
+    "offerMostPopular": "MOST POPULAR",
+    "offerVATIncluded": "VAT included",
+    "bookNow": "Book Now",
+    "aboutUsTitle": "Passion for <span class='text-secondary'>Precision</span>, Commitment to <span class='text-primary'>Excellence</span>",
+    "aboutUsDescription": "Over 15 years of experience back us up. Our team combines cutting-edge technology with craftsmanship, ensuring results that exceed expectations in every project.",
+    "aboutUsAlt": "Technician working on a vehicle",
+    "aboutUsList": [
+      "Certified and specialized technicians",
+      "Warranty on all our work",
+      "Personalized attention and expert advice",
+      "Use of top-quality parts and materials"
+    ]
+  },
+  "es": {
+    "heroTitle": "<span class='text-primary'>Personalización</span> y <span class='text-secondary'>Reparación</span> de Vehículos",
+    "heroDescription": "En Akotan transformamos tu vehículo con precisión y calidad. Desde mantenimiento profesional hasta modificaciones exclusivas, cada proyecto recibe atención experta y dedicación total.",
+    "heroAlt": "Taller mecánico profesional",
+    "offersTitle": "<span class='text-base-content'>Ofertas</span> <span class='text-primary'>Especiales</span>",
+    "offersDescription": "Aprovecha nuestras promociones mensuales con calidad garantizada",
+    "offer1Title": "Cambio de Aceite Premium",
+    "offer1Desc": "Incluye revisión completa y diagnóstico",
+    "offer2Title": "Revisión General",
+    "offer2Desc": "Inspección completa de 50 puntos",
+    "offer3Title": "Alineación y Balanceo",
+    "offer3Desc": "Completo ajuste de dirección",
+    "offerMostPopular": "MÁS POPULAR",
+    "offerVATIncluded": "IVA incluido",
+    "bookNow": "Reservar Ahora",
+    "aboutUsTitle": "Pasión por la <span class='text-secondary'>Precisión</span>, Compromiso con la <span class='text-primary'>Excelencia</span>",
+    "aboutUsDescription": "Más de 15 años de experiencia nos respaldan. Nuestro equipo combina tecnología de vanguardia con habilidades artesanales, asegurando resultados que superan expectativas en cada proyecto.",
+    "aboutUsAlt": "Técnico trabajando en vehículo",
+    "aboutUsList": [
+      "Técnicos certificados y especializados",
+      "Garantía en todos nuestros trabajos",
+      "Atención personalizada y asesoramiento experto",
+      "Uso de repuestos y materiales de primera calidad"
+    ]
+  }
+}

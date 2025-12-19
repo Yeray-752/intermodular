@@ -1,21 +1,7 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { useNavigate } from 'react-router'
-import Footer from './components/Footer'
-import Header from './components/Header'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './i18n'; // importa tu configuración
 
-function App() {
-  const [count, setCount] = useState(0)
-  const navigate = useNavigate()
-
-  return (
-    <>
-     <Header />
-      <Footer />
-    </>
-  )
-}
-
-export default App
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);

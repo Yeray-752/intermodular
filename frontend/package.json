@@ -14,11 +14,13 @@
     "cally": "^0.9.0",
     "daisyui": "^5.5.5",
     "express": "^5.2.1",
+    "i18next": "^25.7.3",
     "lucide-react": "^0.556.0",
     "pikaday": "^1.8.2",
     "react": "^19.2.0",
     "react-calendar": "^6.0.0",
     "react-dom": "^19.2.0",
+    "react-i18next": "^16.5.0",
     "react-router-dom": "^7.10.1",
     "tailwindcss": "^4.1.17"
   },

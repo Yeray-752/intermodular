@@ -1,0 +1,12 @@
+{
+  "en": {
+    "title": "Page not found",
+    "subtitle": "Sorry, we couldn’t find the page you’re looking for.",
+    "button": "Go back home"
+  },
+  "es": {
+    "title": "Página no encontrada",
+    "subtitle": "Lo sentimos, no pudimos encontrar la página que buscas.",
+    "button": "Volver a inicio"
+  }
+}
