@@ -4,31 +4,30 @@ import Footer from '../components/Footer'
 
 function Legales() {
     return (
-        <div className='bg-neutral-50 min-h-screen flex flex-col font-sans text-neutral-800'>
+        <div className='bg-base-200 min-h-screen flex flex-col font-sans text-base-content'>
             <Header />
 
             <main className='grow flex flex-col items-center p-6 md:p-12'>
                 {/* Título */}
                 <div className='w-full max-w-3xl text-center mb-10'>
                     <h1 className='text-3xl md:text-4xl font-semibold mb-4'>Información Legal</h1>
-                    <p className='text-neutral-600 leading-relaxed'>
+                    <p className='text-base-content/70 leading-relaxed'>
                         En esta sección se recoge toda la información legal relacionada con el uso del sitio web de AKOTAN Workshop,
                         incluyendo el aviso legal, la política de privacidad y los términos y condiciones aplicables a nuestros servicios.
                     </p>
                 </div>
 
                 {/* Contenedor principal */}
-                <div className='w-full max-w-3xl bg-white border border-neutral-200 rounded-xl'>
+                <div className='w-full max-w-3xl bg-base-100 border border-base-300 rounded-xl'>
 
                     {/* Índice simple */}
-                    <div className='border-b border-neutral-200 p-4 text-sm flex justify-center gap-6'>
+                    <div className='border-b border-base-300 p-4 text-sm flex justify-center gap-6'>
                         <a href='#aviso-legal' className='hover:underline'>Aviso legal</a>
                         <a href='#privacidad' className='hover:underline'>Privacidad</a>
                         <a href='#terminos' className='hover:underline'>Términos</a>
                     </div>
 
-                    <div className='p-6 md:p-10 space-y-14 text-sm md:text-base leading-relaxed'>
-
+                    <div className='p-6 md:p-10 space-y-14 text-sm md:text-base leading-relaxed text-base-content'>
                         {/* Aviso legal */}
                         <section id='aviso-legal'>
                             <h2 className='text-2xl font-semibold mb-4'>Aviso Legal</h2>
@@ -110,7 +109,7 @@ function Legales() {
                     </div>
 
                     {/* Pie legal */}
-                    <div className='border-t border-neutral-200 p-6 text-center text-sm text-neutral-600'>
+                    <div className='border-t border-base-300 p-6 text-center text-sm text-base-content/70'>
                         <p>Última actualización: junio de 2025</p>
                         <p className='mt-1'>AKOTAN Workshop</p>
                     </div>
@@ -118,7 +117,7 @@ function Legales() {
 
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className='mt-8 text-sm underline cursor-pointer'
+                    className='mt-8 text-sm underline cursor-pointer text-base-content/70'
                 >
                     Volver arriba
                 </button>
