@@ -33,7 +33,7 @@ function Header() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-1">
-                        <ul className="flex items-center space-x-1">
+                        <ul className="flex items-center  space-x-1">
                             {[
                                 { label: 'Inicio', path: '/' },
                                 { label: 'Reservas', path: '/reservas' },
@@ -44,7 +44,7 @@ function Header() {
                                 <li key={item.path}>
                                     <button
                                         onClick={() => navigate(item.path)}
-                                        className={`px-4 py-2 rounded-lg ${hoverLink} hover:bg-base-200 active:bg-base-300`}
+                                        className={`px-4 py-2 cursor-pointer rounded-lg ${hoverLink} hover:bg-base-200 active:bg-base-300`}
                                     >
                                         {item.label}
                                     </button>
@@ -56,7 +56,7 @@ function Header() {
 
                         <button
                             onClick={() => navigate('/login')}
-                            className="ml-4 px-6 py-2.5 bg-primary text-primary-content rounded-xl font-semibold hover:bg-primary-focus transition-all duration-300 shadow-md"
+                            className="ml-4 cursor-pointer px-6 py-2.5 bg-primary text-primary-content rounded-xl font-semibold hover:bg-primary-focus transition-all duration-300 shadow-md"
                         >
                             Iniciar Sesión
                         </button>
