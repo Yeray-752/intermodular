@@ -57,7 +57,7 @@ function TableReservations({ search, props }) {
                             <div className="card-body p-2 grow flex flex-col items-center text-center">
 
                                 <h2 className="card-title text-lg text-center mb-2">{servicios.nombre}</h2>
-                                <p className="text-sm text-gray-900 mb-3 grow">{servicios.descripcion}</p>
+                                <p className="text-sm mb-3 grow">{servicios.descripcion}</p>
 
 
 

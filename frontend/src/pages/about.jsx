@@ -11,7 +11,7 @@ function App() {
 
   return (
 
-    <div className='bg-white'>
+    <div className='bg-base-200'>
       <Header />
       <WhoWeAre />
       <Footer />
