@@ -33,7 +33,7 @@
     "id": 4,
     "nombre": "Filtro de Aceite Pro",
     "descripcion": "Filtro de aceite sintético con eficiencia de filtrado del 99%.",
-    "imagen": "/src/assets/img/productos/filtro_de_aire.jpg",
+    "imagen": "/src/assets/img/productos/filtro_de_aceite.jpg",
     "precio": 12.99,
     "stock": 120,
     "valoracion_global": 4.8,
