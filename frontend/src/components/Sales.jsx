@@ -28,7 +28,7 @@ function Sales() {
               i === index ? "block" : "hidden"
             }`}
           >
-            <img src={src} className="w-full" />
+            <img src={src} className="w-full"/>
             <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <button className="btn btn-circle" onClick={prevSlide}>❮</button>
               <button className="btn btn-circle" onClick={nextSlide}>❯</button>

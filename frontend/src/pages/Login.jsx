@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router'
-import Footer from '../components/Footer'
+import Login from '../components/Login'
 import Header from '../components/Header'
-import Sales from '../components/Sales'
-import WhoWeAre from '../components/WhoWeAre'
+import Footer from '../components/Footer'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,9 +12,7 @@ function App() {
   return (
     <>
       <Header />
-      <Sales />
-      <WhoWeAre />
-      <Footer />
+      <Login />
     </>
   )
 }
