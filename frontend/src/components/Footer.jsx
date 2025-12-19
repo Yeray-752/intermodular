@@ -3,7 +3,7 @@ import logo from "../assets/img/logo_background.png";
 
 function Footer() {
     return (
-        <footer className="bg-linear-to-r from-gray-900 to-gray-800 text-white pt-12 pb-8 mt-20">
+        <footer className="bg-linear-to-r from-gray-900 to-gray-800 text-white pt-12 pb-8 mt-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
