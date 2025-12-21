@@ -9,7 +9,7 @@ function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation('profile');
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'es' ? 'en' : 'es';

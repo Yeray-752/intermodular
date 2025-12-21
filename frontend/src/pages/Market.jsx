@@ -10,7 +10,8 @@ function App() {
   const [search, setSearch] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState("");
 
-  const categorias = t("categories", { returnObjects: true }) || []; // <-- fallback a []
+  const categorias = t("categories", { returnObjects: true }) || [];
+  const listaProductos = t("products", { returnObjects: true });
 
   const manejarClickCategoria = (nombreSeleccionado) => {
     if (categoriaActiva === nombreSeleccionado) {
@@ -19,6 +20,8 @@ function App() {
       setCategoriaActiva(nombreSeleccionado);
     }
   };
+
+  const productosSeguros = Array.isArray(listaProductos) ? listaProductos : [];
 
   const scrollRef = useRef(null);
   const scroll = (offset) => {
@@ -61,7 +64,11 @@ function App() {
 
           <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4 ">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
-              <TableProducts search={search} props={categoriaActiva} />
+              <TableProducts
+                search={search}
+                props={categoriaActiva}
+                productos={listaProductos}
+              />
             </div>
           </div>
         </div>

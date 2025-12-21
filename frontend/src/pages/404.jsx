@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function Error404() {
-  const { t } = useTranslation("error");
+  const { t, ready } = useTranslation("error");
+
+  if (!ready) return <div>Cargando...</div>;
 
   return (
     <div>

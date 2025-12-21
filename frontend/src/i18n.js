@@ -5,17 +5,31 @@ import { initReactI18next } from "react-i18next";
 import profileData from "./assets/data/profile.json";
 import homeData from "./assets/data/home.json";
 import errorData from "./assets/data/404.json";
+import categoriesData from "./assets/data/categories.json";
+import productData from "./assets/data/productosTaller.json";
+import formData from './assets/data/formulario.json';
 
 const resources = {
   en: {
     profile: profileData.en,
     home: homeData.en,
-    error: errorData.en
+    error: errorData.en,
+    market: {
+      ...categoriesData.en,
+      ...productData.en,
+    },
+    formulario: formData.en,
+
   },
   es: {
     profile: profileData.es,
     home: homeData.es,
-    error: errorData.es
+    error: errorData.es,
+    market: {
+      ...categoriesData.es,
+      ...productData.es
+    },
+    formulario: formData.es,
   }
 };
 
@@ -23,8 +37,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "es",
+    lng: i18n.language || "es",
     fallbackLng: "es",
+    ns: ['home', 'profile', 'error', 'market', 'formulario'],
+    defaultNS: 'home',
     interpolation: { escapeValue: false }
   });
 
