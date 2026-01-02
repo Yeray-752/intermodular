@@ -333,7 +333,7 @@
     "id": 34,
     "categoria": "Carrocería",
     "nombre": "Cambio de Faro Delantero",
-    "imagen": "/img/reservas/faroDelantero.jpg",
+    "imagen": "f/img/reservas/faroDelantero.jpg",
     "descripcion": "Sustitución de faro completo",
     "precio": 220,
     "duracion": "1 hora",
