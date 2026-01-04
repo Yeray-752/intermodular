@@ -26,5 +26,5 @@ jobs:
            npm i;
            npm run build;
            cd ..;
-           pm2 restart app.js --name 'intermodular'
+           pm2 restart server.js --name 'intermodular'
            "
