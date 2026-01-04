@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
   const { nombre, email } = req.body;
   try {
     const [result] = await db.query(
-      "INSERT INTO users (nombre, email) VALUES (?, ?)",
+      "INSERT INTO Usuario (nombre, email) VALUES (?, ?)",
       [nombre, email]
     );
     res.json({ id: result.insertId, nombre, email });

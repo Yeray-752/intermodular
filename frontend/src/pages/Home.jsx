@@ -2,7 +2,7 @@ import { useNavigate} from "react-router";
 import { useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import ImagenPrincipal from "/img/web/taller.jpg";
+import ImagenPrincipal from " /img/web/taller.jpg";
 
 export default function App() {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export default function App() {
                 alt="Taller mecánico profesional"
                 className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl md:rounded-3xl"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent rounded-2xl md:rounded-3xl"></div>
             </div>
             <div className="absolute -bottom-4 -right-4 w-24 h-24 md:w-32 md:h-32 bg-primary opacity-20 rounded-full -z-10"></div>
             <div className="absolute -top-4 -left-4 w-20 h-20 md:w-28 md:h-28 bg-secondary opacity-10 rounded-full -z-10"></div>
