@@ -2,7 +2,7 @@ import { useNavigate} from "react-router";
 import { useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import ImagenPrincipal from " /img/web/taller.jpg";
+import ImagenPrincipal from "/img/web/taller.jpg";
 
 export default function App() {
   const navigate = useNavigate();
