@@ -5,9 +5,9 @@ const router = Router()
 
 router.get("/", async (req, res) => {
     try{
-        const [rows] = await db.querry("SELECT * FROM servicios");
+        const [rows] = await db.query("SELECT * FROM servicios");
         res.json(rows)
-    } catch (error){
+    }catch (error) {
         res.status(500).json({ error: "Error en el servidor" });
     }
 });
