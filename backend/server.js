@@ -13,6 +13,7 @@ app.use(express.json());
 // Rutas API
 app.use("/api/usuarios", usersRoutes);
 app.use("/api/productos", productosRoutes);
+app.use("/api/servicios", serviceRoute);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
