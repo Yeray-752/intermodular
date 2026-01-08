@@ -1,0 +1,22 @@
+{
+  "es": {
+      "title": "Inicio de sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "required_field": "Este campo es requerido",
+      "invalid_field": "Este campo está vacío o es incorrecto",
+      "btn_submit": "Entrar",
+      "btn_reset": "Limpiar",
+      "link_signup": "¿Deseas registrarte?"
+  },
+  "en": {
+      "title": "Login",
+      "email": "Email Address",
+      "password": "Password",
+      "required_field": "This field is required",
+      "invalid_field": "This field is empty or incorrect",
+      "btn_submit": "Login",
+      "btn_reset": "Reset",
+      "link_signup": "Don't have an account? Sign up"
+  }
+}

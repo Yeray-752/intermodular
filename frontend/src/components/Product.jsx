@@ -67,7 +67,7 @@ function Product() {
         <div className="min-h-screen bg-base-200">
             <div className="max-w-6xl mx-auto pt-6 px-4">
                 <button onClick={() => navigate(-1)} className="btn btn-sm btn-ghost gap-2">
-                    ← {t('home:back', { defaultValue: 'Volver' })}
+                    ← {t('formulario:back', { defaultValue: 'Volver' })}
                 </button>
             </div>
 

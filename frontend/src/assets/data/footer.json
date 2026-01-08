@@ -1,0 +1,32 @@
+{
+  "es": {
+    "description": "Especialistas en personalización y reparación de vehículos. Combinamos tecnología de vanguardia con artesanía tradicional.",
+    "contactTitle": "Contacto",
+    "linksTitle": "Enlaces Rápidos",
+    "scheduleTitle": "Horario",
+    "address": "Calle Taller, 123, 35600 Puerto del Rosario, España.",
+    "rights": "Todos los derechos reservados.",
+    "developedBy": "Desarrollado por",
+    "days": {
+      "week": "Lunes - Viernes",
+      "sat": "Sábados",
+      "sun": "Domingos",
+      "closed": "Cerrado"
+    }
+  },
+  "en": {
+    "description": "Specialists in vehicle customization and repair. We combine cutting-edge technology with traditional craftsmanship.",
+    "contactTitle": "Contact",
+    "linksTitle": "Quick Links",
+    "scheduleTitle": "Schedule",
+    "address": "Taller Street, 123, 35600 Puerto del Rosario, Spain.",
+    "rights": "All rights reserved.",
+    "developedBy": "Developed by",
+    "days": {
+      "week": "Monday - Friday",
+      "sat": "Saturdays",
+      "sun": "Sundays",
+      "closed": "Closed"
+    }
+  }
+}

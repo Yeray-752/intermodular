@@ -28,7 +28,8 @@
       "confirmButton": "Confirmar Pago de",
       "errorValidation": "Por favor, corrige los errores en el formulario",
       "success": "¡Compra realizada con éxito!"
-    }
+    },
+    "back": "Volver"
   },
   "en": {
     "categoriesTitle": "Categories",
@@ -59,6 +60,7 @@
       "confirmButton": "Confirm Payment of",
       "errorValidation": "Please correct the errors in the form",
       "success": "Purchase completed successfully!"
-    }
+    },
+    "back": "Go Back"
   }
 }

@@ -28,7 +28,6 @@ function Perfil() {
     // Array de campos de información del perfil
     const profileFields = useMemo(() => [
         { label: t('nameWorkshop'), type: "text", value: "AKOTAN Workshop" },
-        { label: t('email'), type: "email", value: "contacto@akotan.com" },
         { label: t('phone'), type: "text", value: "+34 600 000 000" },
         { label: t('location'), type: "text", value: "Madrid, España" },
     ], [t, i18n.language]);

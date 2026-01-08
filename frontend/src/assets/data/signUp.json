@@ -1,0 +1,40 @@
+{
+  "es": {
+    "signup": {
+      "title": "Registro",
+      "name": "Nombre*",
+      "lastname": "Apellidos",
+      "email": "Correo electrónico*",
+      "password": "Contraseña*",
+      "required_field": "Este campo es requerido",
+      "optional_field": "Este campo es opcional",
+      "pass_hint": "La contraseña necesita cumplir los siguientes requisitos:",
+      "pass_req_1": "Mínimo 8 caracteres.",
+      "pass_req_2": "Al menos una mayúscula.",
+      "pass_req_3": "Al menos un número.",
+      "pass_req_4": "No se permiten caracteres especiales ($,~,%,& o /).",
+      "btn_submit": "Registrarse",
+      "btn_reset": "Limpiar",
+      "link_login": "¿Deseas iniciar sesión?"
+    }
+  },
+  "en": {
+    "signup": {
+      "title": "Sign Up",
+      "name": "First Name*",
+      "lastname": "Last Name",
+      "email": "Email Address*",
+      "password": "Password*",
+      "required_field": "This field is required",
+      "optional_field": "This field is optional",
+      "pass_hint": "The password must meet the following requirements:",
+      "pass_req_1": "At least 8 characters.",
+      "pass_req_2": "At least one uppercase letter.",
+      "pass_req_3": "At least one number.",
+      "pass_req_4": "Special characters are not allowed ($,~,%,& or /).",
+      "btn_submit": "Sign Up",
+      "btn_reset": "Reset",
+      "link_login": "Already have an account? Log in"
+    }
+  }
+}

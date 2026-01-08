@@ -1,19 +1,30 @@
 import { useNavigate } from "react-router";
-import logo from '../assets/img/logo_no_background.webp'
+import logo from '../assets/img/logo_no_background.webp';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Header() {
+    const { t } = useTranslation(['header']);
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const hoverLink = 'text-base-content hover:text-primary transition-colors duration-300 font-medium';
 
+    // Array de navegación traducido
+    const navItems = [
+        { label: t('nav.home'), path: '/' },
+        { label: t('nav.bookings'), path: '/reservas' },
+        { label: t('nav.products'), path: '/productos' },
+        { label: t('nav.about'), path: '/sobre-nosotros' },
+        { label: '⚙️', path: '/perfil' },
+    ];
+
     return (
         <header className="sticky top-0 z-50 bg-base-100 dark:bg-base-200 text-base-content shadow-md border-b border-base-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
-                    {/* Logo y nombre */}
+                    {/* LOGO Y TÍTULO */}
                     <div 
                         onClick={() => navigate('/')} 
                         className="flex items-center space-x-4 cursor-pointer group"
@@ -27,21 +38,17 @@ function Header() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-base-content">AKOTAN</h1>
-                            <p className="text-xs font-medium text-base-content/70">TALLER MECÁNICO</p>
+                            <p className="text-xs font-medium text-base-content/70">
+                                {t('subtitle')}
+                            </p>
                         </div>
                     </div>
 
-                    {/* Desktop Navigation */}
+                    {/* NAVEGACIÓN DESKTOP */}
                     <nav className="hidden md:flex items-center space-x-1">
-                        <ul className="flex items-center  space-x-1">
-                            {[
-                                { label: 'Inicio', path: '/' },
-                                { label: 'Reservas', path: '/reservas' },
-                                { label: 'Productos', path: '/productos' },
-                                { label: 'Sobre Nosotros', path: '/sobre-nosotros' },
-                                { label: '⚙️', path: '/perfil' },
-                            ].map(item => (
-                                <li key={item.path}>
+                        <ul className="flex items-center space-x-1">
+                            {navItems.map((item, index) => (
+                                <li key={index}>
                                     <button
                                         onClick={() => navigate(item.path)}
                                         className={`px-4 py-2 cursor-pointer rounded-lg ${hoverLink} hover:bg-base-200 active:bg-base-300`}
@@ -58,11 +65,11 @@ function Header() {
                             onClick={() => navigate('/login')}
                             className="ml-4 cursor-pointer px-6 py-2.5 bg-primary text-primary-content rounded-xl font-semibold hover:bg-primary-focus transition-all duration-300 shadow-md"
                         >
-                            Iniciar Sesión
+                            {t('nav.login')}
                         </button>
                     </nav>
 
-                    {/* Mobile menu button */}
+                    {/* BOTÓN MENÚ MÓVIL */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="md:hidden p-2 rounded-lg text-base-content hover:text-primary transition-colors"
@@ -71,19 +78,13 @@ function Header() {
                     </button>
                 </div>
 
-                {/* Mobile Navigation */}
+                {/* NAVEGACIÓN MÓVIL */}
                 {isMenuOpen && (
                     <div className="md:hidden border-t border-base-300 py-4 animate-fadeIn">
                         <div className="flex flex-col space-y-1">
-                            {[
-                                { label: 'Inicio', path: '/' },
-                                { label: 'Servicios', path: '/servicios' },
-                                { label: 'Reservas', path: '/reservas' },
-                                { label: 'Productos', path: '/productos' },
-                                { label: 'Sobre Nosotros', path: '/sobre-nosotros' },
-                            ].map(item => (
+                            {navItems.map((item, index) => (
                                 <button
-                                    key={item.path}
+                                    key={index}
                                     onClick={() => { navigate(item.path); setIsMenuOpen(false); }}
                                     className="px-4 py-3 text-left text-base-content hover:text-primary hover:bg-base-200 rounded-lg transition-colors font-medium"
                                 >
@@ -96,7 +97,7 @@ function Header() {
                                     onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
                                     className="w-full px-4 py-3 bg-primary text-primary-content rounded-xl font-semibold hover:bg-primary-focus transition-all duration-300"
                                 >
-                                    Iniciar Sesión
+                                    {t('nav.login')}
                                 </button>
                             </div>
                         </div>
@@ -104,7 +105,6 @@ function Header() {
                 )}
             </div>
 
-            {/* CSS for animation */}
             <style>{`
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(-10px); }
