@@ -17,14 +17,6 @@ function Perfil() {
         { id: 'password', label: 'Seguridad', icon: Lock }
     ]
 
-    const [theme, setTheme] = useState(
-        localStorage.getItem("theme") || "light"
-    )
-
-    useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme)
-        localStorage.setItem("theme", theme)
-    }, [theme])
 
     const handleTabChange = (tab) => {
         setActiveTab(tab)
@@ -67,25 +59,7 @@ function Perfil() {
                                 </div>
                             ))}
 
-                            <div className="flex items-center gap-3">
-                                <p>Tema</p>
-                                <label className="toggle text-base-content mt-0.5">
-                                    <input
-                                        type="checkbox"
-                                        checked={theme === "dark"}
-                                        onChange={(e) =>
-                                            setTheme(e.target.checked ? "dark" : "light")
-                                        }
-                                    />
-                                    <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                        <circle cx="12" cy="12" r="4" />
-                                        <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-                                    </svg>
-                                    <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                                    </svg>
-                                </label>
-                            </div>
+                            
                         </div>
 
                         <button className="mt-8 btn btn-primary flex items-center gap-2">

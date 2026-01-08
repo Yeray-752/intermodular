@@ -6,10 +6,7 @@ import ImagenPrincipal from "/img/web/taller.jpg";
 
 export default function App() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(
-          localStorage.getItem("theme") || "light"
-      )
-      let divPrincipal = document.documentElement.setAttribute("data-theme", theme)
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-base-200 text-base-content">

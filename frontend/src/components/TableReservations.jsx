@@ -19,9 +19,9 @@ function TableReservations({ search, props }) {
     };
 
     const datosReservas = {
-        "2025-12-20": "lleno",
-        "2025-12-21": "medio",
-        "2025-12-22": "disponible",
+        "2026-01-20": "lleno",
+        "2026-01-21": "medio",
+        "2026-01-22": "disponible",
     };
 
     const obtenerClaseDia = ({ date, view }) => {
@@ -94,8 +94,7 @@ function TableReservations({ search, props }) {
                                                     <label className="label">
                                                         <span className="label-text font-semibold mb-5">¿Qué vehículo traerás?</span>
                                                     </label>
-                                                    <select className="select select-bordered w-full bg-base-200" id="ns" name="Vehiculrewrewos">
-                                                        <option disabled selected>Selecciona un vehículo</option>
+                                                    <select className="select select-bordered w-full bg-base-200" id="ns" name="Vehiculrewrewos" defaultValue='Seleciona un vehiculo'>
                                                         <option value="ewr">Toyota - Corolla</option>
                                                         <option value="rewrew">Toyota - Hilux</option>
                                                     </select>
@@ -104,21 +103,22 @@ function TableReservations({ search, props }) {
                                                 <div className="flex flex-col items-center bg-base-200 rounded-xl p-4 mb-4">
                                                     <label className="label self-start pb-2">
                                                         <span className="label-text font-semibold">Selecciona la fecha:</span>
-                                                    </label>
-                                                    <Calendar
-                                                        tileClassName={obtenerClaseDia}
-                                                        className="custom-calendar" // Usaremos esta clase en el CSS
-                                                        locale="es-ES"
-                                                        minDetail="month"
-                                                        next2Label={null} // Quita las flechas dobles >>
-                                                        prev2Label={null} // Quita las flechas dobles <<
-                                                        navigationLabel={({ date }) => (
-                                                            <span className="font-bold text-lg capitalize">
-                                                                {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-                                                            </span>
-                                                        )}
-                                                    />
-                                                    
+                                                    </label>                                                
+                                                        <div className="mi-contenedor-calendario">
+                                                            <Calendar
+                                                            tileClassName={obtenerClaseDia}
+                                                            className="custom-calendar" // Usaremos esta clase en el CSS
+                                                            locale="es-ES"
+                                                            minDetail="month"
+                                                            next2Label={null} // Quita las flechas dobles >>
+                                                            prev2Label={null} // Quita las flechas dobles <<
+                                                            navigationLabel={({ date }) => (
+                                                                <span className="font-bold text-lg capitalize">
+                                                                    {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                                                                </span>
+                                                            )}
+                                                        />
+                                                        </div>
                                                 </div>
 
                                                 <div className="grid grid-cols-1 gap-2 bg-base-200/50 p-4 rounded-lg">
