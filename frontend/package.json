@@ -16,9 +16,9 @@
     "express": "^5.2.1",
     "lucide-react": "^0.556.0",
     "pikaday": "^1.8.2",
-    "react": "^19.2.0",
+    "react": "^19.2.3",
     "react-calendar": "^6.0.0",
-    "react-dom": "^19.2.0",
+    "react-dom": "^19.2.3",
     "react-router-dom": "^7.10.1",
     "tailwindcss": "^4.1.17"
   },

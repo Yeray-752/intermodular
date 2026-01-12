@@ -4,12 +4,27 @@ import { Link } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../CalendarioCustom.css';
-import serviciosTaller from "../assets/data/serviciosTaller.json";
 
 function TableReservations({ search, props }) {
-    const [datosTaller] = useState(serviciosTaller);
+    const [datosServicios, setDatosServicios] = useState('');
     const filtroBusqueda = (search || '').toLowerCase();
     const categorias = (props || '');
+
+    useEffect(() => {
+    fetch('http://yeray.informaticamajada.es:3000/api/servicios')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al conectar con la API');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setDatosServicios(data);
+      })
+      .catch(err => {
+        setError(err.message);
+      });
+  }, []);
 
     // ESTADO para controlar qué calendario está abierto
     const [servicioExpandido, setServicioExpandido] = useState(null);

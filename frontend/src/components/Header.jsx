@@ -15,7 +15,6 @@ function Header() {
         <header className="sticky top-0 z-50 bg-base-100 dark:bg-base-200 text-base-content shadow-md border-b border-base-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
-                    {/* Logo y nombre */}
                     <div
                         onClick={() => navigate('/')}
                         className="flex items-center space-x-4 cursor-pointer group"
