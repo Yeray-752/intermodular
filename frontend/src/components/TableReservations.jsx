@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../App.css';
 import { Link } from 'react-router-dom';
 import Calendar from 'react-calendar';
@@ -6,9 +6,10 @@ import 'react-calendar/dist/Calendar.css';
 import '../CalendarioCustom.css';
 
 function TableReservations({ search, props }) {
-    const [datosServicios, setDatosServicios] = useState('');
+    const [datosServicios, setDatosServicios] = useState([]);
     const filtroBusqueda = (search || '').toLowerCase();
     const categorias = (props || '');
+    
 
     useEffect(() => {
     fetch('http://yeray.informaticamajada.es:3000/api/servicios')
@@ -26,6 +27,7 @@ function TableReservations({ search, props }) {
       });
   }, []);
 
+  
     // ESTADO para controlar qué calendario está abierto
     const [servicioExpandido, setServicioExpandido] = useState(null);
 
@@ -52,7 +54,7 @@ function TableReservations({ search, props }) {
 
     return (
         <>
-            {datosTaller.filter((servicio) => {
+            {datosServicios.filter((servicio) => {
                 const coincideNombre = servicio.nombre.toLowerCase().includes(filtroBusqueda);
                 const coincideCategoria = categorias === "" || categorias === "X" || servicio.categoria === categorias;
                 return coincideNombre && coincideCategoria;

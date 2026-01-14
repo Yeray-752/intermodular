@@ -1,0 +1,62 @@
+[
+{
+"id_usuario": 1,
+"email": "cliente1@taller.es",
+"contraseña": "pass1",
+"rol": "cliente"
+},
+{
+"id_usuario": 2,
+"email": "cliente2@taller.es",
+"contraseña": "pass2",
+"rol": "cliente"
+},
+{
+"id_usuario": 3,
+"email": "cliente3@taller.es",
+"contraseña": "pass3",
+"rol": "cliente"
+},
+{
+"id_usuario": 4,
+"email": "cliente4@taller.es",
+"contraseña": "pass4",
+"rol": "cliente"
+},
+{
+"id_usuario": 5,
+"email": "cliente5@taller.es",
+"contraseña": "pass5",
+"rol": "cliente"
+},
+{
+"id_usuario": 6,
+"email": "cliente6@taller.es",
+"contraseña": "pass6",
+"rol": "cliente"
+},
+{
+"id_usuario": 7,
+"email": "cliente7@taller.es",
+"contraseña": "pass7",
+"rol": "cliente"
+},
+{
+"id_usuario": 8,
+"email": "cliente8@taller.es",
+"contraseña": "pass8",
+"rol": "cliente"
+},
+{
+"id_usuario": 9,
+"email": "cliente9@taller.es",
+"contraseña": "pass9",
+"rol": "cliente"
+},
+{
+"id_usuario": 10,
+"email": "cliente10@taller.es",
+"contraseña": "pass10",
+"rol": "cliente"
+}
+]
