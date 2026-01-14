@@ -1,7 +1,7 @@
 import { Facebook, Instagram, MapPin, Phone, Mail } from 'lucide-react';
-import logo from "../assets/img/logo_background.png";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import logo from "/img/web/logo_background.png";
 
 function Footer() {
     // Cargamos los 3 namespaces necesarios

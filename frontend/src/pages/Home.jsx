@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import ImagenPrincipal from "../assets/img/taller.jpg";
 import { useState} from 'react';
+import ImagenPrincipal from "/img/web/taller.jpg";
 
 export default function Home() {
   const { t } = useTranslation("home");

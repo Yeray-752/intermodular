@@ -1,7 +1,7 @@
-import fondo from "../assets/img/fondo_log.webp";
 import { useNavigate, Link } from "react-router-dom";
 // 1. Importamos el hook de traducción
 import { useTranslation } from "react-i18next";
+import fondo from "/img/web/fondo_log.webp";
 
 function Login() {
     const navigate = useNavigate();

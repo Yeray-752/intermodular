@@ -3,6 +3,26 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 function Product() {
+
+    const [serviciosTaller, setServiciosTaller] = useState('')
+
+    useEffect(() => {
+    // Reemplaza esta URL por la de tu API real
+    fetch('http://yeray.informaticamajada.es:3000/api/productos')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al conectar con la API');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setServiciosTaller(data); // Aquí guardas el JSON que insertamos en MariaDB
+      })
+      .catch(err => {
+        setError(err.message);
+      });
+  }, []);
+
     const { id } = useParams();
     const { t } = useTranslation(['market', 'formulario']);
     const navigate = useNavigate();

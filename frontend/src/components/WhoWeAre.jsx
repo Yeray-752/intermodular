@@ -1,5 +1,6 @@
-import coche from '../assets/img/coche.jpg'
 import { useTranslation } from "react-i18next";
+import coche from '/img/web/coche.jpg'
+
 
 function WhoWeAre() {
   const { t } = useTranslation("about");

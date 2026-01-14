@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import logo from '../assets/img/logo_no_background.webp';
+import logo from '/img/web/logo_no_background.webp'
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
