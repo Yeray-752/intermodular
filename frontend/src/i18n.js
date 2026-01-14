@@ -55,7 +55,7 @@ const resources = {
     signup: signupData.es,
     login: loginData.es,
     about: aboutData.es,
-    rating: ratingData.en,
+    rating: ratingData.es,
   }
 };
 
