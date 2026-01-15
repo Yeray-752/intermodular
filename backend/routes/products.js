@@ -1,16 +1,8 @@
 import { Router } from "express";
-import db from "../db.js";
+import { getProducts } from "../controllers/productController.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-    try{
-        const [rows] = await db.query("SELECT * FROM Producto");
-        res.json(rows)
-    }catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error en el servidor" });
-  }
-});
+router.get("/", getProducts);
 
 export default router;
