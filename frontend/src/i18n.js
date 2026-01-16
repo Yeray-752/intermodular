@@ -11,7 +11,7 @@ import errorData from "./assets/data/404.json";
 import formData from './assets/data/formulario.json';
 import servicesData from './assets/data/services.json';
 import legalesData from './assets/data/legales.json';
-import signupData from './assets/data/signup.json';
+import signupData from './assets/data/signUp.json';
 import loginData from './assets/data/login.json';
 import aboutData from './assets/data/about.json';
 import ratingData from './assets/data/rating.json';
