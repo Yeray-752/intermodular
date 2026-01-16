@@ -1,8 +1,13 @@
-import React from 'react'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import React from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { useTranslation } from 'react-i18next';
 
 function Legales() {
+    // Especificamos el namespace 'legales'
+    const { t, i18n } = useTranslation('legales');
+    const lang = i18n.language?.split('-')[0] || 'es';
+
     return (
         <div className='bg-base-200 min-h-screen flex flex-col font-sans text-base-content'>
             <Header />
@@ -10,116 +15,89 @@ function Legales() {
             <main className='grow flex flex-col items-center p-6 md:p-12'>
                 {/* Título */}
                 <div className='w-full max-w-3xl text-center mb-10'>
-                    <h1 className='text-3xl md:text-4xl font-semibold mb-4'>Información Legal</h1>
+                    <h1 className='text-3xl md:text-4xl font-semibold mb-4'>{t('legalInfoTitle')}</h1>
                     <p className='text-base-content/70 leading-relaxed'>
-                        En esta sección se recoge toda la información legal relacionada con el uso del sitio web de AKOTAN Workshop,
-                        incluyendo el aviso legal, la política de privacidad y los términos y condiciones aplicables a nuestros servicios.
+                        {t('legalInfoDescription')}
                     </p>
                 </div>
 
                 {/* Contenedor principal */}
-                <div className='w-full max-w-3xl bg-base-100 border border-base-300 rounded-xl'>
+                <div className='w-full max-w-3xl bg-base-100 border border-base-300 rounded-xl shadow-sm'>
 
                     {/* Índice simple */}
                     <div className='border-b border-base-300 p-4 text-sm flex justify-center gap-6'>
-                        <a href='#aviso-legal' className='hover:underline'>Aviso legal</a>
-                        <a href='#privacidad' className='hover:underline'>Privacidad</a>
-                        <a href='#terminos' className='hover:underline'>Términos</a>
+                        <a href='#aviso-legal' className='hover:underline font-medium'>{t('legalNotice')}</a>
+                        <a href='#privacidad' className='hover:underline font-medium'>{t('privacy')}</a>
+                        <a href='#terminos' className='hover:underline font-medium'>{t('terms')}</a>
                     </div>
 
                     <div className='p-6 md:p-10 space-y-14 text-sm md:text-base leading-relaxed text-base-content'>
+                        
                         {/* Aviso legal */}
                         <section id='aviso-legal'>
-                            <h2 className='text-2xl font-semibold mb-4'>Aviso Legal</h2>
-                            <p>
-                                De conformidad con lo establecido en la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la
-                                Información y del Comercio Electrónico (LSSI-CE), se informa a los usuarios de los datos identificativos
-                                del titular del presente sitio web.
-                            </p>
-                            <p className='mt-4'>
-                                El acceso y uso de este sitio web atribuye la condición de usuario e implica la aceptación plena y sin
-                                reservas de todas las disposiciones incluidas en este aviso legal, que podrán ser modificadas en cualquier
-                                momento para adaptarse a cambios normativos o a la actividad de la empresa.
-                            </p>
-                            <ul className='mt-6 space-y-2 list-disc pl-6'>
-                                <li><strong>Denominación social:</strong> AKOTAN Workshop S.L.</li>
-                                <li><strong>CIF:</strong> B-00000000</li>
-                                <li><strong>Domicilio social:</strong> Calle de la Mecánica, 12, 28001 Madrid, España</li>
-                                <li><strong>Correo electrónico:</strong> contacto@akotan.com</li>
-                                <li><strong>Teléfono:</strong> +34 600 000 000</li>
+                            <h2 className='text-2xl font-semibold mb-4 text-primary'>{t('legalNotice')}</h2>
+                            <p>{t('legalNoticeText1')}</p>
+                            <p className='mt-4'>{t('legalNoticeText2')}</p>
+                            <ul className='mt-6 space-y-2 list-disc pl-6 border-l-2 border-primary/20 bg-base-200/30 p-4 rounded-r-lg'>
+                                <li><strong>{t('companyName')}:</strong> AKOTAN Workshop S.L.</li>
+                                <li><strong>{t('cif')}:</strong> B-00000000</li>
+                                <li><strong>{t('address')}:</strong> Calle de la Mecánica, 12, 28001 Madrid, España</li>
+                                <li><strong>{t('email')}:</strong> contacto@akotan.com</li>
+                                <li><strong>{t('phone')}:</strong> +34 600 000 000</li>
                             </ul>
                         </section>
 
                         {/* Privacidad */}
                         <section id='privacidad'>
-                            <h2 className='text-2xl font-semibold mb-4'>Política de Privacidad</h2>
-                            <p>
-                                AKOTAN Workshop se compromete a garantizar la confidencialidad y seguridad de los datos personales
-                                facilitados por los usuarios, cumpliendo con lo dispuesto en el Reglamento (UE) 2016/679 (RGPD)
-                                y la normativa española vigente en materia de protección de datos.
-                            </p>
-                            <p className='mt-4'>
-                                Los datos personales recogidos a través de los formularios del sitio web serán tratados con la finalidad
-                                de gestionar solicitudes de información, presupuestos, citas de reparación, así como para mantener
-                                comunicaciones relacionadas con los servicios contratados.
-                            </p>
-                            <p className='mt-4'>
-                                El usuario garantiza que los datos proporcionados son veraces y se compromete a comunicar cualquier
-                                modificación de los mismos. Los datos se conservarán únicamente durante el tiempo necesario para cumplir
-                                con la finalidad para la que fueron recabados o mientras exista una obligación legal.
-                            </p>
-                            <p className='mt-4'>
-                                En cualquier momento, el usuario podrá ejercer sus derechos de acceso, rectificación, supresión,
-                                limitación, portabilidad y oposición mediante solicitud escrita dirigida a
-                                <strong> privacidad@akotan.com</strong>.
-                            </p>
+                            <h2 className='text-2xl font-semibold mb-4 text-primary'>{t('privacy')}</h2>
+                            <div className="space-y-4">
+                                <p>{t('privacyText1')}</p>
+                                <p>{t('privacyText2')}</p>
+                                <p>{t('privacyText3')}</p>
+                                <p>{t('privacyText4')}</p>
+                            </div>
                         </section>
 
                         {/* Términos */}
                         <section id='terminos'>
-                            <h2 className='text-2xl font-semibold mb-4'>Términos y Condiciones</h2>
+                            <h2 className='text-2xl font-semibold mb-6 text-primary'>{t('terms')}</h2>
 
-                            <h3 className='font-semibold mt-6'>1. Servicios y presupuestos</h3>
-                            <p>
-                                Todos los servicios ofrecidos por AKOTAN Workshop estarán sujetos a la elaboración previa de un
-                                presupuesto, que deberá ser aceptado expresamente por el cliente antes de iniciar cualquier reparación
-                                o intervención sobre el vehículo.
-                            </p>
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className='font-bold text-lg mb-2'>{t('terms1Title')}</h3>
+                                    <p>{t('terms1Text')}</p>
+                                </div>
 
-                            <h3 className='font-semibold mt-6'>2. Plazos y responsabilidad</h3>
-                            <p>
-                                Los plazos de entrega indicados tienen carácter orientativo y podrán variar en función de la
-                                disponibilidad de piezas, la complejidad de la reparación o causas ajenas al taller.
-                                AKOTAN Workshop no será responsable de retrasos derivados de dichas circunstancias.
-                            </p>
+                                <div>
+                                    <h3 className='font-bold text-lg mb-2'>{t('terms2Title')}</h3>
+                                    <p>{t('terms2Text')}</p>
+                                </div>
 
-                            <h3 className='font-semibold mt-6'>3. Garantía</h3>
-                            <p>
-                                Las reparaciones realizadas cuentan con una garantía legal de tres meses o 2.000 kilómetros,
-                                lo que ocurra primero, excluyendo piezas sometidas a desgaste por uso normal.
-                            </p>
+                                <div>
+                                    <h3 className='font-bold text-lg mb-2'>{t('terms3Title')}</h3>
+                                    <p>{t('terms3Text')}</p>
+                                </div>
 
-                            <h3 className='font-semibold mt-6'>4. Formas de pago</h3>
-                            <p>
-                                El importe de los servicios deberá abonarse en el momento de la entrega del vehículo.
-                                Se aceptan pagos en efectivo, tarjeta bancaria y otros métodos habilitados por el taller.
-                            </p>
+                                <div>
+                                    <h3 className='font-bold text-lg mb-2'>{t('terms4Title')}</h3>
+                                    <p>{t('terms4Text')}</p>
+                                </div>
+                            </div>
                         </section>
-
                     </div>
 
                     {/* Pie legal */}
-                    <div className='border-t border-base-300 p-6 text-center text-sm text-base-content/70'>
-                        <p>Última actualización: junio de 2025</p>
-                        <p className='mt-1'>AKOTAN Workshop</p>
+                    <div className='border-t border-base-300 p-6 text-center text-xs md:text-sm text-base-content/60 bg-base-200/50 rounded-b-xl'>
+                        <p>{t('lastUpdate', { date: lang === 'es' ? 'junio de 2025' : 'June 2025' })}</p>
+                        <p className='mt-1 font-semibold'>AKOTAN Workshop © 2025</p>
                     </div>
                 </div>
 
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className='mt-8 text-sm underline cursor-pointer text-base-content/70'
+                    className='mt-8 btn btn-ghost btn-sm normal-case opacity-70'
                 >
-                    Volver arriba
+                    ↑ {t('backToTop')}
                 </button>
             </main>
 
@@ -128,4 +106,4 @@ function Legales() {
     )
 }
 
-export default Legales
+export default Legales;
