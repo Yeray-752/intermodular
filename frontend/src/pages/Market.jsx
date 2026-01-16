@@ -29,8 +29,8 @@ function App() {
         
         // Lanzamos ambas peticiones a la vez
         const [resProd, resCat] = await Promise.all([
-          fetch('http://yeray.informaticamajada.es:3000/api/products', { headers }),
-          fetch('http://yeray.informaticamajada.es:3000/api/product_categories', { headers })
+          fetch('https://yeray.informaticamajada.es:3000/api/products', { headers }),
+          fetch('https://yeray.informaticamajada.es:3000/api/product_categories', { headers })
         ]);
 
         const dataProd = await resProd.json();

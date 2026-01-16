@@ -25,7 +25,7 @@ function Product() {
         setLoading(true);
         // Usamos el ID de la URL y el idioma actual de i18next
         // Asegúrate de que tu backend use el header 'accept-language' o un query param
-        fetch(`http://yeray.informaticamajada.es:3000/api/products/${id}`, {
+        fetch(`https://yeray.informaticamajada.es:3000/api/products/${id}`, {
             headers: {
                 'accept-language': i18n.language
             }
