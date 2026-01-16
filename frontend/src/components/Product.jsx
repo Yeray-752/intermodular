@@ -1,35 +1,18 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 function Product() {
-
-    const [serviciosTaller, setServiciosTaller] = useState('')
-
-    useEffect(() => {
-    // Reemplaza esta URL por la de tu API real
-    fetch('http://yeray.informaticamajada.es:3000/api/productos')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al conectar con la API');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setServiciosTaller(data); // Aquí guardas el JSON que insertamos en MariaDB
-      })
-      .catch(err => {
-        setError(err.message);
-      });
-  }, []);
-
     const { id } = useParams();
-    const { t } = useTranslation(['market', 'formulario']);
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation(['market', 'formulario']);
 
-    const listaProductos = t("products", { ns: 'market', returnObjects: true }) || [];
-    const producto = listaProductos.find(p => p.id === parseInt(id));
+    // Estados para los datos de la API
+    const [producto, setProducto] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    // Estados del formulario de compra
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [ciudad, setCiudad] = useState("");
     const [ciudadValida, setCiudadValida] = useState(true);
@@ -38,27 +21,30 @@ function Product() {
     const [vencimiento, setVencimiento] = useState("");
     const [vencimientoValido, setVencimientoValido] = useState(true);
 
-    if (!producto) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p className="text-xl font-bold">Producto no encontrado</p>
-                <button onClick={() => navigate(-1)} className="btn btn-ghost">Volver</button>
-            </div>
-        );
-    }
+    useEffect(() => {
+        setLoading(true);
+        // Usamos el ID de la URL y el idioma actual de i18next
+        // Asegúrate de que tu backend use el header 'accept-language' o un query param
+        fetch(`http://localhost:3000/api/products/${id}`, {
+            headers: {
+                'accept-language': i18n.language
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Producto no encontrado');
+                return response.json();
+            })
+            .then(data => {
+                setProducto(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                setError(err.message);
+                setLoading(false);
+            });
+    }, [id, i18n.language]); // Se vuelve a ejecutar si cambias de producto o de idioma
 
-    const ciudades = ["Puerto del Rosario", "El Cotillo", "Corralejo", "Betancuria", "La Oliva", "Morro Jable"];
-
-    const cerrarModal = () => {
-        const modal = document.getElementById('my_modal_2');
-        if (modal) modal.close();
-    };
-
-    const precioOriginal = producto.precio;
-    const precioFinal = tipoEntrega === "domicilio"
-        ? (precioOriginal * 1.05).toFixed(2)
-        : precioOriginal.toFixed(2);
-
+    // --- Funciones de validación (igual que antes) ---
     const esTarjetaValida = (numero) => {
         const limpio = numero.replace(/\s+/g, "");
         if (!/^\d{13,19}$/.test(limpio)) return false;
@@ -83,8 +69,31 @@ function Product() {
         return ultimaFechaMes >= hoy;
     };
 
+    const cerrarModal = () => {
+        const modal = document.getElementById('my_modal_2');
+        if (modal) modal.close();
+    };
+
+    // Pantallas de carga y error
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
+    if (error || !producto) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <p className="text-xl font-bold">{error || "Producto no encontrado"}</p>
+                <button onClick={() => navigate(-1)} className="btn btn-primary">Volver</button>
+            </div>
+        );
+    }
+
+    const ciudades = ["Puerto del Rosario", "El Cotillo", "Corralejo", "Betancuria", "La Oliva", "Morro Jable"];
+    const precioOriginal = parseFloat(producto.price);
+    const precioFinal = tipoEntrega === "domicilio"
+        ? (precioOriginal * 1.05).toFixed(2)
+        : precioOriginal.toFixed(2);
+
     return (
         <div className="min-h-screen bg-base-200">
+            {/* ... Resto de tu HTML igual que antes, pero usando producto.image_url, producto.name, producto.price, etc. ... */}
             <div className="max-w-6xl mx-auto pt-6 px-4">
                 <button onClick={() => navigate(-1)} className="btn btn-sm btn-ghost gap-2">
                     ← {t('formulario:back', { defaultValue: 'Volver' })}
@@ -94,18 +103,18 @@ function Product() {
             <section className="pt-10 pb-24 flex justify-center px-4">
                 <div className="card lg:card-side bg-base-100 shadow-2xl max-w-6xl w-full">
                     <figure className="p-6 bg-neutral-100 lg:w-1/2">
-                        <img src={producto.imagen} alt={producto.nombre} className="rounded-xl w-full h-80 object-contain" />
+                        <img src={producto.image_url} alt={producto.name} className="rounded-xl w-full h-80 object-contain" />
                     </figure>
 
                     <div className="card-body lg:w-1/2">
-                        <div className="badge badge-outline mb-2">{producto.categoria}</div>
-                        <h1 className="card-title text-4xl font-bold mb-4">{producto.nombre}</h1>
-                        <p className="text-justify text-base-content/80 mb-6">{producto.descripcion}</p>
+                        <div className="badge badge-outline mb-2">{producto.category_id}</div>
+                        <h1 className="card-title text-4xl font-bold mb-4">{producto.name}</h1>
+                        <p className="text-justify text-base-content/80 mb-6">{producto.description}</p>
 
                         <div className="flex flex-wrap gap-16 mb-8">
                             <div>
                                 <p className="text-sm opacity-60 font-bold uppercase">{t('market:price')}</p>
-                                <p className="text-3xl font-black text-primary">{producto.precio}€</p>
+                                <p className="text-3xl font-black text-primary">{producto.price}€</p>
                             </div>
                             <div>
                                 <p className="text-sm opacity-60 font-bold uppercase">{t('market:stock')}</p>
@@ -121,7 +130,6 @@ function Product() {
                                 onClick={() => document.getElementById('my_modal_2').showModal()}
                                 disabled={producto.stock === 0}
                             >
-                                {/* Forzamos el namespace 'market' antes de la clave */}
                                 {producto.stock > 0 ? t('formulario:productButton') : t('formulario:outOfStock')}
                             </button>
                         </div>
@@ -129,6 +137,7 @@ function Product() {
                 </div>
             </section>
 
+            {/* Modal de compra (El código del modal sigue igual, solo asegúrate de usar producto.name y precioFinal) */}
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl">
                     <form method="dialog">
