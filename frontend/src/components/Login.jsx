@@ -8,12 +8,14 @@ import fondo from "/img/web/fondo_log.webp";
 
 function Login() {
     const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
+    const [captchaToken, setCaptchaToken] = useState(null);
 
     // 1. Inicializamos la traducción
     const { t } = useTranslation("login");
 
     // 2. Estado para almacenar el token del CAPTCHA
-    const [captchaToken, setCaptchaToken] = useState(null);
+
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -121,8 +123,8 @@ function Login() {
                         </Link>
                     </form>
                 </div>
-            </div>     
-      </div >
+            </div>
+        </div >
     );
 }
 

@@ -11,6 +11,7 @@ function Perfil() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation('profile');
+    const [errors, setErrors] = useState({});
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'es' ? 'en' : 'es';
@@ -40,24 +41,9 @@ function Perfil() {
         t('confirmPassword')
     ], [t, i18n.language]);
 
-    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
-    useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-    }, [theme]);
-    const [errors, setErrors] = useState({});
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Creamos un objeto con los datos del formulario
-        const formData = new FormData(e.target);
-        const data = {
-            nombreTaller: formData.get("nombreTaller"),
-            telefono: formData.get("telefono"),
-            ubicacion: formData.get("ubicacion"),
-        };
 
         // Validamos con Zod
         const result = workshopSchema.safeParse(data);
@@ -131,50 +117,20 @@ function Perfil() {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {profileFields.map((field, i) => (
-                                    <div className="flex flex-col" key={i}>
-                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
-                                            {field.label}
-                                        </label>
-                                        <input
-                                            type={field.type}
-                                            className="p-3 border border-base-300 rounded-lg focus:ring focus:ring-primary/50 focus:border-transparent outline-none transition-all bg-base-100 text-base-content"
-                                            defaultValue={field.value}
-                                        />
-                                    </div>
-                                ))}
 
-                                <div className="flex items-center gap-3">
-                                    <p>{t('theme')}</p>
-                                    <label className="toggle text-base-content mt-0.5">
-                                        <input
-                                            type="checkbox"
-                                            checked={theme === "dark"}
-                                            onChange={(e) =>
-                                                setTheme(e.target.checked ? "dark" : "light")
-                                            }
-                                        />
-                                        <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                            <circle cx="12" cy="12" r="4" />
-                                            <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-                                        </svg>
-                                        <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                                        </svg>
-                                    </label>
+                            <div className="flex items-center gap-3">
 
-                                    <button className='btn btn-accent' onClick={toggleLanguage}>
-                                        {t('changeLanguage')}
-                                    </button>
-                                </div>
+                                <button className='btn btn-accent' onClick={toggleLanguage}>
+                                    {t('changeLanguage')}
+                                </button>
                             </div>
+
 
                             <button type="submit" className="mt-8 btn btn-primary flex items-center gap-2">
                                 <Save size={18} />
                                 {t('saveChanges')}
                             </button>
-                            </form>
+                        </form>
                     </div>
                 );
 
@@ -312,46 +268,7 @@ function Perfil() {
                         </div>
                     </aside>
 
-                    {/* Mobile menu */}
-                    {mobileMenuOpen && (
-                        <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setMobileMenuOpen(false)}>
-                            <aside
-                                className='bg-base-100 w-72 h-full p-6 shadow-2xl'
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <div className="flex justify-between items-center mb-10">
-                                    <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
-                                    <button onClick={() => setMobileMenuOpen(false)} className="text-base-content">
-                                        <X size={28} />
-                                    </button>
-                                </div>
-                                <nav className='space-y-2'>
-                                    {menuItems.map(item => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <button
-                                                key={item.id}
-                                                className={menuBtnStyle(item.id)}
-                                                onClick={() => handleTabChange(item.id)}
-                                            >
-                                                <Icon size={20} />
-                                                <span>{item.label}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </nav>
-                                <div className="absolute bottom-6 left-6 right-6 pt-6 border-t border-base-300">
-                                    <button
-                                        onClick={() => navigate('/login')}
-                                        className='w-full text-left px-4 py-3 text-base-content/70 hover:bg-base-200 rounded-xl flex items-center gap-3 transition-all'
-                                    >
-                                        <LogOut size={20} />
-                                        <span>{t('logout')}</span>
-                                    </button>
-                                </div>
-                            </aside>
-                        </div>
-                    )}
+
 
                     {/* Contenido principal */}
                     <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg border border-base-300'>

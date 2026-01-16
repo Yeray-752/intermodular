@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useState } from 'react';
 import ImagenPrincipal from "/img/web/taller.jpg";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const { t } = useTranslation("home");

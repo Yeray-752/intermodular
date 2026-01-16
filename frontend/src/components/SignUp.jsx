@@ -7,6 +7,7 @@ import { registerSchema } from "../schemas/registerSchema";
 
 function SignUp() {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
   // 2. Inicializar la traducción apuntando al namespace 'formulario'
   const { t } = useTranslation("signup");
 
@@ -68,7 +69,7 @@ function SignUp() {
 
           <fieldset className="fieldset flex flex-col">
             <label className="label">{t("signup.email")}</label>
-             <input name="email" type="email" className={`input w-full ${errors.email ? 'border-error' : ''}`} placeholder="usuario@gmail.com" />
+            <input name="email" type="email" className={`input w-full ${errors.email ? 'border-error' : ''}`} placeholder="usuario@gmail.com" />
             {errors.email && <span className="text-error text-xs mt-1">{errors.email[0]}</span>}
 
             <p className="validator-hint hidden">{t("signup.required_field")}</p>
