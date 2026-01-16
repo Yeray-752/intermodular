@@ -4,6 +4,7 @@ import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus } from
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
+import { workshopSchema } from '../schemas/perfilGeneralSchemas'
 
 function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
@@ -45,6 +46,40 @@ function Perfil() {
         document.documentElement.setAttribute("data-theme", theme);
         localStorage.setItem("theme", theme);
     }, [theme]);
+    const [errors, setErrors] = useState({});
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // Creamos un objeto con los datos del formulario
+        const formData = new FormData(e.target);
+        const data = {
+            nombreTaller: formData.get("nombreTaller"),
+            telefono: formData.get("telefono"),
+            ubicacion: formData.get("ubicacion"),
+        };
+
+        // Validamos con Zod
+        const result = workshopSchema.safeParse(data);
+
+        if (!result.success) {
+            // Si hay errores, los guardamos en el estado
+            const fieldErrors = result.error.flatten().fieldErrors;
+            setErrors(fieldErrors);
+        } else {
+            // Si todo está bien, limpiamos errores y enviamos
+            setErrors({});
+            console.log("Datos válidos, enviando:", result.data);
+            // Aquí iría tu llamada a la API
+        }
+    };
+
+    const campos = [
+        { name: "nombreTaller", label: "Nombre Completo / Taller", type: "text", value: "AKOTAN Workshop" },
+        { name: "telefono", label: "Teléfono de Contacto", type: "text", value: "+34 600 000 000" },
+        { name: "ubicacion", label: "Ubicación", type: "text", value: "Madrid, España" },
+    ];
+
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -62,55 +97,84 @@ function Perfil() {
         switch (activeTab) {
             case 'informacion':
                 return (
-                    <div className="animate-fade-in">
+                    <div>
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profileInfo')}</h2>
                             <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {profileFields.map((field, i) => (
-                                <div className="flex flex-col" key={i}>
-                                    <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
-                                        {field.label}
-                                    </label>
-                                    <input
-                                        type={field.type}
-                                        className="p-3 border border-base-300 rounded-lg focus:ring focus:ring-primary/50 focus:border-transparent outline-none transition-all bg-base-100 text-base-content"
-                                        defaultValue={field.value}
-                                    />
-                                </div>
-                            ))}
 
-                            <div className="flex items-center gap-3">
-                                <p>{t('theme')}</p>
-                                <label className="toggle text-base-content mt-0.5">
-                                    <input
-                                        type="checkbox"
-                                        checked={theme === "dark"}
-                                        onChange={(e) =>
-                                            setTheme(e.target.checked ? "dark" : "light")
-                                        }
-                                    />
-                                    <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                        <circle cx="12" cy="12" r="4" />
-                                        <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-                                    </svg>
-                                    <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
-                                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                                    </svg>
-                                </label>
+                        <form onSubmit={handleSubmit}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {campos.map((field, i) => (
+                                    <div className="flex flex-col" key={field.name}>
+                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
+                                            {field.label}
+                                        </label>
+                                        <input
+                                            name={field.name} // IMPORTANTE para el FormData
+                                            type={field.type}
+                                            defaultValue={field.value}
+                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
+                                    ${errors[field.name]
+                                                    ? 'border-error ring-1 ring-error'
+                                                    : 'border-base-300 focus:ring focus:ring-primary/50 focus:border-transparent'
+                                                }`}
+                                        />
 
-                                <button className='btn btn-accent' onClick={toggleLanguage}>
-                                    {t('changeLanguage')}
-                                </button>
+                                        {errors[field.name] && (
+                                            <span className="text-error text-[10px] mt-1 font-bold uppercase">
+                                                {errors[field.name][0]}
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        </div>
 
-                        <button className="mt-8 btn btn-primary flex items-center gap-2">
-                            <Save size={18} />
-                            {t('saveChanges')}
-                        </button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {profileFields.map((field, i) => (
+                                    <div className="flex flex-col" key={i}>
+                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
+                                            {field.label}
+                                        </label>
+                                        <input
+                                            type={field.type}
+                                            className="p-3 border border-base-300 rounded-lg focus:ring focus:ring-primary/50 focus:border-transparent outline-none transition-all bg-base-100 text-base-content"
+                                            defaultValue={field.value}
+                                        />
+                                    </div>
+                                ))}
+
+                                <div className="flex items-center gap-3">
+                                    <p>{t('theme')}</p>
+                                    <label className="toggle text-base-content mt-0.5">
+                                        <input
+                                            type="checkbox"
+                                            checked={theme === "dark"}
+                                            onChange={(e) =>
+                                                setTheme(e.target.checked ? "dark" : "light")
+                                            }
+                                        />
+                                        <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
+                                            <circle cx="12" cy="12" r="4" />
+                                            <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+                                        </svg>
+                                        <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="fill-current">
+                                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                                        </svg>
+                                    </label>
+
+                                    <button className='btn btn-accent' onClick={toggleLanguage}>
+                                        {t('changeLanguage')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="mt-8 btn btn-primary flex items-center gap-2">
+                                <Save size={18} />
+                                {t('saveChanges')}
+                            </button>
+                            </form>
                     </div>
                 );
 

@@ -1,5 +1,11 @@
-import { useNavigate } from "react-router-dom"; // Asegúrate de usar 'react-router-dom'
 import { useTranslation } from "react-i18next";
+import { useState } from 'react';
+import '../App.css';
+import { useNavigate } from "react-router";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import '../CalendarioCustom.css';
+import serviciosTaller from "../assets/data/productosTaller.json";
 
 function TableProducts({ search, props: categoriaSeleccionada, productos }) {
     const { t } = useTranslation('market'); // Cambié a 'market' para coincidir con tus namespaces

@@ -1,15 +1,46 @@
+/* =================================================
+   VARIABLES DE TEMA (Basadas en data-theme)
+   ================================================= */
+:root, [data-theme="light"] {
+  --cal-bg: #ffffff;
+  --cal-text: #374151;
+  --cal-text-muted: #9ca3af;
+  --cal-shadow: rgba(0, 0, 0, 0.05);
+  --cal-hover: #f3f4f6;
+  --cal-now-border: #3b82f6;
+  --cal-active-bg: #4b5563;
+  --cal-active-text: #ffffff;
+  --cal-neighbor: #d1d5db;
+  --cal-nav-btn-bg: #f3f4f6; /* Fondo suave para el botón central en light */
+}
+
+[data-theme="dark"] {
+  --cal-bg: #1f2937;          
+  --cal-text: #f9fafb;        
+  --cal-text-muted: #9ca3af;  
+  --cal-shadow: rgba(0, 0, 0, 0.4);
+  --cal-hover: #374151;       
+  --cal-now-border: #60a5fa;  
+  --cal-active-bg: #f3f4f6;   
+  --cal-active-text: #111827; 
+  --cal-neighbor: #4b5563;
+  --cal-nav-btn-bg: #2d3748; /* Fondo oscuro para el botón central en dark */
+}
+
 /* ================================
    CONTENEDOR GENERAL
 ================================ */
 .mi-contenedor-calendario .react-calendar {
   width: 100% !important;
-  max-width: 350px; /* Ajusta según tu diseño */
+  max-width: 350px;
   border: none !important;
-  background: white;
+  background: var(--cal-bg) !important;
+  color: var(--cal-text) !important;
   font-family: sans-serif;
   padding: 1rem;
   border-radius: 25px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px var(--cal-shadow);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ================================
@@ -28,16 +59,31 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
+  color: var(--cal-text) !important;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+/* SOLUCIÓN AL BOTÓN CLARO: Quitamos el gris por defecto de React Calendar */
+.react-calendar__navigation button:disabled {
+  background-color: var(--cal-nav-btn-bg) !important;
+  color: var(--cal-text) !important;
+  cursor: default;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: var(--cal-hover) !important;
 }
 
 /* ================================
-   DÍAS DE LA SEMANA
+   DÍAS DE LA SEMANA (LUN, MAR...)
 ================================ */
 .react-calendar__month-view__weekdays {
   text-transform: uppercase;
   font-weight: 700;
   font-size: 0.7rem;
-  color: #9ca3af;
+  color: var(--cal-text-muted) !important;
   text-align: center;
 }
 
@@ -46,87 +92,78 @@
 }
 
 /* ================================
-   GRILLA DE DÍAS (IMPORTANTE)
+   GRILLA Y DÍAS (TILES)
 ================================ */
 .react-calendar__month-view__days {
   display: grid !important;
-  grid-template-columns: repeat(7, 1fr); /* Crea 7 columnas iguales */
-  justify-items: center; /* Centra el botón dentro de su celda */
-  gap: 6px 0; /* Espaciado entre filas */
+  grid-template-columns: repeat(7, 1fr);
+  justify-items: center;
+  gap: 6px 0;
 }
 
-/* ================================
-   DÍAS (TILES) - TAMAÑO REDUCIDO
-================================ */
 .react-calendar__tile {
-  /* Control de tamaño */
   width: 34px !important; 
   height: 34px !important;
   max-width: 34px !important;
   padding: 0 !important;
   margin: 2px !important;
-  
-  /* Forma y Texto */
   display: flex !important;
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
   font-weight: 500;
-  border-radius: 50% !important; /* Cambia a 50% si los quieres circulares */
-  
-  /* Reset */
+  border-radius: 50% !important;
   background: transparent;
   border: none;
   cursor: pointer;
+  color: var(--cal-text);
   transition: all 0.2s ease;
 }
 
-/* Efecto hover */
 .react-calendar__tile:enabled:hover {
-  background-color: #f3f4f6 !important;
+  background-color: var(--cal-hover) !important;
 }
 
 /* ================================
-   ESTADOS DE COLOR (PEQUEÑOS)
+   FINES DE SEMANA (ROJOS)
+================================ */
+.react-calendar__month-view__days__day--weekend {
+  color: #ef4444 !important;
+}
+
+/* Evitar que el rojo pise al texto cuando el día está seleccionado */
+.react-calendar__tile--active.react-calendar__month-view__days__day--weekend {
+  color: var(--cal-active-text) !important;
+}
+
+/* ================================
+   ESTADOS ESPECIALES
 =============================== */
 
 /* Día Actual */
 .react-calendar__tile--now {
-  border: 1.5px solid #3b82f6 !important;
-  color: #3b82f6 !important;
+  border: 1.5px solid var(--cal-now-border) !important;
+  color: var(--cal-now-border) !important;
   background: transparent !important;
 }
 
 /* Día Seleccionado */
 .react-calendar__tile--active {
-  background: #4b5563 !important; /* Gris oscuro */
-  color: white !important;
+  background: var(--cal-active-bg) !important;
+  color: var(--cal-active-text) !important;
 }
 
-/* Estados personalizados */
-.dia-rojo {
-  background-color: #ef4444 !important;
-  color: white !important;
-}
+/* Círculos de colores personalizados */
+.dia-rojo { background-color: #ef4444 !important; color: white !important; }
+.dia-amarillo { background-color: #fbbf24 !important; color: #374151 !important; }
+.dia-verde { background-color: #22c55e !important; color: white !important; }
 
-.dia-amarillo {
-  background-color: #fbbf24 !important;
-  color: #374151 !important;
-}
-
-.dia-verde {
-  background-color: #22c55e !important;
-  color: white !important;
-}
-
-/* Días de otros meses */
+/* Días de meses vecinos */
 .react-calendar__month-view__days__day--neighboringMonth {
-  color: #d1d5db !important;
+  color: var(--cal-neighbor) !important;
 }
 
-/* ================================
-   ANIMACIÓN (Opcional)
-================================ */
+/* Animación de entrada */
 .react-calendar__tile {
   animation: fadeIn 0.3s ease-out;
 }

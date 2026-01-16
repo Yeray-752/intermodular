@@ -1,10 +1,9 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import '../App.css';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../CalendarioCustom.css';
-import serviciosTaller from "../assets/data/serviciosTaller.json";
 
 function TableReservations({ search, props: categoriaSeleccionada }) {
     const { i18n } = useTranslation();
@@ -55,9 +54,9 @@ function TableReservations({ search, props: categoriaSeleccionada }) {
     const filtroBusqueda = (search || '').toLowerCase();
 
     const datosReservas = {
-        "2025-12-20": "lleno",
-        "2025-12-21": "medio",
-        "2025-12-22": "disponible",
+        "2026-01-20": "lleno",
+        "2026-01-21": "medio",
+        "2026-01-22": "disponible",
     };
 
     const obtenerClaseDia = ({ date, view }) => {

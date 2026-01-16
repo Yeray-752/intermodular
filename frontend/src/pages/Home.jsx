@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { useState} from 'react';
+import { useState } from 'react';
 import ImagenPrincipal from "/img/web/taller.jpg";
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
     localStorage.getItem("theme") || "light"
   );
   document.documentElement.setAttribute("data-theme", theme);
-
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
       <Header />
