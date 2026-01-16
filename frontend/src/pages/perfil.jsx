@@ -87,6 +87,7 @@ function Perfil() {
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profileInfo')}</h2>
                             <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
+                            <p>cambiate cabron</p>
                         </div>
 
 
