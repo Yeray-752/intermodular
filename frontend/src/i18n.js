@@ -19,7 +19,7 @@ import ratingData from './assets/data/rating.json';
 // Configuración de los recursos de traducción
 
 const resources = {
-  en: {
+  en: { 
     profile: profileData.en,
     home: homeData.en,
     header: headerData.en,
