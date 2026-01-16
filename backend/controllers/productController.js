@@ -66,9 +66,13 @@ export const getProducts = async (req, res) => {
   try {
     const query = `
       SELECT 
-        p.*,
-        t.name, 
-        t.description
+      p.id, 
+      p.price, 
+      p.stock, 
+      p.image_url, 
+      p.category_id,
+      t.name, 
+      t.description
       FROM products p
       LEFT JOIN product_translations t 
         ON p.id = t.product_id 
@@ -196,7 +200,7 @@ export const purchaseProduct = async (req, res) => {
 
     // 1. Verificar stock actual (SELECT ... FOR UPDATE bloquea la fila para que nadie más la toque)
     const [rows] = await connection.execute(
-      "SELECT stock FROM products WHERE id = ? FOR UPDATE", 
+      "SELECT stock FROM products WHERE id = ? FOR UPDATE",
       [productId]
     );
 
@@ -210,15 +214,15 @@ export const purchaseProduct = async (req, res) => {
     // 2. Validar si hay suficiente cantidad
     if (currentStock < quantity) {
       await connection.rollback();
-      return res.status(400).json({ 
-        message: `Stock insuficiente. Disponible: ${currentStock}` 
+      return res.status(400).json({
+        message: `Stock insuficiente. Disponible: ${currentStock}`
       });
     }
 
     // 3. Descontar el stock
     const newStock = currentStock - quantity;
     await connection.execute(
-      "UPDATE products SET stock = ? WHERE id = ?", 
+      "UPDATE products SET stock = ? WHERE id = ?",
       [newStock, productId]
     );
 

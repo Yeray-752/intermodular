@@ -8,10 +8,8 @@ import headerData from "./assets/data/header.json";
 import footerData from "./assets/data/footer.json";
 import homeData from "./assets/data/home.json";
 import errorData from "./assets/data/404.json";
-import categoriesData from "./assets/data/categories.json";
-import productData from "./assets/data/productosTaller.json";
 import formData from './assets/data/formulario.json';
-import servicesData from './assets/data/serviciosTaller.json';
+import servicesData from './assets/data/services.json';
 import legalesData from './assets/data/legales.json';
 import signupData from './assets/data/signup.json';
 import loginData from './assets/data/login.json';
@@ -27,10 +25,6 @@ const resources = {
     header: headerData.en,
     footer: footerData.en,
     error: errorData.en,
-    market: {
-      ...categoriesData.en,
-      ...productData.en,
-    },
     formulario: formData.en,
     servicios: servicesData.en,
     legales: legalesData.en,
@@ -45,10 +39,6 @@ const resources = {
     header: headerData.es,
     footer: footerData.es,
     error: errorData.es,
-    market: {
-      ...categoriesData.es,
-      ...productData.es
-    },
     formulario: formData.es,
     servicios: servicesData.es,
     legales: legalesData.es,
@@ -73,7 +63,7 @@ i18n
     },
 
     // Namespaces (archivos virtuales de traducción)
-  ns: ['home','header', 'footer', 'profile', 'error', 'market', 'formulario', 'servicios','legales','signup','login','about', 'rating'],
+  ns: ['home','header', 'footer', 'profile', 'error', 'formulario', 'servicios','legales','signup','login','about', 'rating'],
     defaultNS: 'home',
 
     interpolation: {
