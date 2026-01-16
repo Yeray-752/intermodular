@@ -1,4 +1,3 @@
-import fondo from "../assets/img/fondo_Registro.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import Header from '../components/Header'
 import SignUp from '../components/SignUp'

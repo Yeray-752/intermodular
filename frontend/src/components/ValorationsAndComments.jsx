@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
-import TableProducts from '../components/TableProducts'
+import { useTranslation } from "react-i18next"; // 1. Importar hook
 
 function App() {
     const [count, setCount] = useState(0)
     const navigate = useNavigate()
+    const { t } = useTranslation("rating"); // 2. Inicializar traducción
 
     return (
         <>
@@ -16,7 +15,7 @@ function App() {
                     <div className="card bg-base-100 shadow-sm">
                         <div className="card-body">
                             <h2 className="card-title">
-                                ¡Danos tu opinión!
+                                {t("opinion_title")}
                             </h2>
 
                             <div className="rating rating-lg rating-half mb-4">
@@ -36,26 +35,24 @@ function App() {
                             <fieldset className="fieldset">
                                 <textarea
                                     className="textarea h-24"
-                                    placeholder="Escriba un comentario si lo desea..."
+                                    placeholder={t("placeholder_textarea")}
                                 ></textarea>
                             </fieldset>
 
                             <div className="card-actions">
                                 <button className="btn btn-primary btn-sm">
-                                    Enviar
+                                    {t("btn_send")}
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {/* Hacer un while para cada uno de los comentarios */}
                     <div className='card bg-base-100 shadow-sm'>
-                        <div className='grid grid-cols-3'>
-                            <p>Imagen de perfil</p>
-                            <p>Nombre del usuario</p>
+                        <div className='grid grid-cols-3 p-4'>
+                            <p>{t("user_image_alt")}</p>
+                            <p>{t("user_name_placeholder")}</p>
                             <div className="rating rating-md rating-half pointer-events-none">
                                 <input type="radio" className="rating-hidden" />
-
                                 <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
                                 <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" checked disabled />
                                 <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
@@ -67,14 +64,14 @@ function App() {
                                 <input type="radio" className="mask mask-star-2 mask-half-1 bg-amber-400" checked disabled />
                                 <input type="radio" className="mask mask-star-2 mask-half-2 bg-amber-400" disabled />
                             </div>
-
                         </div>
 
-                        <p className='pt-5 text-left'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                        <p className='p-5 pt-0 text-left'>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                        </p>
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

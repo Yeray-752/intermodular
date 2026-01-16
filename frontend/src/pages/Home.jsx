@@ -1,15 +1,15 @@
-import { useNavigate} from "react-router";
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import ImagenPrincipal from "../assets/img/taller.jpg";
+import { useState} from 'react';
+import ImagenPrincipal from "/img/web/taller.jpg";
 
-export default function App() {
-  const navigate = useNavigate();
+export default function Home() {
+  const { t } = useTranslation("home");
   const [theme, setTheme] = useState(
-          localStorage.getItem("theme") || "light"
-      )
-      let divPrincipal = document.documentElement.setAttribute("data-theme", theme)
+    localStorage.getItem("theme") || "light"
+  );
+  document.documentElement.setAttribute("data-theme", theme);
 
   return (
     <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
@@ -19,105 +19,116 @@ export default function App() {
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mb-20 md:mb-28">
           <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="text-primary">Personalización</span> y{" "}
-              <span className="text-secondary">Reparación</span> de Vehículos
-            </h1>
+            <h1
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+              dangerouslySetInnerHTML={{ __html: t("heroTitle") }}
+            />
             <p className="text-lg md:text-xl text-base-content/80 leading-relaxed">
-              En Akotan transformamos tu vehículo con precisión y calidad. Desde
-              mantenimiento profesional hasta modificaciones exclusivas, cada proyecto
-              recibe atención experta y dedicación total.
+              {t("heroDescription")}
             </p>
           </div>
-          
+
           <div className="order-1 lg:order-2 relative">
             <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition duration-500">
               <img
                 src={ImagenPrincipal}
-                alt="Taller mecánico profesional"
+                alt={t("heroAlt")}
                 className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl md:rounded-3xl"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent rounded-2xl md:rounded-3xl"></div>
             </div>
             <div className="absolute -bottom-4 -right-4 w-24 h-24 md:w-32 md:h-32 bg-primary opacity-20 rounded-full -z-10"></div>
             <div className="absolute -top-4 -left-4 w-20 h-20 md:w-28 md:h-28 bg-secondary opacity-10 rounded-full -z-10"></div>
           </div>
         </section>
 
-        {/* Ofertas Section */}
+        {/* Offers Section */}
         <section className="mb-20 md:mb-28">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 md:mb-20">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-base-content">Ofertas</span>{" "}
-                <span className="text-primary">Especiales</span>
-              </h2>
+              <h2
+                className="text-3xl md:text-4xl font-bold mb-4"
+                dangerouslySetInnerHTML={{ __html: t("offersTitle") }}
+              />
               <p className="text-base-content/80 text-lg max-w-2xl mx-auto">
-                Aprovecha nuestras promociones mensuales con calidad garantizada
+                {t("offersDescription")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Cambio de Aceite Premium",
-                  desc: "Incluye revisión completa y diagnóstico",
-                  price: "29,99€",
-                  popular: true
-                },
-                {
-                  title: "Revisión General",
-                  desc: "Inspección completa de 50 puntos",
-                  price: "49,99€",
-                  popular: false
-                },
-                {
-                  title: "Alineación y Balanceo",
-                  desc: "Completo ajuste de dirección",
-                  price: "39,99€",
-                  popular: false
-                }
-              ].map((oferta, i) => (
-                <div
-                  key={i}
-                  className={`bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border ${
-                    oferta.popular ? "border-primary relative" : "border-base-300"
-                  }`}
-                >
-                  {oferta.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-primary text-primary-content px-4 py-1 rounded-full text-sm font-bold">
-                        MÁS POPULAR
-                      </span>
-                    </div>
-                  )}
-                  <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
-                    {oferta.title}
-                  </h3>
-                  <p className="text-base-content/80 mb-6">{oferta.desc}</p>
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-3xl font-bold text-base-content">{oferta.price}</span>
-                    <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
-                      IVA incluido
-                    </span>
-                  </div>
-                  <button className="w-full py-3 btn btn-primary">
-                    Reservar Ahora
-                  </button>
+              {/* Oferta 1 */}
+              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-primary relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-primary text-primary-content px-4 py-1 rounded-full text-sm font-bold">
+                    {t("offerMostPopular")}
+                  </span>
                 </div>
-              ))}
+                <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
+                  {t("offer1Title")}
+                </h3>
+                <p className="text-base-content/80 mb-6">{t("offer1Desc")}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-3xl font-bold text-base-content">
+                    29,99€
+                  </span>
+                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                    {t("offerVATIncluded")}
+                  </span>
+                </div>
+                <button className="w-full py-3 btn btn-primary">
+                  {t("bookNow")}
+                </button>
+              </div>
+
+              {/* Oferta 2 */}
+              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
+                <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
+                  {t("offer2Title")}
+                </h3>
+                <p className="text-base-content/80 mb-6">{t("offer2Desc")}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-3xl font-bold text-base-content">
+                    49,99€
+                  </span>
+                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                    {t("offerVATIncluded")}
+                  </span>
+                </div>
+                <button className="w-full py-3 btn btn-primary">
+                  {t("bookNow")}
+                </button>
+              </div>
+
+              {/* Oferta 3 */}
+              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
+                <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
+                  {t("offer3Title")}
+                </h3>
+                <p className="text-base-content/80 mb-6">{t("offer3Desc")}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-3xl font-bold text-base-content">
+                    39,99€
+                  </span>
+                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                    {t("offerVATIncluded")}
+                  </span>
+                </div>
+                <button className="w-full py-3 btn btn-primary">
+                  {t("bookNow")}
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Sobre Nosotros Section */}
+        {/* About Us Section */}
         <section className="mb-10">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
             <div className="relative">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
                 <img
                   src={ImagenPrincipal}
-                  alt="Técnico trabajando en vehículo"
+                  alt={t("aboutUsAlt")}
                   className="w-full h-[300px] md:h-[400px] object-cover"
                 />
               </div>
@@ -125,24 +136,15 @@ export default function App() {
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-                Pasión por la <span className="text-secondary">Precisión</span>, 
-                Compromiso con la <span className="text-primary">Excelencia</span>
-              </h2>
-              
+              <h2
+                className="text-3xl md:text-4xl font-bold leading-tight"
+                dangerouslySetInnerHTML={{ __html: t("aboutUsTitle") }}
+              />
               <p className="text-base-content text-lg leading-relaxed">
-                Más de 15 años de experiencia nos respaldan. Nuestro equipo combina
-                tecnología de vanguardia con habilidades artesanales, asegurando
-                resultados que superan expectativas en cada proyecto.
+                {t("aboutUsDescription")}
               </p>
-              
               <ul className="space-y-4">
-                {[
-                  "Técnicos certificados y especializados",
-                  "Garantía en todos nuestros trabajos",
-                  "Atención personalizada y asesoramiento experto",
-                  "Uso de repuestos y materiales de primera calidad"
-                ].map((item, i) => (
+                {t("aboutUsList", { returnObjects: true }).map((item, i) => (
                   <li key={i} className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -160,4 +162,3 @@ export default function App() {
     </div>
   );
 }
-  

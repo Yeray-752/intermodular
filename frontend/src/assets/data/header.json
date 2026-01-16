@@ -1,0 +1,22 @@
+{
+  "es": {
+    "subtitle": "TALLER MECÁNICO",
+    "nav": {
+      "home": "Inicio",
+      "bookings": "Reservas",
+      "products": "Productos",
+      "about": "Sobre Nosotros",
+      "login": "Iniciar Sesión"
+    }
+  },
+  "en": {
+    "subtitle": "MECHANIC WORKSHOP",
+    "nav": {
+      "home": "Home",
+      "bookings": "Bookings",
+      "products": "Products",
+      "about": "About Us",
+      "login": "Login"
+    }
+  }
+}

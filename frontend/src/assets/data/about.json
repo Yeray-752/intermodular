@@ -1,0 +1,40 @@
+{
+  "es": {
+    "sobre_nosotros_badge": "SOBRE NOSOTROS",
+    "quienes_somos_h2": "¿Quiénes somos?",
+    "quienes_somos_p1": "En Talleres Ekotan somos una empresa familiar con más de 20 años de experiencia en venta y reparación de piezas. Contamos con un equipo de 15 profesionales apasionados por la mecánica y comprometidos con una atención cercana y de calidad.",
+    "logros_h2": "¿Qué hemos logrado y qué queremos lograr?",
+    "logros_p1": "Hemos logrado consolidarnos como uno de los talleres mejor valorados de Puerto del Rosario, recibiendo el premio a Centro de Reparación de Alta Calidad. Nuestro objetivo ahora es expandirnos por toda la isla y, con esfuerzo, llegar a todas las Islas Canarias y posteriormente a España.",
+    "creacion_empresa": "Creación de la empresa.",
+    "clientes_satisfechos": "Más de 2000 clientes satisfechos.",
+    "premio_calidad": "Premio a Centro de Reparación de Alta Calidad.",
+    "expansion_insular": "Expansión insular",
+    "espana": "Ekotan en toda España",
+    "proximamente": "Próximamente",
+    "futuro": "Futuro",
+    "contacto_badge": "CONTACTO",
+    "contacto_h2": "Ponte en contacto",
+    "contacto_p1": "Estamos disponibles para resolver cualquier duda o ayudarte con tu vehículo:",
+    "telefono": "Teléfono",
+    "correo": "Correo"
+  },
+  "en": {
+    "sobre_nosotros_badge": "ABOUT US",
+    "quienes_somos_h2": "Who ",
+    "quienes_somos_p1": "At Talleres Ekotan we are a family business with over 20 years of experience in parts sales and repair. We have a team of 15 professionals passionate about mechanics and committed to close, quality service.",
+    "logros_h2": "What have we achieved and what do we want to achieve?",
+    "logros_p1": "We have managed to consolidate ourselves as one of the best-rated workshops in Puerto del Rosario, receiving the High-Quality Repair Center award. Our goal now is to expand throughout the island and eventually reach all the Canary Islands and then Spain.",
+    "creacion_empresa": "Company creation.",
+    "clientes_satisfechos": "Over 2000 satisfied customers.",
+    "premio_calidad": "High-Quality Repair Center Award.",
+    "expansion_insular": "Island-wide expansion",
+    "espana": "Ekotan across all Spain",
+    "proximamente": "Coming soon",
+    "futuro": "Future",
+    "contacto_badge": "CONTACT",
+    "contacto_h2": "Get in touch",
+    "contacto_p1": "We are available to answer any questions or help you with your vehicle:",
+    "telefono": "Phone",
+    "correo": "Email"
+  }
+}

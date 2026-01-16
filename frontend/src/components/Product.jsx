@@ -1,126 +1,126 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import serviciosTaller from "../assets/data/productosTaller.json";
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 function Product() {
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { t, i18n } = useTranslation(['market', 'formulario']);
 
-    const producto = serviciosTaller.find(p => p.id === parseInt(id));
+    // Estados para los datos de la API
+    const [producto, setProducto] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    // Estados del formulario de compra
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [ciudad, setCiudad] = useState("");
     const [ciudadValida, setCiudadValida] = useState(true);
-
     const [tarjeta, setTarjeta] = useState("");
     const [tarjetaValida, setTarjetaValida] = useState(true);
-
     const [vencimiento, setVencimiento] = useState("");
     const [vencimientoValido, setVencimientoValido] = useState(true);
 
-    const ciudades = [
-        "Puerto del Rosario", "El Cotillo", "Corralejo",
-        "Betancuria", "La Oliva", "Morro Jable",
-    ];
+    useEffect(() => {
+        setLoading(true);
+        // Usamos el ID de la URL y el idioma actual de i18next
+        // Asegúrate de que tu backend use el header 'accept-language' o un query param
+        fetch(`http://localhost:3000/api/products/${id}`, {
+            headers: {
+                'accept-language': i18n.language
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Producto no encontrado');
+                return response.json();
+            })
+            .then(data => {
+                setProducto(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                setError(err.message);
+                setLoading(false);
+            });
+    }, [id, i18n.language]); // Se vuelve a ejecutar si cambias de producto o de idioma
+
+    // --- Funciones de validación (igual que antes) ---
+    const esTarjetaValida = (numero) => {
+        const limpio = numero.replace(/\s+/g, "");
+        if (!/^\d{13,19}$/.test(limpio)) return false;
+        let suma = 0; let alternar = false;
+        for (let i = limpio.length - 1; i >= 0; i--) {
+            let n = parseInt(limpio[i], 10);
+            if (alternar) { n *= 2; if (n > 9) n -= 9; }
+            suma += n; alternar = !alternar;
+        }
+        return suma % 10 === 0;
+    };
+
+    const esFechaValida = (fecha) => {
+        const limpio = fecha.replace(/\s+/g, "");
+        if (!/^\d{2}\/\d{2}$/.test(limpio)) return false;
+        const [mesStr, anioStr] = limpio.split("/");
+        const mes = parseInt(mesStr, 10);
+        const year = parseInt(anioStr, 10) + 2000;
+        if (mes < 1 || mes > 12) return false;
+        const hoy = new Date();
+        const ultimaFechaMes = new Date(year, mes, 0);
+        return ultimaFechaMes >= hoy;
+    };
 
     const cerrarModal = () => {
         const modal = document.getElementById('my_modal_2');
         if (modal) modal.close();
     };
 
-    const precioOriginal = producto.precio;
+    // Pantallas de carga y error
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
+    if (error || !producto) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <p className="text-xl font-bold">{error || "Producto no encontrado"}</p>
+                <button onClick={() => navigate(-1)} className="btn btn-primary">Volver</button>
+            </div>
+        );
+    }
+
+    const ciudades = ["Puerto del Rosario", "El Cotillo", "Corralejo", "Betancuria", "La Oliva", "Morro Jable"];
+    const precioOriginal = parseFloat(producto.price);
     const precioFinal = tipoEntrega === "domicilio"
         ? (precioOriginal * 1.05).toFixed(2)
         : precioOriginal.toFixed(2);
 
-    const esTarjetaValida = (numero) => {
-        const limpio = numero.replace(/\s+/g, "");
-        if (!/^\d{13,19}$/.test(limpio)) return false;
-
-        let suma = 0;
-        let alternar = false;
-
-        for (let i = limpio.length - 1; i >= 0; i--) {
-            let n = parseInt(limpio[i], 10);
-
-            if (alternar) {
-                n *= 2;
-                if (n > 9) n -= 9;
-            }
-
-            suma += n;
-            alternar = !alternar;
-        }
-
-        return suma % 10 === 0;
-    };
-
-
-
-    const esFechaValida = (fecha) => {
-
-        const limpio = fecha.replace(/\s+/g, "");
-        if (!/^\d{2}\/\d{2}$/.test(limpio)) return false;
-
-        const [mesStr, anioStr] = limpio.split("/");
-        const mes = parseInt(mesStr, 10);
-        const year = parseInt(anioStr, 10) + 2000;
-
-        if (mes < 1 || mes > 12) return false;
-
-        const hoy = new Date();
-        const ultimaFechaMes = new Date(year, mes, 0);
-        return ultimaFechaMes >= hoy;
-    };
-
-
-
     return (
         <div className="min-h-screen bg-base-200">
-            <section className="pt-24 pb-24 flex justify-center px-4">
-                <div className="card lg:card-side bg-base-100 shadow-2xl max-w-6xl w-full">
+            {/* ... Resto de tu HTML igual que antes, pero usando producto.image_url, producto.name, producto.price, etc. ... */}
+            <div className="max-w-6xl mx-auto pt-6 px-4">
+                <button onClick={() => navigate(-1)} className="btn btn-sm btn-ghost gap-2">
+                    ← {t('formulario:back', { defaultValue: 'Volver' })}
+                </button>
+            </div>
 
+            <section className="pt-10 pb-24 flex justify-center px-4">
+                <div className="card lg:card-side bg-base-100 shadow-2xl max-w-6xl w-full">
                     <figure className="p-6 bg-neutral-100 lg:w-1/2">
-                        <img
-                            src={producto.imagen}
-                            alt={producto.nombre}
-                            className="rounded-xl w-full h-80 object-contain"
-                        />
+                        <img src={producto.image_url} alt={producto.name} className="rounded-xl w-full h-80 object-contain" />
                     </figure>
 
                     <div className="card-body lg:w-1/2">
-                        <div className="badge badge-outline mb-2">{producto.categoria}</div>
-                        <h1 className="card-title text-4xl font-bold mb-4">
-                            {producto.nombre}
-                        </h1>
-
-                        <p className="text-justify text-base-content/80 mb-6">
-                            {producto.descripcion}
-                        </p>
+                        <div className="badge badge-outline mb-2">{producto.category_id}</div>
+                        <h1 className="card-title text-4xl font-bold mb-4">{producto.name}</h1>
+                        <p className="text-justify text-base-content/80 mb-6">{producto.description}</p>
 
                         <div className="flex flex-wrap gap-16 mb-8">
                             <div>
-                                <p className="text-sm opacity-60 font-bold uppercase">Precio Unitario</p>
-                                <p className="text-3xl font-black text-primary">{producto.precio}€</p>
+                                <p className="text-sm opacity-60 font-bold uppercase">{t('market:price')}</p>
+                                <p className="text-3xl font-black text-primary">{producto.price}€</p>
                             </div>
                             <div>
-                                <p className="text-sm opacity-60 font-bold uppercase">Disponibilidad</p>
+                                <p className="text-sm opacity-60 font-bold uppercase">{t('market:stock')}</p>
                                 <p className={`text-xl font-bold ${producto.stock > 0 ? 'text-success' : 'text-error'}`}>
-                                    {producto.stock > 0 ? `${producto.stock} en stock` : 'Agotado'}
+                                    {producto.stock > 0 ? `${producto.stock} ${t('market:stock')}` : t('market:outOfStock')}
                                 </p>
-                            </div>
-                            <div className="mb-6">
-                                <p className="text-sm opacity-60 font-bold uppercase">Valoración: {producto.valoracion_global}/5</p>
-                                <div className="rating rating-md rating-half pointer-events-none">
-                                    {[...Array(10)].map((_, i) => (
-                                        <input
-                                            key={i}
-                                            type="radio"
-                                            className={`mask mask-star-2 ${i % 2 === 0 ? 'mask-half-1' : 'mask-half-2'} bg-amber-400`}
-                                            checked={i + 1 <= producto.valoracion_global * 2}
-                                            disabled
-                                        />
-                                    ))}
-                                </div>
                             </div>
                         </div>
 
@@ -130,91 +130,67 @@ function Product() {
                                 onClick={() => document.getElementById('my_modal_2').showModal()}
                                 disabled={producto.stock === 0}
                             >
-                                {producto.stock > 0 ? 'Realizar Pedido' : 'Producto sin existencias'}
+                                {producto.stock > 0 ? t('formulario:productButton') : t('formulario:outOfStock')}
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {/* Modal de compra (El código del modal sigue igual, solo asegúrate de usar producto.name y precioFinal) */}
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl">
-
                     <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                            ✕
-                        </button>
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
 
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            alert("¡Compra realizada con éxito!");
-                            cerrarModal();
-                        }}
-                    >
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!tarjetaValida || !vencimientoValido || (tipoEntrega === "domicilio" && !ciudadValida)) {
+                            alert(t('formulario:checkout.errorValidation'));
+                            return;
+                        }
+                        alert(t('formulario:checkout.success'));
+                        cerrarModal();
+                        navigate('/');
+                    }}>
                         <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            📦 Pedido: {producto.nombre}
+                            📦 {t('formulario:checkout.title')}: {producto.nombre}
                         </h3>
 
                         <div className="space-y-6">
-
                             <section>
-                                <label className="label mb-2 font-bold">Tipo de entrega</label>
-                                <select
-                                    className="select select-bordered w-full"
-                                    value={tipoEntrega}
-                                    onChange={(e) => setTipoEntrega(e.target.value)}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Selecciona cómo recibirás tu producto
-                                    </option>
-                                    <option value="recogida">🏪 Recogida en taller (Gratis)</option>
-                                    <option value="domicilio">
-                                        🚚 Envío a domicilio (+ 5% del precio original)
-                                    </option>
+                                <label className="label mb-2 font-bold">{t('formulario:checkout.deliveryType')}</label>
+                                <select className="select select-bordered w-full" value={tipoEntrega} onChange={(e) => setTipoEntrega(e.target.value)} required>
+                                    <option value="" disabled>{t('formulario:checkout.deliverySelect')}</option>
+                                    <option value="recogida">{t('formulario:checkout.pickup')}</option>
+                                    <option value="domicilio">{t('formulario:checkout.homeDelivery')}</option>
                                 </select>
                             </section>
 
                             {tipoEntrega === "domicilio" && (
-                                <div className="bg-base-200 p-4 rounded-xl space-y-4 animate-fadeIn">
-                                    <h4 className="font-bold text-sm uppercase opacity-60 text-primary">
-                                        Datos de Envío
-                                    </h4>
-
+                                <div className="bg-base-200 p-4 rounded-xl space-y-4">
+                                    <h4 className="font-bold text-sm uppercase opacity-60 text-primary">{t('formulario:checkout.shippingData')}</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="form-control">
-                                            <span className="label-text mb-2 block">
-                                                Dirección completa
-                                            </span>
-                                            <input
-                                                required
-                                                type="text"
-                                                placeholder="Calle, número, piso..."
-                                                className="input input-bordered w-full"
-                                            />
+                                            <span className="label-text mb-2 block">{t('formulario:checkout.address')}</span>
+                                            <input required type="text" placeholder={t('formulario:checkout.addressPlaceholder')} className="input input-bordered w-full" />
                                         </div>
-
                                         <div className="form-control">
-                                            <span className="label-text mb-2 block">Ciudad</span>
+                                            <span className="label-text mb-2 block">{t('formulario:checkout.city')}</span>
                                             <input
                                                 required
                                                 list="ciudades"
-                                                placeholder="Ej: Puerto del Rosario"
-                                                className={`input input-bordered w-full ${!ciudadValida ? "input-error" : ""
-                                                    }`}
+                                                placeholder={t('formulario:checkout.cityPlaceholder')}
+                                                className={`input input-bordered w-full ${!ciudadValida ? "input-error" : ""}`}
                                                 value={ciudad}
                                                 onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setCiudad(value);
-                                                    setCiudadValida(ciudades.includes(value));
+                                                    setCiudad(e.target.value);
+                                                    setCiudadValida(ciudades.includes(e.target.value));
                                                 }}
                                             />
                                             <datalist id="ciudades">
-                                                {ciudades.map((c) => (
-                                                    <option key={c} value={c} />
-                                                ))}
+                                                {ciudades.map((c) => <option key={c} value={c} />)}
                                             </datalist>
                                         </div>
                                     </div>
@@ -223,119 +199,63 @@ function Product() {
 
                             {tipoEntrega === "recogida" && (
                                 <div className="alert alert-info shadow-sm">
-                                    <span>
-                                        Podrás recoger tu pieza en 24h en nuestro taller principal.
-                                    </span>
+                                    <span>{t('formulario:checkout.pickupAlert')}</span>
                                 </div>
                             )}
 
                             {(tipoEntrega === "recogida" || tipoEntrega === "domicilio") && (
                                 <>
-                                    <div className="divider text-xs opacity-50 uppercase font-bold">
-                                        Resumen de Pago
-                                    </div>
-
+                                    <div className="divider text-xs opacity-50 uppercase font-bold">{t('formulario:checkout.paymentSummary')}</div>
                                     <div className="flex justify-between items-center bg-primary text-primary-content p-4 rounded-lg">
-                                        <span className="font-bold">TOTAL FINAL:</span>
+                                        <span className="font-bold">{t('formulario:checkout.total')}:</span>
                                         <span className="text-2xl font-black">{precioFinal}€</span>
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="form-control">
-                                            <span className="label-text mb-2 block font-medium">
-                                                Titular de la tarjeta
-                                            </span>
-                                            <input
-                                                required
-                                                type="text"
-                                                placeholder="Nombre completo"
-                                                className="input input-bordered w-full"
-                                            />
+                                            <span className="label-text mb-2 block font-medium">{t('formulario:checkout.cardHolder')}</span>
+                                            <input required type="text" placeholder={t('formulario:checkout.cardHolderPlaceholder')} className="input input-bordered w-full" />
                                         </div>
-
                                         <div className="form-control">
-                                            <span className="label-text mb-2 block font-medium">
-                                                Número de tarjeta
-                                            </span>
-
+                                            <span className="label-text mb-2 block font-medium">{t('formulario:checkout.cardNumber')}</span>
                                             <input
                                                 type="text"
                                                 required
                                                 placeholder="0000 0000 0000 0000"
-                                                className={`input input-bordered w-full tracking-widest ${!tarjetaValida ? "input-error" : ""
-                                                    }`}
+                                                className={`input input-bordered w-full ${!tarjetaValida ? "input-error" : ""}`}
                                                 value={tarjeta}
                                                 onChange={(e) => {
-                                                    const value = e.target.value
-                                                        .replace(/[^\d]/g, "")
-                                                        .replace(/(.{4})/g, "$1 ")
-                                                        .trim();
-
-                                                    setTarjeta(value);
-                                                    setTarjetaValida(esTarjetaValida(value));
+                                                    const val = e.target.value.replace(/[^\d]/g, "").replace(/(.{4})/g, "$1 ").trim();
+                                                    setTarjeta(val);
+                                                    setTarjetaValida(esTarjetaValida(val));
                                                 }}
                                                 maxLength={19}
                                             />
-
-                                            {!tarjetaValida && (
-                                                <span className="text-error text-sm mt-1">
-                                                    Número de tarjeta no válido
-                                                </span>
-                                            )}
                                         </div>
-
-
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="form-control">
-                                                <span className="label-text mb-2 block font-medium">
-                                                    Vencimiento
-                                                </span>
+                                                <span className="label-text mb-2 block font-medium">{t('formulario:checkout.expiry')}</span>
                                                 <input
                                                     type="text"
                                                     placeholder="MM/AA"
                                                     value={vencimiento}
-                                                    maxLength={5}
                                                     className={`input input-bordered w-full ${!vencimientoValido ? "input-error" : ""}`}
                                                     onChange={(e) => {
-                                                        let value = e.target.value.replace(/\D/g, "");
-                                                        if (value.length > 2) {
-                                                            value = value.slice(0, 2) + "/" + value.slice(2, 4);
-                                                        }
-                                                        setVencimiento(value);
-
-                                                        if (value.length === 5) {
-                                                            setVencimientoValido(esFechaValida(value));
-                                                        } else {
-                                                            setVencimientoValido(true);
-                                                        }
+                                                        let val = e.target.value.replace(/\D/g, "");
+                                                        if (val.length > 2) val = val.slice(0, 2) + "/" + val.slice(2, 4);
+                                                        setVencimiento(val);
+                                                        setVencimientoValido(val.length === 5 ? esFechaValida(val) : true);
                                                     }}
-                                                />
-
-                                                {!vencimientoValido && (
-                                                    <span className="text-error text-sm mt-1">Fecha no válida</span>
-                                                )}
-
-                                            </div>
-
-                                            <div className="form-control">
-                                                <span className="label-text mb-2 block font-medium">
-                                                    CVV
-                                                </span>
-                                                <input
                                                     required
-                                                    type="password"
-                                                    placeholder="***"
-                                                    className="input input-bordered w-full"
-                                                    maxLength={4}
                                                 />
+                                            </div>
+                                            <div className="form-control">
+                                                <span className="label-text mb-2 block font-medium">{t('formulario:checkout.cvv')}</span>
+                                                <input required type="password" placeholder="***" className="input input-bordered w-full" maxLength={4} />
                                             </div>
                                         </div>
-
-                                        <button
-                                            type="submit"
-                                            className="btn btn-primary btn-block text-lg mt-6"
-                                        >
-                                            Confirmar Pago de {precioFinal}€
+                                        <button type="submit" className="btn btn-primary btn-block text-lg mt-6">
+                                            {t('formulario:checkout.confirmButton')} {precioFinal}€
                                         </button>
                                     </div>
                                 </>
@@ -343,17 +263,9 @@ function Product() {
                         </div>
                     </form>
                 </div>
-
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
             </dialog>
-
-
         </div>
     );
 }
 
 export default Product;
-
-
