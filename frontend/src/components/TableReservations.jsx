@@ -12,7 +12,7 @@ function TableReservations({ search, props }) {
     
 
     useEffect(() => {
-    fetch('http://yeray.informaticamajada.es:3000/api/servicios')
+    fetch('http://127.0.0.1:3000/api/servicios')
       .then(response => {
         if (!response.ok) {
           throw new Error('Error al conectar con la API');
@@ -55,9 +55,9 @@ function TableReservations({ search, props }) {
     return (
         <>
             {datosServicios.filter((servicio) => {
-                const coincideNombre = servicio.nombre.toLowerCase().includes(filtroBusqueda);
+                /* const coincideNombre = servicio.nombre.toLowerCase().includes(filtroBusqueda); */
                 const coincideCategoria = categorias === "" || categorias === "X" || servicio.categoria === categorias;
-                return coincideNombre && coincideCategoria;
+                return  coincideCategoria;
             })
                 .map(servicios => {
                     return (

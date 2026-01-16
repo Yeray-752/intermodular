@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     try{
-        const [rows] = await db.query("SELECT * FROM Producto");
+        const [rows] = await db.query("SELECT * FROM products");
         res.json(rows)
     }catch (error) {
     console.error(error);

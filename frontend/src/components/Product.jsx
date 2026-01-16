@@ -7,7 +7,7 @@ function Product() {
 
     useEffect(() => {
     // Reemplaza esta URL por la de tu API real
-    fetch('http://yeray.informaticamajada.es:3000/api/productos')
+    fetch('http://localhost:3000/api/productos')
       .then(response => {
         if (!response.ok) {
           throw new Error('Error al conectar con la API');
