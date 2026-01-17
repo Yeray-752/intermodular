@@ -22,8 +22,8 @@ function App() {
       try {
         const headers = { 'accept-language': i18n.language };
         const [resServ, resCat] = await Promise.all([
-          fetch('http://yeray.informaticamajada.es:3000/api/services', { headers }),
-          fetch('http://yeray.informaticamajada.es:3000/api/service_categories', { headers })
+          fetch('https://yeray.informaticamajada.es/api/services', { headers }),
+          fetch('https://yeray.informaticamajada.es/api/service_categories', { headers })
         ]);
 
         const dataServ = await resServ.json();
