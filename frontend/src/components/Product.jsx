@@ -42,9 +42,8 @@ function Product() {
                 setError(err.message);
                 setLoading(false);
             });
-    }, [id, i18n.language]); // Se vuelve a ejecutar si cambias de producto o de idioma
+    }, [id, i18n.language]);
 
-    // --- Funciones de validación (igual que antes) ---
     const esTarjetaValida = (numero) => {
         const limpio = numero.replace(/\s+/g, "");
         if (!/^\d{13,19}$/.test(limpio)) return false;
@@ -74,7 +73,6 @@ function Product() {
         if (modal) modal.close();
     };
 
-    // Pantallas de carga y error
     if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
     if (error || !producto) {
         return (

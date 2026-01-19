@@ -17,35 +17,56 @@ function Login() {
     // 2. Estado para almacenar el token del CAPTCHA
 
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+    const handleLogin = async (e) => {
+    e.preventDefault();
 
-        // 3. Verificamos si el usuario completó el CAPTCHA
-        if (!captchaToken) {
-            alert("Por favor, completa la verificación de seguridad.");
+    if (!captchaToken) {
+        alert("Por favor, completa la verificación de seguridad.");
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    const result = loginSchema.safeParse(data);
+    if (!result.success) {
+        setErrors(result.error.flatten().fieldErrors);
+        return;
+    }
+
+    try {
+        // 1. Enviamos los datos al endpoint de tu servidor
+        const response = await fetch("http://localhost:3000/api/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: data.email,
+                contraseña: data.password // Mapeamos password del form a contraseña de la DB
+            }),
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            // Si el backend devuelve 401, mostramos el error
+            setErrors({ general: [json.error || "Error al iniciar sesión"] });
             return;
         }
 
-        // Aquí es donde en el futuro enviarás:
-        // { email, password, captchaToken } a tu carpeta /backend
-        console.log("Token de verificación listo:", captchaToken);
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
+        // 2. Guardamos el Token en localStorage
+        localStorage.setItem("token", json.token);
+        localStorage.setItem("rol", json.rol);
 
-
-        const result = loginSchema.safeParse(data);
-
-        if (!result.success) {
-            const formattedErrors = result.error.flatten().fieldErrors;
-            setErrors(formattedErrors);
-            return;
-        }
-
-        setErrors({});
-        console.log("Datos válidos, enviando login...", result.data);
+        console.log("Login exitoso, token guardado.");
+        
+        // 3. Redirigimos según el rol o al inicio
         navigate("/");
-        // Aquí iría tu fetch o llamada a Firebase/Auth
-    };
+
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        setErrors({ general: ["No se pudo conectar con el servidor"] });
+    }
+};
 
     return (
         <div>
