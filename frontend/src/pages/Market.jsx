@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 function App() {
 
-    const { t, i18n } = useTranslation('servicios');
+    const { t, i18n } = useTranslation('market');
   // Estados para datos de la API
   const [listaProductos, setListaProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -68,7 +68,7 @@ function App() {
             placeholder={t("searchPlaceholder")}
           />
 
-          <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('categories')}</h1>
+          <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('products')}</h1>
 
           {/* Navegación de Categorías Dinámicas */}
           <nav className='space-x-1.5 mt-4 mb-5 w-full max-w-6xl'>

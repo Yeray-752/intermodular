@@ -1,0 +1,20 @@
+{
+    "es": {
+        "price": "Precio",
+        "stock": "Unidades disponibles",
+        "outOfStock": "Agotado",
+        "back": "Volver",
+        "products": "Productos",
+        "searchPlaceholder": "Amortiguador hidráulico...",
+        "productButton": "Comprar ahora"
+    },
+    "en": {
+        "price": "Price",
+        "stock": "Units available",
+        "outOfStock": "Out of stock",
+        "back": "Back",
+        "products": "Products",
+        "searchPlaceholder": "Hydraulic shock absorber...",
+        "productButton": "Buy now"
+    }
+}
