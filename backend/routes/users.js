@@ -1,32 +1,13 @@
 import { Router } from "express";
-import db from "../db.js";
+import { registerClient, login, getClientProfile } from "../controllers/userController.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 
-// GET - Obtener todos los usuarios
-router.get("/", async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT * FROM Usuario");
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error en el sihghgvervidor" });
-  }
-});
+router.post("/register", registerClient);
+router.post("/login", login);
 
-// POST - Crear usuario
-router.post("/", async (req, res) => {
-  const { nombre, email } = req.body;
-  try {
-    const [result] = await db.query(
-      "INSERT INTO Usuario (nombre, email) VALUES (?, ?)",
-      [nombre, email]
-    );
-    res.json({ id: result.insertId, nombre, email });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error en el servidor" });
-  }
-});
+// Solo usuarios logueados pueden ver perfiles
+router.get("/profile/me", verifyToken, getClientProfile);
 
 export default router;
