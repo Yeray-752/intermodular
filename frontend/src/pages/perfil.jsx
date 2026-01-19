@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas'
+import SelectorCanarias from '../components/selectorCanarias';
 
 function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
@@ -63,7 +64,6 @@ function Perfil() {
     const campos = [
         { name: "nombreTaller", label: "Nombre Completo / Taller", type: "text", value: "AKOTAN Workshop" },
         { name: "telefono", label: "Teléfono de Contacto", type: "text", value: "+34 600 000 000" },
-        { name: "ubicacion", label: "Ubicación", type: "text", value: "Madrid, España" },
     ];
 
 
@@ -101,7 +101,7 @@ function Perfil() {
                                             name={field.name} // IMPORTANTE para el FormData
                                             type={field.type}
                                             defaultValue={field.value}
-                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
+                                            className={`p-3 border rounded-lg outline-none bg-gray-50 transition-all bg-base-100 text-base-content 
                                     ${errors[field.name]
                                                     ? 'border-error ring-1 ring-error'
                                                     : 'border-base-300 focus:ring focus:ring-primary/50 focus:border-transparent'
@@ -116,6 +116,8 @@ function Perfil() {
                                     </div>
                                 ))}
                             </div>
+
+                            {<SelectorCanarias />}
 
 
                             <div className="flex items-center gap-3">
