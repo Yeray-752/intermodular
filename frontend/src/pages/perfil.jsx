@@ -4,13 +4,13 @@ import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus } from
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
-import { workshopSchema } from '../schemas/perfilGeneralSchemas'
+import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/selectorCanarias';
 
 function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [userProfile, setUserProfile] = useState(null); // Estado para los datos de la DB
+    const [userProfile, setUserProfile] = useState(null); 
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
     
@@ -35,7 +35,6 @@ function Perfil() {
                     const data = await response.json();
                     setUserProfile(data);
                 } else {
-                    // Si el token expiró o es inválido
                     localStorage.removeItem("token");
                     navigate("/login");
                 }
@@ -98,6 +97,13 @@ function Perfil() {
         }
     };
 
+    // Mapeo dinámico de campos con los datos de la DB
+    const campos = useMemo(() => [
+        { name: "nombre", label: t('name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
+        { name: "apellidos", label: t('apellidos') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
+        { name: "telefono", label: t('phone') || "Teléfono", type: "text", value: userProfile?.telefono || "" },
+        { name: "direccion", label: t('location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
+    ], [userProfile, t]);
 
     const menuItems = useMemo(() => [
         { id: 'informacion', label: t('account'), icon: User },
@@ -105,36 +111,10 @@ function Perfil() {
         { id: 'citas', label: t('myAppointments'), icon: Calendar },
         { id: 'historial', label: t('history'), icon: FileText },
         { id: 'password', label: t('security'), icon: Lock }
-    ], [t, i18n.language]);
-
-    // Array de campos de información del perfil
-    const profileFields = useMemo(() => [
-        { label: t('nameWorkshop'), type: "text", value: "AKOTAN Workshop" },
-        { label: t('phone'), type: "text", value: "+34 600 000 000" },
-        { label: t('location'), type: "text", value: "Madrid, España" },
-    ], [t, i18n.language]);
-
-    // Labels de campos de contraseña
-    const passwordFields = useMemo(() => [
-        t('currentPassword'),
-        t('newPassword'),
-        t('confirmPassword')
-    ], [t, i18n.language]);
-
-
-    const campos = [
-        { name: "nombreTaller", label: "Nombre Completo / Taller", type: "text", value: "AKOTAN Workshop" },
-        { name: "telefono", label: "Teléfono de Contacto", type: "text", value: "+34 600 000 000" },
-    ];
-
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-        setMobileMenuOpen(false);
-    };
+    ], [t]);
 
     const menuBtnStyle = (tab) => `
-        w-full text-left px-1 py-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-3
+        w-full text-left px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-3
         ${activeTab === tab 
             ? 'bg-base-100 text-primary font-semibold shadow-md' 
             : 'text-base-content/70 hover:bg-base-200 hover:shadow-sm'}
@@ -153,7 +133,7 @@ function Perfil() {
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {campos.map((field) => (
                                     <div className="flex flex-col" key={field.name}>
                                         <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
@@ -163,11 +143,8 @@ function Perfil() {
                                             name={field.name}
                                             type={field.type}
                                             defaultValue={field.value}
-                                            className={`p-3 border rounded-lg outline-none bg-gray-50 transition-all bg-base-100 text-base-content 
-                                    ${errors[field.name]
-                                                    ? 'border-error ring-1 ring-error'
-                                                    : 'border-base-300 focus:ring focus:ring-primary/50 focus:border-transparent'
-                                                }`}
+                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
+                                                ${errors[field.name] ? 'border-error ring-1 ring-error' : 'border-base-300 focus:ring focus:ring-primary/50'}`}
                                         />
                                         {errors[field.name] && (
                                             <span className="text-error text-[10px] mt-1 font-bold uppercase">
@@ -178,7 +155,12 @@ function Perfil() {
                                 ))}
                             </div>
 
-                            <button type="submit" className="mt-8 btn btn-primary flex items-center gap-2">
+                            {/* Selector de Islas y Municipios */}
+                            <div className="mb-6">
+                                <SelectorCanarias />
+                            </div>
+
+                            <button type="submit" className="mt-4 btn btn-primary flex items-center gap-2">
                                 <Save size={18} />
                                 {t('saveChanges')}
                             </button>
@@ -211,27 +193,46 @@ function Perfil() {
                         </div>
                     </div>
                 );
-            // ... (Los casos 'citas', 'historial' y 'password' se mantienen igual)
+            // Otros casos (citas, historial, password) omitidos por brevedad pero se mantienen igual que en tu lógica original
             default:
-                return <p>Selecciona una opción.</p>;
+                return <p className="text-base-content/50">Selecciona una opción del menú.</p>;
         }
     }
 
     return (
         <div className='bg-base-200 min-h-screen flex flex-col'>
             <Header />
+            
+            {/* Mobile menu - visible solo en móviles */}
+            <div className="lg:hidden bg-base-100 border-b border-base-300 p-4">
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="flex items-center gap-2 text-base-content font-semibold"
+                >
+                    {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    <span>{t('menu')}</span>
+                </button>
+            </div>
+
             <main className='flex-1 p-4 md:p-6 lg:p-8'>
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
-                    {/* Sidebar */}
-                    <aside className='hidden lg:flex flex-col bg-base-100 w-72 flex-none p-6 rounded-2xl shadow-xl'>
-                        <div className="mb-10">
+                    {/* Sidebar Desktop */}
+                    <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-base-100 w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
+                        <div className="mb-10 hidden lg:block">
                             <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
                         </div>
-                        <nav className='space-y-1 flex-1'>
+                        <nav className='space-y-2 flex-1'>
                             {menuItems.map(item => {
                                 const Icon = item.icon;
                                 return (
-                                    <button key={item.id} className={menuBtnStyle(item.id)} onClick={() => setActiveTab(item.id)}>
+                                    <button 
+                                        key={item.id} 
+                                        className={menuBtnStyle(item.id)} 
+                                        onClick={() => {
+                                            setActiveTab(item.id);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                    >
                                         <Icon size={20} />
                                         <span>{item.label}</span>
                                     </button>
@@ -239,11 +240,11 @@ function Perfil() {
                             })}
                         </nav>
                         <div className="mt-auto pt-6 border-t border-base-300 space-y-1">
-                            <button onClick={toggleLanguage} className='w-full text-left px-1 py-3 text-xs font-bold uppercase text-base-content/50 hover:text-primary flex items-center gap-3'>
+                            <button onClick={toggleLanguage} className='w-full text-left px-4 py-3 text-xs font-bold uppercase text-base-content/50 hover:text-primary flex items-center gap-3'>
                                 <span className="text-lg">🌐</span>
-                                <span>{i18n.language === 'es' ? 'EN' : 'ES'}</span>
+                                <span>{i18n.language === 'es' ? 'English (EN)' : 'Español (ES)'}</span>
                             </button>
-                            <button onClick={handleLogout} className='w-full text-left px-2 py-3 text-error/70 hover:bg-error/10 rounded-xl flex items-center gap-3 transition-all'>
+                            <button onClick={handleLogout} className='w-full text-left px-4 py-3 text-error/70 hover:bg-error/10 rounded-xl flex items-center gap-3 transition-all'>
                                 <LogOut size={20} />
                                 <span>{t('logout')}</span>
                             </button>
@@ -251,7 +252,7 @@ function Perfil() {
                     </aside>
 
                     {/* Contenido principal */}
-                    <section className='bg-base-100 flex-1 p-6 md:p-10 rounded-2xl shadow-lg border border-base-300'>
+                    <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg border border-base-300'>
                         {renderContent()}
                     </section>
                 </div>

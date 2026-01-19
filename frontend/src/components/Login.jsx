@@ -1,15 +1,18 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { loginSchema } from "../schemas/loginSchema"
-import { useState } from "react";
+import { useContext, useState } from "react";
 // Importamos el componente de la librería que instalaste
 import Turnstile from "react-turnstile";
 import fondo from "/img/web/fondo_log.webp";
+import { AuthContext } from "../context/AuthContext";
+
 
 function Login() {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const [captchaToken, setCaptchaToken] = useState(null);
+    const { login } = useContext(AuthContext);
 
     // 1. Inicializamos la traducción
     const { t } = useTranslation("login");
@@ -35,32 +38,34 @@ function Login() {
     }
 
     try {
-        // 1. Enviamos los datos al endpoint de tu servidor
         const response = await fetch("http://localhost:3000/api/users/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: data.email,
-                contraseña: data.password // Mapeamos password del form a contraseña de la DB
+                contraseña: data.password 
             }),
         });
 
         const json = await response.json();
 
         if (!response.ok) {
-            // Si el backend devuelve 401, mostramos el error
             setErrors({ general: [json.error || "Error al iniciar sesión"] });
             return;
         }
 
-        // 2. Guardamos el Token en localStorage
+        // 1. Guardamos en el almacenamiento persistente
         localStorage.setItem("token", json.token);
         localStorage.setItem("rol", json.rol);
 
-        console.log("Login exitoso, token guardado.");
-        
-        // 3. Redirigimos según el rol o al inicio
-        navigate("/");
+        console.log("Login exitoso, actualizando contexto...");
+
+        // 2. ¡IMPORTANTE! Actualizamos el estado GLOBAL con el token real (json.token)
+        login(json.token); 
+
+        // 3. Ahora que el contexto tiene al usuario, navegamos
+        // El Header cambiará automáticamente y las rutas protegidas te dejarán pasar
+        navigate("/"); 
 
     } catch (error) {
         console.error("Error de conexión:", error);
