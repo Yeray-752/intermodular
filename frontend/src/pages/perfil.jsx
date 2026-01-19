@@ -73,7 +73,7 @@ function Perfil() {
     };
 
     const menuBtnStyle = (tab) => `
-        w-full text-left px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-3
+        w-full text-left px-1 py-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-3
         ${activeTab === tab
             ? 'bg-base-100 text-primary font-semibold shadow-md'
             : 'text-base-content/70 hover:bg-base-200 hover:shadow-sm'}
@@ -87,7 +87,6 @@ function Perfil() {
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profileInfo')}</h2>
                             <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
-                            <p>cambiate cabron</p>
                         </div>
 
 
@@ -99,7 +98,7 @@ function Perfil() {
                                             {field.label}
                                         </label>
                                         <input
-                                            name={field.name} // IMPORTANTE para el FormData
+                                            name={field.name}
                                             type={field.type}
                                             defaultValue={field.value}
                                             className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
@@ -116,16 +115,8 @@ function Perfil() {
                                         )}
                                     </div>
                                 ))}
+
                             </div>
-
-
-                            <div className="flex items-center gap-3">
-
-                                <button className='btn btn-accent' onClick={toggleLanguage}>
-                                    {t('changeLanguage')}
-                                </button>
-                            </div>
-
 
                             <button type="submit" className="mt-8 btn btn-primary flex items-center gap-2">
                                 <Save size={18} />
@@ -239,29 +230,35 @@ function Perfil() {
             <main className='flex-1 p-4 md:p-6 lg:p-8'>
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
                     {/* Sidebar */}
-                    <aside className='hidden lg:block bg-base-100 w-72 flex-none p-6 rounded-2xl shadow-xl'>
+                    <aside className='hidden lg:flex flex-col bg-base-100 w-72 flex-none p-6 rounded-2xl shadow-xl'>
                         <div className="mb-10">
                             <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
                         </div>
-                        <nav className='space-y-2'>
+
+                        <nav className='space-y-1 flex-1'>
                             {menuItems.map(item => {
                                 const Icon = item.icon;
                                 return (
-                                    <button
-                                        key={item.id}
-                                        className={menuBtnStyle(item.id)}
-                                        onClick={() => setActiveTab(item.id)}
-                                    >
+                                    <button key={item.id} className={menuBtnStyle(item.id)} onClick={() => setActiveTab(item.id)}>
                                         <Icon size={20} />
                                         <span>{item.label}</span>
                                     </button>
                                 );
                             })}
                         </nav>
-                        <div className="mt-auto pt-6 border-t border-base-300">
+
+                        <div className="mt-auto pt-6 border-t border-base-300 space-y-1">
+                            <button
+                                onClick={toggleLanguage}
+                                className='w-full text-left px-1 py-3 text-xs font-bold uppercase tracking-widest text-base-content/50 hover:text-primary transition-all flex items-center gap-3'
+                            >
+                                <span className="text-lg">🌐</span>
+                                <span>{i18n.language === 'es' ? 'Cambiar idioma -> (EN)' : 'Change language -> (ES)'}</span>
+                            </button>
+
                             <button
                                 onClick={() => navigate('/login')}
-                                className='w-full text-left px-4 py-3 text-base-content/70 hover:bg-base-200 rounded-xl flex items-center gap-3 transition-all'
+                                className='w-full text-left px-2 py-3 text-error/70 hover:bg-error/10 rounded-xl flex items-center gap-3 transition-all'
                             >
                                 <LogOut size={20} />
                                 <span>{t('logout')}</span>
@@ -277,8 +274,6 @@ function Perfil() {
                     </section>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 }
