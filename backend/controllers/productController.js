@@ -58,7 +58,6 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: "Error al crear el producto" });
   }
 };
-
 export const getProducts = async (req, res) => {
   // req.lang viene de tu languageMiddleware ('es' o 'en')
   const lang = req.lang;
@@ -91,7 +90,6 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
 export const getProductsById = async (req, res) => {
   const lang = req.lang;
   const { id } = req.params; // Obtenemos el ID de la URL (ej: /productos/5)
@@ -127,7 +125,6 @@ export const getProductsById = async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const lang = req.lang; // Idioma detectado (es/en)
@@ -171,7 +168,6 @@ export const updateProduct = async (req, res) => {
     connection.release();
   }
 };
-
 export const deleteProduct = async (req, res) => {
   const { id } = req.params; // El ID del producto a borrar
 
@@ -190,7 +186,6 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ error: "No se pudo eliminar el producto." });
   }
 };
-
 export const purchaseProduct = async (req, res) => {
   const { productId, quantity } = req.body; // El usuario envía ID y cantidad
   const connection = await db.getConnection(); // Necesitamos una conexión fija para la transacción

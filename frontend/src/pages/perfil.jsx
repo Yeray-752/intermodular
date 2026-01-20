@@ -101,7 +101,6 @@ function Perfil() {
     const campos = useMemo(() => [
         { name: "nombre", label: t('name') || "Nombre", type: "text", value: userProfile?.nombre || "" },
         { name: "apellidos", label: t('apellidos') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
-        { name: "telefono", label: t('phone') || "Teléfono", type: "text", value: userProfile?.telefono || "" },
         { name: "direccion", label: t('location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
     ], [userProfile, t]);
 

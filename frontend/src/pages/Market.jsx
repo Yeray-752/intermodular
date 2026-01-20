@@ -4,29 +4,28 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import TableProducts from '../components/TableProducts';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function App() {
 
-    const { t, i18n } = useTranslation('market');
+  const { t, i18n } = useTranslation('market');
   // Estados para datos de la API
   const [listaProductos, setListaProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
-  
+
   // Estados para filtros y UI
   const [search, setSearch] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState(null); // Ahora guardaremos el ID (int)
   const [loading, setLoading] = useState(true);
 
-  const scrollRef = useRef(null);
-
   // useEffect para cargar Categorías y Productos simultáneamente
   useEffect(() => {
     setLoading(true);
-    
+
     const fetchDatos = async () => {
       try {
         const headers = { 'accept-language': i18n.language };
-        
+
         // Lanzamos ambas peticiones a la vez
         const [resProd, resCat] = await Promise.all([
           fetch('https://yeray.informaticamajada.es/api/products', { headers }),
@@ -35,7 +34,6 @@ function App() {
 
         const dataProd = await resProd.json();
         const dataCat = await resCat.json();
-        console.log(dataCat)
 
         setListaProductos(dataProd);
         setCategorias(dataCat);
@@ -54,12 +52,17 @@ function App() {
     setCategoriaActiva(categoriaActiva === id ? null : id);
   };
 
+  const scrollRef = useRef(null);
+  const scroll = (offset) => {
+    if (scrollRef.current) scrollRef.current.scrollLeft += offset;
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="grow">
         <div className="flex-col grow p-4 justify-items-center">
-          
+
           {/* Barra de búsqueda */}
           <input
             className='input mt-6 input-bordered w-full max-w-md'
@@ -71,28 +74,31 @@ function App() {
           <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('products')}</h1>
 
           {/* Navegación de Categorías Dinámicas */}
-          <nav className='space-x-1.5 mt-4 mb-5 w-full max-w-6xl'>
-            <div className="relative justify-items-center group px-10">
-              <div 
-                ref={scrollRef} 
-                className="flex overflow-x-auto gap-3 py-4 no-scrollbar scroll-smooth"
-              >
-                {categorias.map((cat) => (
-                  <div key={cat.id} className="shrink-0">
-                    <button
-                      onClick={() => manejarClickCategoria(cat.id)}
-                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all ${
-                        categoriaActiva === cat.id
-                        ? "bg-orange-600 text-white border-orange-600 hover:bg-orange-700"
-                        : "btn-outline btn-primary"
+          <nav className='relative mt-4 mb-5 w-full max-w-6xl px-10'>
+            <button onClick={() => scroll(-200)} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+              <ChevronLeft size={24} />
+            </button>
+
+            <div
+              ref={scrollRef}
+              className="flex overflow-x-auto gap-3 py-4 no-scrollbar scroll-smooth"
+            >
+              {categorias.map((cat) => (
+                <div key={cat.id} className="shrink-0">
+                  <button
+                    onClick={() => manejarClickCategoria(cat.id)}
+                    className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all ${categoriaActiva === cat.id ? "bg-primary text-white" : "btn-outline btn-primary"
                       }`}
-                    >
-                      {cat.name}
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  >
+                    {cat.name}
+                  </button>
+                </div>
+              ))}
             </div>
+
+            <button onClick={() => scroll(200)} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+              <ChevronRight size={24} />
+            </button>
           </nav>
 
           {/* Listado de Productos */}

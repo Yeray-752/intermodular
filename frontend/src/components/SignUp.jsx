@@ -36,7 +36,6 @@ function SignUp() {
           contraseña: data.password, // Mapeo para el Backend
           nombre: data.nombre,
           apellidos: data.apellidos,
-          telefono: data.telefono || "000000000", // Campo que pide tu tabla Cliente
           direccion: data.direccion || ""
         }),
       });
@@ -88,12 +87,6 @@ function SignUp() {
               {errors.apellidos && <span className="text-error text-xs mt-1">{errors.apellidos[0]}</span>}
             </fieldset>
           </div>
-
-          {/* Añadimos campo de Teléfono ya que tu tabla Cliente lo marca como NOT NULL */}
-          <fieldset className="fieldset flex flex-col">
-            <label className="label">{t("signup.phone") || "Teléfono"}</label>
-            <input name="telefono" type="text" className="input w-full" placeholder="600000000" maxLength="9" />
-          </fieldset>
 
           <fieldset className="fieldset flex flex-col">
             <label className="label">{t("signup.email")}</label>

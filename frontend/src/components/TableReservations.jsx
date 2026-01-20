@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../CalendarioCustom.css';
@@ -10,6 +11,10 @@ function TableReservations({ search, categoriaId, servicios }) {
     const [servicioExpandido, setServicioExpandido] = useState(null);
     const filtroBusqueda = (search || '').toLowerCase();
     const lang = i18n.language?.split('-')[0] || 'es';
+
+    const token = localStorage.getItem("token");
+    const location = useLocation();
+        const navigate = useNavigate();
 
     // Lógica para colorear la dificultad (Frontend)
     const getDifficultyColor = (level) => {
@@ -78,15 +83,24 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     {servicio.price}€
                                 </div>
 
-                                <button
-                                    className="btn btn-sm btn-primary text-white"
-                                    onClick={() => {
-                                        setServicioExpandido(servicio.id);
-                                        document.getElementById(`modal_${servicio.id}`).showModal();
-                                    }}
-                                >
-                                    {t('book')}
-                                </button>
+                                {token ?
+                                    <button
+                                        className="btn btn-sm btn-primary text-white"
+                                        onClick={() => {
+                                            setServicioExpandido(servicio.id);
+                                            document.getElementById(`modal_${servicio.id}`).showModal();
+                                        }}
+                                    >
+                                        {t('book')}
+                                    </button>
+                                    :
+                                    <button
+                                        className="btn btn-sm btn-primary text-white"
+                                        onClick={() => navigate('/Login', { state: { from: location } })}
+                                    >
+                                        {t('noToken')}
+                                    </button>
+                                }
 
                                 {/* MODAL DINÁMICO */}
                                 <dialog id={`modal_${servicio.id}`} className="modal modal-bottom sm:modal-middle text-left">
@@ -100,8 +114,8 @@ function TableReservations({ search, categoriaId, servicios }) {
                                             <label className="label">
                                                 <span className="label-text font-semibold">{t('vehicleQuestion')}</span>
                                             </label>
-                                            <select className="select select-bordered w-full bg-base-200">
-                                                <option disabled selected>{t('selectVehicle')}</option>
+                                            <select className="select select-bordered w-full bg-base-200" defaultValue={0}>
+                                                <option disabled value={0}>{t('selectVehicle')}</option>
                                                 <option>Mi Toyota Corolla</option>
                                             </select>
                                         </div>

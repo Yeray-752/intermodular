@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,12 +7,15 @@ function Product() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation(['market', 'formulario']);
 
-    // Estados para los datos de la API
+    const token = localStorage.getItem("token");
+    const location = useLocation(); //si no tienes token, te vas al login y al iniciar te vuelves a la página
+
+    // estados para los datos de la API
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Estados del formulario de compra
+    // estados del formulario de compra
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [ciudad, setCiudad] = useState("");
     const [ciudadValida, setCiudadValida] = useState(true);
@@ -23,8 +26,6 @@ function Product() {
 
     useEffect(() => {
         setLoading(true);
-        // Usamos el ID de la URL y el idioma actual de i18next
-        // Asegúrate de que tu backend use el header 'accept-language' o un query param
         fetch(`https://yeray.informaticamajada.es/api/products/${id}`, {
             headers: {
                 'accept-language': i18n.language
@@ -91,7 +92,6 @@ function Product() {
 
     return (
         <div className="min-h-screen bg-base-200">
-            {/* ... Resto de tu HTML igual que antes, pero usando producto.image_url, producto.name, producto.price, etc. ... */}
             <div className="max-w-6xl mx-auto pt-6 px-4">
                 <button onClick={() => navigate(-1)} className="btn btn-sm btn-ghost gap-2">
                     ← {t('formulario:back', { defaultValue: 'Volver' })}
@@ -123,19 +123,29 @@ function Product() {
                         </div>
 
                         <div className="card-actions">
-                            <button
-                                className="btn btn-warning btn-block text-lg font-bold"
-                                onClick={() => document.getElementById('my_modal_2').showModal()}
-                                disabled={producto.stock === 0}
-                            >
-                                {producto.stock > 0 ? t('formulario:productButton') : t('formulario:outOfStock')}
-                            </button>
+                            {token ?
+                                <button
+                                    className="btn btn-warning btn-block text-lg font-bold"
+                                    onClick={() => document.getElementById('my_modal_2').showModal()}
+                                    disabled={producto.stock === 0}
+                                >
+                                    {producto.stock > 0 ? t('formulario:productButton') : t('formulario:outOfStock')}
+                                </button>
+                                :
+                                <button
+                                    className="btn btn-warning btn-block text-lg font-bold"
+                                    onClick={() => navigate('/Login', { state: { from: location } })}
+                                >
+                                    {t('formulario:noToken')}
+                                </button>
+                            }
+
+
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Modal de compra (El código del modal sigue igual, solo asegúrate de usar producto.name y precioFinal) */}
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl">
                     <form method="dialog">

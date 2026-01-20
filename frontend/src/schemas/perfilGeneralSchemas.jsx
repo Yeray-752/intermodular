@@ -5,12 +5,6 @@ export const workshopSchema = z.object({
     .string()
     .min(1, "El nombre es obligatorio")
     .trim(),
-    
-  telefono: z
-    .string()
-    .min(9, "El teléfono debe tener al menos 9 caracteres")
-    .regex(/^\+?[0-9\s\-]+$/, "Formato de teléfono no válido"),
-
   ubicacion: z
     .string()
     .min(1, "La ubicación es obligatoria")

@@ -19,7 +19,8 @@
             "Baja": "Baja",
             "Media": "Media",
             "Alta": "Alta"
-        }
+        },
+        "noToken": "Inicie sesión para reservar"
     },
     "en": {
         "searchPlaceholder": "Search services...",
@@ -41,6 +42,7 @@
             "Baja": "Low",
             "Media": "Medium",
             "Alta": "High"
-        }
+        },
+        "noToken": "Log in to book"
     }
 }

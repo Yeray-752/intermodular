@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const registerClient = async (req, res) => {
-    const { email, contraseña, nombre, apellidos, telefono, direccion } = req.body;
+    const { email, contraseña, nombre, apellidos, direccion } = req.body;
     const connection = await db.getConnection(); // Obtenemos conexión para la transacción
 
     try {
@@ -20,8 +20,8 @@ export const registerClient = async (req, res) => {
 
         // 2. Insertar en la tabla Cliente usando el ID recién creado
         await connection.query(
-            "INSERT INTO Cliente (id_usuario, nombre, apellidos, telefono, direccion) VALUES (?, ?, ?, ?, ?)",
-            [newUserId, nombre, apellidos, telefono, direccion]
+            "INSERT INTO Cliente (id_usuario, nombre, apellidos, direccion) VALUES (?, ?, ?, ?, ?)",
+            [newUserId, nombre, apellidos, direccion]
         );
 
         await connection.commit();
@@ -78,7 +78,7 @@ export const getClientProfile = async (req, res) => {
 
     try {
         const [rows] = await db.query(`
-      SELECT u.email, c.nombre, c.apellidos, c.telefono, c.direccion
+      SELECT u.email, c.nombre, c.apellidos, c.direccion
       FROM Usuario u
       INNER JOIN Cliente c ON u.id_usuario = c.id_usuario
       WHERE u.id_usuario = ?
@@ -90,17 +90,4 @@ export const getClientProfile = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Error al obtener perfil" });
     }
-};
-
-const getProfile = async () => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch("http://localhost:3000/api/users/profile/me", {
-        headers: {
-            "Authorization": `Bearer ${token}` // Así el middleware verifyToken sabe quién eres
-        }
-    });
-
-    const data = await response.json();
-    console.log("Datos del perfil:", data);
 };
