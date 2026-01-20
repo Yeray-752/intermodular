@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import '../CalendarioCustom.css';
-import '../App.css';
+import '../style/CalendarioCustom.css';
+import '../style/App.css';
 
 function TableReservations({ search, categoriaId, servicios }) {
     const { t, i18n } = useTranslation('servicios');

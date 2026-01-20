@@ -3,19 +3,19 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Importación de datos JSON
-import profileData from "./assets/data/profile.json";
-import headerData from "./assets/data/header.json";
-import footerData from "./assets/data/footer.json";
-import homeData from "./assets/data/home.json";
-import errorData from "./assets/data/404.json";
-import formData from './assets/data/formulario.json';
-import servicesData from './assets/data/services.json';
-import legalesData from './assets/data/legales.json';
-import signupData from './assets/data/signUp.json';
-import loginData from './assets/data/login.json';
-import aboutData from './assets/data/about.json';
-import ratingData from './assets/data/rating.json';
-import marketData from './assets/data/market.json';
+import profileData from "../assets/data/profile.json";
+import headerData from "../assets/data/header.json";
+import footerData from "../assets/data/footer.json";
+import homeData from "../assets/data/home.json";
+import errorData from "../assets/data/404.json";
+import formData from '../assets/data/formulario.json';
+import servicesData from '../assets/data/services.json';
+import legalesData from '../assets/data/legales.json';
+import signupData from '../assets/data/signUp.json';
+import loginData from '../assets/data/login.json';
+import aboutData from '../assets/data/about.json';
+import ratingData from '../assets/data/rating.json';
+import marketData from '../assets/data/market.json';
 
 // Configuración de los recursos de traducción
 

@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Footer from '../components/Footer'
-import Header from '../components/Header'
+import Footer from '../components/Principal/Footer'
+import Header from '../components/Principal/Header'
 import TableReservations from '../components/TableReservations'
-import '../scroll.css';
+import '../style/scroll.css';
 
 function App() {
   // Usamos 'servicios' como namespace para que coincida con tu config de i18n

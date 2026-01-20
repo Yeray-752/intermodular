@@ -1,8 +1,8 @@
 
-import '../App.css'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
-import WhoWeAre from '../components/WhoWeAre'
+import '../style/App.css'
+import Footer from '../components/Principal/Footer'
+import Header from '../components/Principal/Header'
+import WhoWeAre from '../components/Principal/WhoWeAre'
 
 function App() {
 

@@ -1,21 +1,22 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import './i18n';
+import '../style/index.css'
+import './i18n.js';
 
-import Home from './pages/Home.jsx'
-import Login from './pages/Login.jsx'
-import Reservas from './pages/Reservations.jsx'
-import Market from './pages/Market.jsx'
-import SignUp from './pages/SignUp.jsx'
-import About from './pages/about.jsx'
-import Producto from './pages/Product.jsx'
-import Error from "./pages/404.jsx"
-import Perfil from "./pages/perfil.jsx"
-import Texto from "./pages/texto.jsx"
-import { AuthProvider } from './context/AuthContext';
+import Home from '../pages/Home.jsx'
+import Login from '../pages/Login.jsx'
+import Reservas from '../pages/Reservations.jsx'
+import Market from '../pages/Market.jsx'
+import SignUp from '../pages/SignUp.jsx'
+import About from '../pages/about.jsx'
+import Producto from '../pages/Product.jsx'
+import Error from "../pages/404.jsx"
+import Perfil from "../pages/perfil.jsx"
+import Texto from "../pages/texto.jsx"
+import AdminPage from "../pages/AdminPage.jsx"
+import { AuthProvider } from '../context/AuthContext.jsx';
 
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { ThemeProvider } from "../context/ThemeContext.jsx";
 
 import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
@@ -37,6 +38,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path='/perfil' element={<Perfil />} />
           <Route path='/Aviso-legal' element={<Texto />} />
           <Route path='*' element={<Error />} />
+
+          <Route path='/admin/dashboard'  element={<AdminPage />} />
+          
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

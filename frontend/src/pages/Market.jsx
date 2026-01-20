@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import '../App.css';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
-import TableProducts from '../components/TableProducts';
+import '../style/App.css';
+import Footer from '../components/Principal/Footer';
+import Header from '../components/Principal/Header';
+import TableProducts from '../components/Productos/TableProducts';
 import { useTranslation } from 'react-i18next';
 
 function App() {
@@ -35,7 +35,6 @@ function App() {
 
         const dataProd = await resProd.json();
         const dataCat = await resCat.json();
-        console.log(dataCat)
 
         setListaProductos(dataProd);
         setCategorias(dataCat);

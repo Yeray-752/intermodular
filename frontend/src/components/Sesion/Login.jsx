@@ -1,11 +1,11 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { loginSchema } from "../schemas/loginSchema"
+import { loginSchema } from "../../schemas/loginSchema"
 import { useContext, useState } from "react";
 // Importamos el componente de la librería que instalaste
 import Turnstile from "react-turnstile";
 import fondo from "/img/web/fondo_log.webp";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 
 function Login() {

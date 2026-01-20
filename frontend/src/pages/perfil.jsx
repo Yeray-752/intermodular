@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus } from 'lucide-react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/Principal/Header';
+import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
-import SelectorCanarias from '../components/selectorCanarias';
+import SelectorCanarias from '../components/perfil/selectorCanarias';
+import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
@@ -56,7 +57,8 @@ function Perfil() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("rol");
-        navigate("/login");
+        navigate("/");
+        location.reload()
     };
 
     // 2. ENVIAR ACTUALIZACIÓN AL BACKEND
@@ -101,7 +103,6 @@ function Perfil() {
     const campos = useMemo(() => [
         { name: "nombre", label: t('name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
         { name: "apellidos", label: t('apellidos') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
-        { name: "telefono", label: t('phone') || "Teléfono", type: "text", value: userProfile?.telefono || "" },
         { name: "direccion", label: t('location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
     ], [userProfile, t]);
 
@@ -240,6 +241,7 @@ function Perfil() {
                             })}
                         </nav>
                         <div className="mt-auto pt-6 border-t border-base-300 space-y-1">
+                            <AdminButton />
                             <button onClick={toggleLanguage} className='w-full text-left px-4 py-3 text-xs font-bold uppercase text-base-content/50 hover:text-primary flex items-center gap-3'>
                                 <span className="text-lg">🌐</span>
                                 <span>{i18n.language === 'es' ? 'English (EN)' : 'Español (ES)'}</span>

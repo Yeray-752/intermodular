@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../App.css'
+import '../../style/App.css'
 import { useNavigate } from 'react-router'
 import { useTranslation } from "react-i18next"; // 1. Importar hook
 

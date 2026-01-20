@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
-import Header from '../components/Header'
-import SignUp from '../components/SignUp'
+import Header from '../components/Principal/Header'
+import SignUp from '../components/Sesion/SignUp'
 
 
 function App() {

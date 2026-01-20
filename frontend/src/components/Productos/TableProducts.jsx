@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import '../App.css';
+import '../../style/App.css';
 import 'react-calendar/dist/Calendar.css';
-import '../CalendarioCustom.css';
+import '../../style/CalendarioCustom.css';
 
 // Cambiamos 'props' por 'categoriaId' para que coincida con lo que envía el padre
 function TableProducts({ search, categoriaId, productos }) {
