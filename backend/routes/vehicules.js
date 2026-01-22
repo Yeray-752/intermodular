@@ -3,8 +3,8 @@ import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo } from '../cont
 
 const router = Router();
 
-router.post('/vehiculos', registrarVehiculo);
-router.put('/vehiculos/:matricula', actualizarVehiculo);
-router.delete('/vehiculos/:matricula', eliminarVehiculo);
+router.post('/', registrarVehiculo);
+router.put('/:matricula', actualizarVehiculo);
+router.delete('/:matricula', eliminarVehiculo);
 
 export default router;

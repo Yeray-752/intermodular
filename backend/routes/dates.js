@@ -4,10 +4,10 @@ import { validarEstadoCita } from '../middleware/state.js';
 
 const router = Router();
 
-router.get('/citas', obtenerCitas);
+router.get('/', obtenerCitas);
 
-router.post('/citas', crearCita);
+router.post('/', crearCita);
 
-router.patch('/citas/:id/estado', validarEstadoCita, actualizarEstadoCita);
+router.patch('/:id/estado', validarEstadoCita, actualizarEstadoCita);
 
 export default router;
