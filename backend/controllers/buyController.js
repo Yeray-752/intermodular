@@ -1,6 +1,6 @@
 import db from "../db.js";
 
-const getCompras = async (req, res) => {
+export const getCompras = async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM Compra');
         res.json(rows);
@@ -9,7 +9,7 @@ const getCompras = async (req, res) => {
     }
 };
 
-const createCompra = async (req, res) => {
+export const createCompra = async (req, res) => {
     const { id_usuario, id_producto, fecha, estado } = req.body;
     try {
         const [result] = await db.query(
@@ -22,7 +22,7 @@ const createCompra = async (req, res) => {
     }
 };
 
-const updateEstadoCompra = async (req, res) => {
+export const updateEstadoCompra = async (req, res) => {
     const { id } = req.params;
     const { estado } = req.body;
 
@@ -43,5 +43,3 @@ const updateEstadoCompra = async (req, res) => {
         res.status(500).json({ message: "Error al actualizar el estado", error });
     }
 };
-
-export default { getCompras, createCompra, updateEstadoCompra };

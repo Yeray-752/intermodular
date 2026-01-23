@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getCompras, createCompra } from '../controllers/buyController.js';
-import { validateCompra } from '../validators/buyValidator.js';
+import { getCompras, createCompra, updateEstadoCompra } from '../controllers/buyController.js';
+import { validateCompra, validateUpdateEstado } from '../validators/buyValidator.js';
 const router = Router();
 
 router.get('/', getCompras);
