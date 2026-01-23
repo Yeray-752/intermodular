@@ -5,7 +5,7 @@ import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
-import SelectorCanarias from '../components/perfil/selectorCanarias';
+import SelectorCanarias from '../components/Perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
