@@ -7,11 +7,9 @@ import TableReservations from '../components/TableReservations'
 import '../style/scroll.css';
 
 function App() {
-  // Usamos 'servicios' como namespace para que coincida con tu config de i18n
   const { t, i18n } = useTranslation('servicios');
   const [search, setSearch] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState(null);
-
   const [servicios, setServicios] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,10 +23,8 @@ function App() {
           fetch('https://yeray.informaticamajada.es/api/services', { headers }),
           fetch('https://yeray.informaticamajada.es/api/service_categories', { headers })
         ]);
-
         const dataServ = await resServ.json();
         const dataCat = await resCat.json();
-
         setServicios(dataServ);
         setCategorias(dataCat);
       } catch (error) {
@@ -63,49 +59,45 @@ function App() {
 
           <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('categories')}</h1>
 
-          <nav className='space-x-1.5 mt-4 mb-5'>
+          <nav className='space-x-1.5 mt-4 mb-5 w-full'>
+            <div className='relative group w-80 lg:w-225 xl:w-289 mx-auto px-10'>
+              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+                <ChevronLeft size={24} />
+              </button>
 
-            <div className='relative group w-80 lg:w-225 2xl:w-290 max-w-6xl mx-auto px-10'>
+              <div ref={scrollRef} className="flex overflow-x-auto gap-3 py-4 no-scrollbar scroll-smooth">
+                {categorias.map((cat) => (
+                  <div key={cat.id} className="shrink-0">
+                    <button
+                      onClick={() => manejarClickCategoria(cat.id)}
+                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
+                        categoriaActiva === cat.id ? "bg-primary text-white border-none" : "btn-outline btn-primary"
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-            <button onClick={() => scroll(-200)} className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
-              <ChevronLeft size={24} />
-            </button>
-
-            <div
-              ref={scrollRef}
-              className="flex overflow-x-auto gap-3 py-4 no-scrollbar scroll-smooth"
-            >
-              {categorias.map((cat) => (
-                <div key={cat.id} className="shrink-0">
-                  <button
-                    onClick={() => manejarClickCategoria(cat.id)}
-                    className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
-                      categoriaActiva === cat.id ? "bg-primary text-white" : "btn-outline btn-primary"
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <button onClick={() => scroll(200)} className="absolute -right-5 ml-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
-              <ChevronRight size={24} />
-            </button>
+              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+                <ChevronRight size={24} />
+              </button>
             </div>
           </nav>
 
-          <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4">
+          {/* CONTENEDOR DE RESERVAS: Se ha eliminado el grid de aquí para evitar conflictos */}
+          <div className="w-full max-w-[1400px] pt-4">
             {loading ? (
-              <div className="flex justify-center py-10"><span className="loading loading-spinner loading-lg text-primary"></span></div>
-            ) : (
-              <div className="grid lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
-                <TableReservations
-                  search={search}
-                  categoriaId={categoriaActiva}
-                  servicios={servicios}
-                />
+              <div className="flex justify-center py-10">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
               </div>
+            ) : (
+              <TableReservations
+                search={search}
+                categoriaId={categoriaActiva}
+                servicios={servicios}
+              />
             )}
           </div>
         </div>

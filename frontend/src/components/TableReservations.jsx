@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -8,15 +8,21 @@ import '../style/App.css';
 
 function TableReservations({ search, categoriaId, servicios }) {
     const { t, i18n } = useTranslation('servicios');
-    const [servicioExpandido, setServicioExpandido] = useState(null);
-    const filtroBusqueda = (search || '').toLowerCase();
-    const lang = i18n.language?.split('-')[0] || 'es';
-
+    const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
     const token = localStorage.getItem("token");
     const location = useLocation();
-        const navigate = useNavigate();
+    const navigate = useNavigate();
+    const lang = i18n.language?.split('-')[0] || 'es';
 
-    // Lógica para colorear la dificultad (Frontend)
+    const serviciosFiltrados = useMemo(() => {
+        const filtro = (search || '').toLowerCase();
+        return (servicios || []).filter((s) => {
+            const coincideNombre = s.name?.toLowerCase().includes(filtro);
+            const coincideCat = !categoriaId || s.category_id === categoriaId;
+            return coincideNombre && coincideCat;
+        });
+    }, [servicios, search, categoriaId]);
+
     const getDifficultyColor = (level) => {
         switch (level) {
             case 'low': return 'text-green-500';
@@ -26,12 +32,7 @@ function TableReservations({ search, categoriaId, servicios }) {
         }
     };
 
-    // Simulación de estados para el calendario
-    const datosReservas = {
-        "2026-01-20": "lleno",
-        "2026-01-21": "medio",
-        "2026-01-22": "disponible",
-    };
+    const datosReservas = { "2026-01-20": "lleno", "2026-01-21": "medio", "2026-01-22": "disponible" };
 
     const obtenerClaseDia = ({ date, view }) => {
         if (view === 'month') {
@@ -44,213 +45,166 @@ function TableReservations({ search, categoriaId, servicios }) {
         return null;
     };
 
-    const serviciosFiltrados = servicios.filter((s) => {
-        const coincideNombre = s.name?.toLowerCase().includes(filtroBusqueda);
-        const coincideCat = !categoriaId || s.category_id === categoriaId;
-        return coincideNombre && coincideCat;
-    });
+    const abrirModal = (servicio) => {
+        setServicioSeleccionado(servicio);
+        document.getElementById('modal_reserva_unico').showModal();
+    };
 
     return (
-        <>
-            {serviciosFiltrados.map((servicio) => (
-                <div
-                    key={servicio.id}
-                    className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 w-80 flex flex-col p-4"
-                >
-                    {/* IMAGEN */}
-                    <div className="relative mb-4">
-                        <img
-                            src={servicio.image_url}
-                            alt={servicio.name}
-                            className="h-40 w-full object-cover rounded-xl"
-                        />
-
-                        {/* DURACIÓN DISCRETA */}
-                        <span className="absolute top-2 right-2 text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded-full">
-                            {servicio.duration}
-                        </span>
-                    </div>
-
-                    {/* CONTENIDO */}
-                    <h2 className="text-lg font-bold mb-1 text-gray-900">
-                        {servicio.name}
-                    </h2>
-
-                    <p className="text-sm text-gray-500 mb-3 leading-relaxed">
-                        {servicio.description}
-                    </p>
-
-                    {/* DIFICULTAD */}
-                    <p className="text-xs mb-4">
-                        <span className="font-semibold">{t('difficulty')}:</span>{" "}
-                        <span className={`font-semibold ${getDifficultyColor(servicio.difficulty)}`}>
-                            {t(`levels.${servicio.difficulty}`)}
-                        </span>
-                    </p>
-
-                    {/* FOOTER */}
-                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-                        <span className="text-2xl font-extrabold text-orange-500">
-                            {servicio.price}€
-                        </span>
-
-                        <button
-                            className="btn btn-primary btn-sm rounded-full px-6"
-                            onClick={() => {
-                                setServicioExpandido(servicio.id);
-                                document.getElementById(`modal_${servicio.id}`).showModal();
-                            }}
-                        >
-                            {t('book')}
-                        </button>
-                    </div>
-
-                    {/* MODAL */}
-                    <dialog
-                        id={`modal_${servicio.id}`}
-                        className="modal modal-bottom sm:modal-middle"
+        <div className="w-full">
+            {/* GRID INTERNO: Controla las tarjetas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
+                {serviciosFiltrados.map((servicio) => (
+                    <div
+                        key={servicio.id}
+                        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 w-full max-w-[320px] flex flex-col p-4 border border-gray-100"
                     >
-                        <div className="modal-box max-w-lg rounded-2xl shadow-xl">
-                            {/* HEADER */}
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-2xl font-bold text-primary">
-                                    {t('bookTitle')}
-                                </h3>
-                                <span className="badge badge-outline">
-                                    {servicio.name}
-                                </span>
-                            </div>
-
-                            {/* VEHÍCULO */}
-                            <div className="form-control mb-5">
-                                <label className="label font-semibold">
-                                    {t('vehicleQuestion')}
-                                </label>
-                                <select className="select select-bordered">
-                                    <option disabled selected>
-                                        {t('selectVehicle')}
-                                    </option>
-                                    <option>Mi Toyota Corolla</option>
-                                </select>
-                            </div>
-
-                            {/* CALENDARIO */}
-                            <div className="bg-base-200 rounded-xl p-4 mb-4">
-                                <label className="label font-semibold">
-                                    {t('selectDate')}
-                                </label>
-                                <Calendar
-                                    tileClassName={obtenerClaseDia}
-                                    className="custom-calendar mx-auto"
-                                    locale={lang === 'es' ? 'es-ES' : 'en-US'}
-                                />
-                            </div>
-
-                            {/* LEYENDA */}
-                            <div className="grid grid-cols-3 gap-3 text-xs mb-6 text-center">
-                                <div className="flex items-center justify-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                                    {t('lowDemand')}
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-                                    {t('mediumDemand')}
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                                    {t('highDemand')}
-                                </div>
+                        <div className="relative mb-4">
+                            <img
+                                src={servicio.image_url}
+                                alt={servicio.name}
+                                className="h-44 w-full object-cover rounded-xl"
+                            />
+                            <span className="absolute top-2 right-2 text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded-full">
+                                {servicio.duration}
+                            </span>
                         </div>
-                        <div>
 
-                                {token ?
+                        <div className="flex flex-col grow">
+                            <h2 className="text-lg font-bold mb-2 text-gray-900 line-clamp-1">{servicio.name}</h2>
+                            <p className="text-sm text-gray-500 mb-4 line-clamp-3 h-14">{servicio.description}</p>
+
+                            <div className="mt-auto">
+                                <p className="text-xs mb-4">
+                                    <span className="font-semibold">{t('difficulty')}:</span>{" "}
+                                    <span className={`font-semibold ${getDifficultyColor(servicio.difficulty)}`}>
+                                        {t(`levels.${servicio.difficulty}`)}
+                                    </span>
+                                </p>
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <span className="text-2xl font-extrabold text-orange-500">{servicio.price}€</span>
                                     <button
-                                        className="btn btn-sm btn-primary text-white"
-                                        onClick={() => {
-                                            setServicioExpandido(servicio.id);
-                                            document.getElementById(`modal_${servicio.id}`).showModal();
-                                        }}
+                                        className="btn btn-primary btn-sm rounded-full px-6 text-white"
+                                        onClick={() => abrirModal(servicio)}
                                     >
                                         {t('book')}
                                     </button>
-                                    :
-                                    <button
-                                        className="btn btn-sm btn-primary text-white"
-                                        onClick={() => navigate('/Login', { state: { from: location } })}
-                                    >
-                                        {t('noToken')}
-                                    </button>
-                                }
-                            
-
-                                {/* MODAL DINÁMICO */}
-                                <dialog id={`modal_${servicio.id}`} className="modal modal-bottom sm:modal-middle text-left">
-                                    <div className="modal-box max-w-md bg-base-100 p-6">
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h3 className="font-bold text-2xl text-primary">{t('bookTitle')}</h3>
-                                            <span className="badge badge-ghost p-3">{servicio.name}</span>
-                                        </div>
-
-                                        <div className="form-control w-full mb-6">
-                                            <label className="label">
-                                                <span className="label-text font-semibold">{t('vehicleQuestion')}</span>
-                                            </label>
-                                            <select className="select select-bordered w-full bg-base-200" defaultValue={0}>
-                                                <option disabled value={0}>{t('selectVehicle')}</option>
-                                                <option>Mi Toyota Corolla</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="flex flex-col items-center bg-base-200 rounded-xl p-4 mb-4">
-                                            <label className="label self-start pb-2">
-                                                <span className="label-text font-semibold">{t('selectDate')}</span>
-                                            </label>
-                                            <Calendar
-                                                tileClassName={obtenerClaseDia}
-                                                className="custom-calendar"
-                                                locale={lang === 'es' ? 'es-ES' : 'en-US'}
-                                            />
-                                        </div>
-
-                                        {/* Leyenda de colores basada en tu JSON */}
-                                        <div className="grid grid-cols-1 gap-1 mb-4 text-xs">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                <span>{t('lowDemand')}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                                                <span>{t('highDemand')}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="modal-action">
-                                            <form method="dialog" className="flex gap-2 w-full">
-                                                <button className="btn flex-1" onClick={() => setServicioExpandido(null)}>{t('cancel')}</button>
-                                                <button className="btn btn-primary flex-1">{t('confirm')}</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <form method="dialog" className="modal-backdrop">
-                                        <button onClick={() => setServicioExpandido(null)}>close</button>
-                                    </form>
-                                </dialog>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                ))}
+            </div>
 
-                        {/* BACKDROP */}
-                        <form method="dialog" className="modal-backdrop">
-                            <button onClick={() => setServicioExpandido(null)}>
-                                close
-                            </button>
-                        </form>
-                    </dialog>
+            {/* MODAL ÚNICO */}
+            <dialog id="modal_reserva_unico" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
+                <div className="modal-box max-w-lg p-0 overflow-y-auto max-h-[90vh] rounded-2xl bg-white shadow-2xl border border-gray-100 flex flex-col">
+
+                    {servicioSeleccionado ? (
+                        <>
+                            {/* HEADER - Sticky para que no se pierda al hacer scroll */}
+                            <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-6 py-5 border-b border-gray-100">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-extrabold text-2xl text-slate-800 tracking-tight">
+                                            {t('bookTitle')}
+                                        </h3>
+                                        <p className="text-xs text-slate-500 mt-0.5">Gestión de cita previa</p>
+                                    </div>
+                                    <button
+                                        className="btn btn-sm btn-circle btn-ghost"
+                                        onClick={() => document.getElementById('modal_reserva_unico').close()}
+                                    >✕</button>
+                                </div>
+                                <div className="mt-3">
+                                    <span className="badge badge-primary badge-outline font-bold px-3 py-3">
+                                        {servicioSeleccionado.name}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* CONTENIDO - El área que tendrá el scroll */}
+                            <div className="p-6 space-y-6">
+
+                                {/* Selección de Vehículo */}
+                                <div className="form-control w-full">
+                                    <label className="label">
+                                        <span className="label-text font-bold text-slate-700">{t('vehicleQuestion')}</span>
+                                    </label>
+                                    <select className="select select-bordered w-full bg-slate-50 focus:ring-2 focus:ring-primary/20 transition-all" defaultValue={0}>
+                                        <option disabled value={0}>{t('selectVehicle')}</option>
+                                        <option>Mi Toyota Corolla</option>
+                                        <option>Añadir nuevo vehículo...</option>
+                                    </select>
+                                </div>
+
+                                {/* Motivo de la visita */}
+                                <div className="form-control w-full">
+                                    <label className="label">
+                                        <span className="label-text font-bold text-slate-700">Motivo o detalles</span>
+                                    </label>
+                                    <textarea
+                                        placeholder="Describe brevemente qué necesita tu vehículo..."
+                                        className="textarea textarea-bordered w-full bg-slate-50 focus:ring-2 focus:ring-primary/20 h-24"
+                                    />
+                                </div>
+
+                                {/* Sección Calendario */}
+                                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                                    <label className="label pt-0">
+                                        <span className="label-text font-bold text-slate-700">{t('selectDate')}</span>
+                                    </label>
+
+                                    <div className="bg-white rounded-xl shadow-sm p-2 mb-4 border border-gray-100 overflow-hidden">
+                                        <Calendar
+                                            tileClassName={obtenerClaseDia}
+                                            locale={lang === 'es' ? 'es-ES' : 'en-US'}
+                                            className="mx-auto border-none"
+                                        />
+                                    </div>
+
+                                    {/* Leyenda de Disponibilidad */}
+                                    <div className="flex flex-wrap justify-center gap-4 text-[10px] uppercase font-bold tracking-widest text-slate-500">
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-200"></div>
+                                            <span>{t('lowDemand')}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
+                                            <span>{t('mediumDemand')}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-200"></div>
+                                            <span>{t('highDemand')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* FOOTER - Sticky en la parte inferior */}
+                            <div className="sticky bottom-0 z-20 bg-white/90 backdrop-blur-md p-6 border-t border-gray-100">
+                                <form method="dialog" className="flex gap-3 w-full">
+                                    <button
+                                        className="btn btn-ghost flex-1 font-bold text-slate-500"
+                                        onClick={() => setServicioSeleccionado(null)}
+                                    >
+                                        {t('cancel')}
+                                    </button>
+                                    <button className="btn btn-primary flex-2 text-white shadow-lg shadow-primary/30 font-bold">
+                                        {token ? t('confirm') : t('noToken')}
+                                    </button>
+                                </form>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="py-24 flex flex-col items-center justify-center gap-4">
+                            <span className="loading loading-ring loading-lg text-primary"></span>
+                            <p className="text-slate-400 font-medium animate-pulse uppercase tracking-widest text-sm">Cargando servicio...</p>
+                        </div>
+                    )}
                 </div>
-            ))}
-
-
-
-        </>
+            </dialog>
+        </div>
     );
 }
 

@@ -2,8 +2,6 @@ import { z } from "zod";
 
 const EstadoCompra = z.enum(['pendiente', 'pagado', 'en_proceso', 'enviado', 'entregado', 'cancelado']);
 
-import { z } from "zod";
-
 export const validateCompra = (data) => {
   const schema = z.object({
     id_producto: z.number().int().positive("ID de producto no válido"),

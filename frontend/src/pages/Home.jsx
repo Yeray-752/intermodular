@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import Footer from "../components/Principal/Footer";
 import Header from "../components/Principal/Header";
 import { useState } from 'react';
@@ -20,10 +20,16 @@ export default function Home() {
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mb-20 md:mb-28">
           <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
-            <h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
-              dangerouslySetInnerHTML={{ __html: t("heroTitle") }}
-            />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <Trans
+                i18nKey="heroTitle"
+                components={{
+                  0: <span className=" bg-amber-500 text-primary" />,
+                  1: <span className="text-secondary" />
+                }}
+              />
+            </h1>
+
             <p className="text-lg md:text-xl text-base-content/80 leading-relaxed">
               {t("heroDescription")}
             </p>
@@ -49,8 +55,15 @@ export default function Home() {
             <div className="text-center mb-12 md:mb-20">
               <h2
                 className="text-3xl md:text-4xl font-bold mb-4"
-                dangerouslySetInnerHTML={{ __html: t("offersTitle") }}
-              />
+              >
+                <Trans
+                  i18nKey="offersTitle"
+                  components={{
+                    0: <span className=" text-base-content" />,
+                    1: <span className="text-primary" />
+                  }}
+                />
+              </h2>
               <p className="text-base-content/80 text-lg max-w-2xl mx-auto">
                 {t("offersDescription")}
               </p>
@@ -137,10 +150,15 @@ export default function Home() {
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              <h2
-                className="text-3xl md:text-4xl font-bold leading-tight"
-                dangerouslySetInnerHTML={{ __html: t("aboutUsTitle") }}
-              />
+              <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+                <Trans
+                  i18nKey="aboutUsTitle"
+                  components={{
+                    0: <span className="text-secondary" />,
+                    1: <span className="text-primary" />
+                  }}
+                />
+              </h2>
               <p className="text-base-content text-lg leading-relaxed">
                 {t("aboutUsDescription")}
               </p>

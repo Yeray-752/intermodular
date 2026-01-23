@@ -11,7 +11,7 @@ function Login() {
     const navigate = useNavigate();
     const location = useLocation();
     const [errors, setErrors] = useState({});
-    const [captchaToken, setCaptchaToken] = useState(null);
+
     const { login } = useContext(AuthContext);
 
     const { t } = useTranslation("login");
@@ -19,10 +19,6 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        if (!captchaToken) {
-            alert("Por favor, completa la verificación de seguridad.");
-            return;
-        }
 
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
@@ -119,25 +115,10 @@ function Login() {
                             </span>
                         </fieldset>
 
-                        <div className="flex justify-center my-2">
-                            <Turnstile
-                                sitekey="3x00000000000000000000FF" // Llave de prueba (cámbiala en producción)
-                                onVerify={(token) => setCaptchaToken(token)}
-                                onExpire={() => setCaptchaToken(null)}
-                                onError={() => setCaptchaToken(null)}
-                            />
-                        </div>
+                       
 
                         <button type="submit" className="btn btn-neutral mt-2">
                             {t("btn_submit")}
-                        </button>
-
-                        <button
-                            type="reset"
-                            className="btn btn-ghost mt-0"
-                            onClick={() => setCaptchaToken(null)}
-                        >
-                            {t("btn_reset")}
                         </button>
 
                         <Link to="/registro" className="link link-hover mt-2 text-center">
