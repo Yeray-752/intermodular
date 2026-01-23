@@ -1,4 +1,3 @@
-// middlewares/vehiculo.middleware.js
 import db from '../config/db.js';
 
 export const verificarPropiedadVehiculo = async (req, res, next) => {

@@ -14,11 +14,10 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
+//Esto evita que alguien se ponga "admin" en el local storage y se pueda meter con permisos de admin
 export const isAdmin = (req, res, next) => {
-  // Este middleware se ejecuta DESPUÉS de verifyToken,
-  // por lo que req.user ya existe y tiene el rol.
   if (req.user && req.user.rol === 'admin') {
-    next(); // Es admin, puede pasar
+    next();
   } else {
     res.status(403).json({ error: "Acceso denegado: Se requieren permisos de administrador" });
   }

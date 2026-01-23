@@ -1,4 +1,5 @@
 import db from "../db.js";
+import { validateCompra } from "../validators/buyValidator.js";
 
 export const getCompras = async (req, res) => {
     try {
@@ -10,15 +11,29 @@ export const getCompras = async (req, res) => {
 };
 
 export const createCompra = async (req, res) => {
-    const { id_usuario, id_producto, fecha, estado } = req.body;
+    const validation = validateCompra(req.body);
+
+    if (!validation.success) {
+        return res.status(400).json({ errors: validation.error.flatten().fieldErrors });
+    }
+
+    const id_user = req.user.id; 
+    
+    const { id_producto, fecha, estado } = validation.data;
+
     try {
         const [result] = await db.query(
             'INSERT INTO Compra (id_usuario, id_producto, fecha, estado) VALUES (?, ?, ?, ?)',
-            [id_usuario, id_producto, fecha, estado || 'pendiente']
+            [id_user, id_producto, fecha, estado || 'pendiente']
         );
-        res.status(201).json({ id: result.insertId, message: "Compra creada con éxito" });
+        
+        res.status(201).json({ 
+            message: "Compra realizada con éxito", 
+            id_compra: result.insertId 
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error al crear compra", error });
+        console.error(error);
+        res.status(500).json({ message: "Error al procesar la compra" });
     }
 };
 
