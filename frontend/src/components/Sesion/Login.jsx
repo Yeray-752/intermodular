@@ -1,7 +1,7 @@
-import { useNavigate, Link, useLocation } from "react-router-dom"; // MODIFICADO: Importa useLocation
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { loginSchema } from "../../schemas/loginSchema"
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import Turnstile from "react-turnstile";
 import fondo from "/img/web/fondo_log.webp";
 import { AuthContext } from "../../context/AuthContext";
@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
     const navigate = useNavigate();
-    const location = useLocation(); // MODIFICADO: Captura el estado de la navegación
+    const location = useLocation();
     const [errors, setErrors] = useState({});
     const [captchaToken, setCaptchaToken] = useState(null);
     const { login } = useContext(AuthContext);
@@ -63,18 +63,14 @@ function Login() {
             // El Header cambiará automáticamente y las rutas protegidas te dejarán pasar
             navigate("/");
 
-            } catch (error) {
-                console.error("Error de conexión:", error);
-                setErrors({ general: ["No se pudo conectar con el servidor"] });
-            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            setErrors({ general: ["No se pudo conectar con el servidor"] });
         }
-     
+    }
 
 
-
-return (
-    // ... El resto de tu JSX permanece igual
-    <div>
+    return (
         <div>
             <div
                 className="w-screen h-screen flex justify-center items-center bg-cover bg-center relative"
@@ -123,7 +119,6 @@ return (
                             </span>
                         </fieldset>
 
-                        {/* 4. Widget de Cloudflare Turnstile */}
                         <div className="flex justify-center my-2">
                             <Turnstile
                                 sitekey="3x00000000000000000000FF" // Llave de prueba (cámbiala en producción)
@@ -151,9 +146,9 @@ return (
                     </form>
                 </div>
             </div>
-        </div >
-    </div>
-)
-    }
+        </div>
+
+    )
+}
 
 export default Login;

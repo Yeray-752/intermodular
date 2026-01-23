@@ -1,6 +1,7 @@
 import db from "../db.js";
+import { validateCompra } from "../validators/buyValidator.js";
 
-const getCompras = async (req, res) => {
+export const getCompras = async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM Compra');
         res.json(rows);
@@ -9,20 +10,34 @@ const getCompras = async (req, res) => {
     }
 };
 
-const createCompra = async (req, res) => {
-    const { id_usuario, id_producto, fecha, estado } = req.body;
+export const createCompra = async (req, res) => {
+    const validation = validateCompra(req.body);
+
+    if (!validation.success) {
+        return res.status(400).json({ errors: validation.error.flatten().fieldErrors });
+    }
+
+    const id_user = req.user.id; 
+    
+    const { id_producto, fecha, estado } = validation.data;
+
     try {
         const [result] = await db.query(
             'INSERT INTO Compra (id_usuario, id_producto, fecha, estado) VALUES (?, ?, ?, ?)',
-            [id_usuario, id_producto, fecha, estado || 'pendiente']
+            [id_user, id_producto, fecha, estado || 'pendiente']
         );
-        res.status(201).json({ id: result.insertId, message: "Compra creada con éxito" });
+        
+        res.status(201).json({ 
+            message: "Compra realizada con éxito", 
+            id_compra: result.insertId 
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error al crear compra", error });
+        console.error(error);
+        res.status(500).json({ message: "Error al procesar la compra" });
     }
 };
 
-const updateEstadoCompra = async (req, res) => {
+export const updateEstadoCompra = async (req, res) => {
     const { id } = req.params;
     const { estado } = req.body;
 
@@ -43,5 +58,3 @@ const updateEstadoCompra = async (req, res) => {
         res.status(500).json({ message: "Error al actualizar el estado", error });
     }
 };
-
-export default { getCompras, createCompra, updateEstadoCompra };
