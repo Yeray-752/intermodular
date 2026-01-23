@@ -9,7 +9,12 @@
     "updateProfileData": "Update your account and workshop info",
     "nameWorkshop": "Full Name / Workshop",
     "email": "Email",
+<<<<<<< HEAD
+    "phone": "Contact Phone",
+    "location": "Streat",
+=======
     "location": "Location",
+>>>>>>> origin/database
     "theme": "Theme",
     "saveChanges": "Save Changes",
     "addCar": "Add Car",
@@ -36,7 +41,12 @@
     "updateProfileData": "Actualiza los datos de tu cuenta y taller",
     "nameWorkshop": "Nombre Completo / Taller",
     "email": "Correo Electrónico",
+<<<<<<< HEAD
+    "phone": "Teléfono de Contacto",
+    "location": "Calle",
+=======
     "location": "Ubicación",
+>>>>>>> origin/database
     "theme": "Tema",
     "saveChanges": "Guardar Cambios",
     "addCar": "Añadir Vehículo",

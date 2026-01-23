@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import '../App.css'
+import '../style/App.css'
 import { useNavigate } from 'react-router'
-import Login from '../components/Login'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import Login from '../components/Sesion/Login'
+import Header from '../components/Principal/Header'
+import Footer from '../components/Principal/Footer'
 
 function App() {
   const [count, setCount] = useState(0)

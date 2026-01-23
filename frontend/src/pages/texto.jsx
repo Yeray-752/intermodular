@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/Principal/Header';
+import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
 
 function Legales() {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import fondo from "/img/web/fondo_Registro.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { registerSchema } from "../schemas/registerSchema";
+import { registerSchema } from "../../schemas/registerSchema";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ function SignUp() {
 
     try {
       // 2. Enviar a la API (Ruta que creamos con transacción)
-      const response = await fetch("https://yeray.informaticamajada.es/api/users/register", {
+      const response = await fetch("http://localhost:3000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

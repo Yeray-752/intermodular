@@ -1,21 +1,75 @@
 import { useNavigate, Link, useLocation } from "react-router-dom"; // MODIFICADO: Importa useLocation
 import { useTranslation } from "react-i18next";
+<<<<<<< HEAD:frontend/src/components/Sesion/Login.jsx
+import { loginSchema } from "../../schemas/loginSchema"
+import { useContext, useState } from "react";
+// Importamos el componente de la librería que instalaste
+=======
 import { loginSchema } from "../schemas/loginSchema"
 import { useState } from "react";
+>>>>>>> origin/database:frontend/src/components/Login.jsx
 import Turnstile from "react-turnstile";
 import fondo from "/img/web/fondo_log.webp";
+import { AuthContext } from "../../context/AuthContext";
+
 
 function Login() {
     const navigate = useNavigate();
     const location = useLocation(); // MODIFICADO: Captura el estado de la navegación
     const [errors, setErrors] = useState({});
     const [captchaToken, setCaptchaToken] = useState(null);
+    const { login } = useContext(AuthContext);
 
     const { t } = useTranslation("login");
 
     const handleLogin = async (e) => {
         e.preventDefault();
 
+<<<<<<< HEAD:frontend/src/components/Sesion/Login.jsx
+    if (!captchaToken) {
+        alert("Por favor, completa la verificación de seguridad.");
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    const result = loginSchema.safeParse(data);
+    if (!result.success) {
+        setErrors(result.error.flatten().fieldErrors);
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/api/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: data.email,
+                contraseña: data.password 
+            }),
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            setErrors({ general: [json.error || "Error al iniciar sesión"] });
+            return;
+        }
+
+        // 1. Guardamos en el almacenamiento persistente
+        localStorage.setItem("token", json.token);
+        localStorage.setItem("rol", json.rol);
+
+        console.log("Login exitoso, actualizando contexto...");
+
+        // 2. ¡IMPORTANTE! Actualizamos el estado GLOBAL con el token real (json.token)
+        login(json.token); 
+
+        // 3. Ahora que el contexto tiene al usuario, navegamos
+        // El Header cambiará automáticamente y las rutas protegidas te dejarán pasar
+        navigate("/"); 
+=======
         if (!captchaToken) {
             alert("Por favor, completa la verificación de seguridad.");
             return;
@@ -29,6 +83,7 @@ function Login() {
             setErrors(result.error.flatten().fieldErrors);
             return;
         }
+>>>>>>> origin/database:frontend/src/components/Login.jsx
 
         try {
             const response = await fetch("http://localhost:3000/api/users/login", {

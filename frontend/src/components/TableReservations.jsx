@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import '../CalendarioCustom.css';
-import '../App.css';
+import '../style/CalendarioCustom.css';
+import '../style/App.css';
 
 function TableReservations({ search, categoriaId, servicios }) {
     const { t, i18n } = useTranslation('servicios');
@@ -52,36 +52,116 @@ function TableReservations({ search, categoriaId, servicios }) {
 
     return (
         <>
-            {serviciosFiltrados.map(servicio => (
-                <div key={servicio.id} className='card bg-base-100 shadow-xl h-full w-80 flex flex-col border border-base-300'>
-                    <figure className="h-[140px] w-full p-2">
+            {serviciosFiltrados.map((servicio) => (
+                <div
+                    key={servicio.id}
+                    className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 w-80 flex flex-col p-4"
+                >
+                    {/* IMAGEN */}
+                    <div className="relative mb-4">
                         <img
                             src={servicio.image_url}
                             alt={servicio.name}
-                            className="h-full w-full object-cover rounded-xl"
+                            className="h-40 w-full object-cover rounded-xl"
                         />
-                    </figure>
 
-                    <div className="card-body p-4 grow flex flex-col items-center text-center">
-                        <h2 className="card-title text-lg mb-2 font-bold">{servicio.name}</h2>
-                        <p className="text-sm mb-3 grow line-clamp-3 text-base-content/70">{servicio.description}</p>
+                        {/* DURACIÓN DISCRETA */}
+                        <span className="absolute top-2 right-2 text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded-full">
+                            {servicio.duration}
+                        </span>
+                    </div>
 
-                        <div className="mt-auto border-t border-base-300 pt-3 w-full">
-                            <div className="flex justify-between text-xs mb-2">
-                                <p><span className="font-semibold">{t('duration')}:</span> {servicio.duration}</p>
-                                {/* Dificultad: La clave es 'low'/'medium'/'high' para el color y la traducción */}
-                                <p>
-                                    <span className="font-semibold">{t('difficulty')}:</span>{" "}
-                                    <span className={`font-bold ${getDifficultyColor(servicio.difficulty)}`}>
-                                        {t(`levels.${servicio.difficulty}`)}
-                                    </span>
-                                </p>
+                    {/* CONTENIDO */}
+                    <h2 className="text-lg font-bold mb-1 text-gray-900">
+                        {servicio.name}
+                    </h2>
+
+                    <p className="text-sm text-gray-500 mb-3 leading-relaxed">
+                        {servicio.description}
+                    </p>
+
+                    {/* DIFICULTAD */}
+                    <p className="text-xs mb-4">
+                        <span className="font-semibold">{t('difficulty')}:</span>{" "}
+                        <span className={`font-semibold ${getDifficultyColor(servicio.difficulty)}`}>
+                            {t(`levels.${servicio.difficulty}`)}
+                        </span>
+                    </p>
+
+                    {/* FOOTER */}
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span className="text-2xl font-extrabold text-orange-500">
+                            {servicio.price}€
+                        </span>
+
+                        <button
+                            className="btn btn-primary btn-sm rounded-full px-6"
+                            onClick={() => {
+                                setServicioExpandido(servicio.id);
+                                document.getElementById(`modal_${servicio.id}`).showModal();
+                            }}
+                        >
+                            {t('book')}
+                        </button>
+                    </div>
+
+                    {/* MODAL */}
+                    <dialog
+                        id={`modal_${servicio.id}`}
+                        className="modal modal-bottom sm:modal-middle"
+                    >
+                        <div className="modal-box max-w-lg rounded-2xl shadow-xl">
+                            {/* HEADER */}
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-primary">
+                                    {t('bookTitle')}
+                                </h3>
+                                <span className="badge badge-outline">
+                                    {servicio.name}
+                                </span>
                             </div>
 
-                            <div className="card-actions justify-between items-center">
-                                <div className="text-xl font-extrabold text-orange-600">
-                                    {servicio.price}€
+                            {/* VEHÍCULO */}
+                            <div className="form-control mb-5">
+                                <label className="label font-semibold">
+                                    {t('vehicleQuestion')}
+                                </label>
+                                <select className="select select-bordered">
+                                    <option disabled selected>
+                                        {t('selectVehicle')}
+                                    </option>
+                                    <option>Mi Toyota Corolla</option>
+                                </select>
+                            </div>
+
+                            {/* CALENDARIO */}
+                            <div className="bg-base-200 rounded-xl p-4 mb-4">
+                                <label className="label font-semibold">
+                                    {t('selectDate')}
+                                </label>
+                                <Calendar
+                                    tileClassName={obtenerClaseDia}
+                                    className="custom-calendar mx-auto"
+                                    locale={lang === 'es' ? 'es-ES' : 'en-US'}
+                                />
+                            </div>
+
+                            {/* LEYENDA */}
+                            <div className="grid grid-cols-3 gap-3 text-xs mb-6 text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                                    {t('lowDemand')}
                                 </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    {t('mediumDemand')}
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                                    {t('highDemand')}
+                                </div>
+                        </div>
+                        <div>
 
                                 {token ?
                                     <button
@@ -101,6 +181,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                         {t('noToken')}
                                     </button>
                                 }
+                            
 
                                 {/* MODAL DINÁMICO */}
                                 <dialog id={`modal_${servicio.id}`} className="modal modal-bottom sm:modal-middle text-left">
@@ -156,9 +237,19 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 </dialog>
                             </div>
                         </div>
-                    </div>
+
+                        {/* BACKDROP */}
+                        <form method="dialog" className="modal-backdrop">
+                            <button onClick={() => setServicioExpandido(null)}>
+                                close
+                            </button>
+                        </form>
+                    </dialog>
                 </div>
             ))}
+
+
+
         </>
     );
 }

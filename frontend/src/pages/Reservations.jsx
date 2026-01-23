@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Footer from '../components/Footer'
-import Header from '../components/Header'
+import Footer from '../components/Principal/Footer'
+import Header from '../components/Principal/Header'
 import TableReservations from '../components/TableReservations'
-import '../scroll.css';
+import '../style/scroll.css';
 
 function App() {
   // Usamos 'servicios' como namespace para que coincida con tu config de i18n
@@ -63,8 +63,11 @@ function App() {
 
           <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('categories')}</h1>
 
-          <nav className='relative mt-4 mb-5 w-full max-w-6xl px-10'>
-            <button onClick={() => scroll(-200)} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+          <nav className='space-x-1.5 mt-4 mb-5'>
+
+            <div className='relative group w-80 lg:w-225 2xl:w-290 max-w-6xl mx-auto px-10'>
+
+            <button onClick={() => scroll(-200)} className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
               <ChevronLeft size={24} />
             </button>
 
@@ -76,7 +79,7 @@ function App() {
                 <div key={cat.id} className="shrink-0">
                   <button
                     onClick={() => manejarClickCategoria(cat.id)}
-                    className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all ${
+                    className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
                       categoriaActiva === cat.id ? "bg-primary text-white" : "btn-outline btn-primary"
                     }`}
                   >
@@ -86,16 +89,17 @@ function App() {
               ))}
             </div>
 
-            <button onClick={() => scroll(200)} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
+            <button onClick={() => scroll(200)} className="absolute -right-5 ml-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
               <ChevronRight size={24} />
             </button>
+            </div>
           </nav>
 
-          <div className="w-full max-w-[1350px] pt-4">
+          <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4">
             {loading ? (
               <div className="flex justify-center py-10"><span className="loading loading-spinner loading-lg text-primary"></span></div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 justify-items-center">
+              <div className="grid lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
                 <TableReservations
                   search={search}
                   categoriaId={categoriaActiva}

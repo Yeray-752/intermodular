@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import Footer from "../components/Principal/Footer";
+import Header from "../components/Principal/Header";
 import { useState } from 'react';
 import ImagenPrincipal from "/img/web/taller.jpg";
 import { useNavigate } from "react-router-dom";

@@ -20,7 +20,7 @@ export const registerClient = async (req, res) => {
 
         // 2. Insertar en la tabla Cliente usando el ID recién creado
         await connection.query(
-            "INSERT INTO Cliente (id_usuario, nombre, apellidos, direccion) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO Cliente (id_usuario, nombre, apellidos, direccion) VALUES (?, ?, ?, ?)",
             [newUserId, nombre, apellidos, direccion]
         );
 
@@ -75,6 +75,10 @@ export const getClientProfile = async (req, res) => {
     // Ya no usamos req.params.id (URL)
     // Usamos req.user.id que el middleware de auth sacó del Token
     const userIdFromToken = req.user.id;
+
+    if (!req.user || !req.user.id) {
+            return res.status(401).json({ error: "Token no contiene ID de usuario" });
+        }
 
     try {
         const [rows] = await db.query(`
