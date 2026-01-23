@@ -3,7 +3,7 @@ import { validateCompra } from "../validators/buyValidator.js";
 
 export const getCompras = async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM Compra');
+        const [rows] = await db.query('SELECT * FROM pedido');
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: "Error al obtener compras", error });
@@ -23,7 +23,7 @@ export const createCompra = async (req, res) => {
 
     try {
         const [result] = await db.query(
-            'INSERT INTO Compra (id_usuario, id_producto, fecha, estado) VALUES (?, ?, ?, ?)',
+            'INSERT INTO pedido (id_usuario, id_producto, fecha, estado) VALUES (?, ?, ?, ?)',
             [id_user, id_producto, fecha, estado || 'pendiente']
         );
         
@@ -43,7 +43,7 @@ export const updateEstadoCompra = async (req, res) => {
 
     try {
         const [result] = await db.query(
-            'UPDATE Compra SET estado = ? WHERE id = ?',
+            'UPDATE pedido SET estado = ? WHERE id = ?',
             [estado, id]
         );
 
