@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../style/CalendarioCustom.css';
@@ -10,6 +11,10 @@ function TableReservations({ search, categoriaId, servicios }) {
     const [servicioExpandido, setServicioExpandido] = useState(null);
     const filtroBusqueda = (search || '').toLowerCase();
     const lang = i18n.language?.split('-')[0] || 'es';
+
+    const token = localStorage.getItem("token");
+    const location = useLocation();
+        const navigate = useNavigate();
 
     // Lógica para colorear la dificultad (Frontend)
     const getDifficultyColor = (level) => {
@@ -155,21 +160,81 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     <span className="w-3 h-3 rounded-full bg-red-500"></span>
                                     {t('highDemand')}
                                 </div>
-                            </div>
+                        </div>
+                        <div>
 
-                            {/* ACCIONES */}
-                            <div className="modal-action">
-                                <form method="dialog" className="flex w-full gap-3">
+                                {token ?
                                     <button
-                                        className="btn btn-outline flex-1"
-                                        onClick={() => setServicioExpandido(null)}
+                                        className="btn btn-sm btn-primary text-white"
+                                        onClick={() => {
+                                            setServicioExpandido(servicio.id);
+                                            document.getElementById(`modal_${servicio.id}`).showModal();
+                                        }}
                                     >
-                                        {t('cancel')}
+                                        {t('book')}
                                     </button>
-                                    <button className="btn btn-primary flex-1">
-                                        {t('confirm')}
+                                    :
+                                    <button
+                                        className="btn btn-sm btn-primary text-white"
+                                        onClick={() => navigate('/Login', { state: { from: location } })}
+                                    >
+                                        {t('noToken')}
                                     </button>
-                                </form>
+                                }
+                            
+
+                                {/* MODAL DINÁMICO */}
+                                <dialog id={`modal_${servicio.id}`} className="modal modal-bottom sm:modal-middle text-left">
+                                    <div className="modal-box max-w-md bg-base-100 p-6">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h3 className="font-bold text-2xl text-primary">{t('bookTitle')}</h3>
+                                            <span className="badge badge-ghost p-3">{servicio.name}</span>
+                                        </div>
+
+                                        <div className="form-control w-full mb-6">
+                                            <label className="label">
+                                                <span className="label-text font-semibold">{t('vehicleQuestion')}</span>
+                                            </label>
+                                            <select className="select select-bordered w-full bg-base-200" defaultValue={0}>
+                                                <option disabled value={0}>{t('selectVehicle')}</option>
+                                                <option>Mi Toyota Corolla</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="flex flex-col items-center bg-base-200 rounded-xl p-4 mb-4">
+                                            <label className="label self-start pb-2">
+                                                <span className="label-text font-semibold">{t('selectDate')}</span>
+                                            </label>
+                                            <Calendar
+                                                tileClassName={obtenerClaseDia}
+                                                className="custom-calendar"
+                                                locale={lang === 'es' ? 'es-ES' : 'en-US'}
+                                            />
+                                        </div>
+
+                                        {/* Leyenda de colores basada en tu JSON */}
+                                        <div className="grid grid-cols-1 gap-1 mb-4 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                <span>{t('lowDemand')}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                                <span>{t('highDemand')}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="modal-action">
+                                            <form method="dialog" className="flex gap-2 w-full">
+                                                <button className="btn flex-1" onClick={() => setServicioExpandido(null)}>{t('cancel')}</button>
+                                                <button className="btn btn-primary flex-1">{t('confirm')}</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <form method="dialog" className="modal-backdrop">
+                                        <button onClick={() => setServicioExpandido(null)}>close</button>
+                                    </form>
+                                </dialog>
                             </div>
                         </div>
 

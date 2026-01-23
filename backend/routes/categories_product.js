@@ -3,8 +3,8 @@ import { getCategories, createCategory,deleteCategory } from '../controllers/cat
 
 const router = Router();
 
-router.get('/', getCategories);    // GET /api/categories
-router.post('/', createCategory);  // POST /api/categories
+router.get('/', getCategories);
+router.post('/', createCategory);
 router.delete('/:id', deleteCategory);
 
 export default router;

@@ -29,7 +29,8 @@
       "errorValidation": "Por favor, corrige los errores en el formulario",
       "success": "¡Compra realizada con éxito!"
     },
-    "back": "Volver"
+    "back": "Volver",
+    "noToken": "Inicie sesión para comprar"
   },
   "en": {
     "categoriesTitle": "Categories",
@@ -61,6 +62,7 @@
       "errorValidation": "Please correct the errors in the form",
       "success": "Purchase completed successfully!"
     },
-    "back": "Go Back"
+    "back": "Go Back",
+    "noToken": "Log in to buy"
   }
 }
