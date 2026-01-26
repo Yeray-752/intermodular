@@ -49,6 +49,9 @@ function TableReservations({ search, categoriaId, servicios }) {
         setServicioSeleccionado(servicio);
         document.getElementById('modal_reserva_unico').showModal();
     };
+    const cerrarModal = () => {
+        document.getElementById('modal_reserva_unico').close();
+    };
 
     return (
         <div className="w-full">
@@ -129,7 +132,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 {/* Selección de Vehículo */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold text-slate-700">{t('vehicleQuestion')}</span>
+                                        <span className="label-text font-bold mb-3 text-slate-700">{t('vehicleQuestion')}</span>
                                     </label>
                                     <select className="select select-bordered w-full bg-slate-50 focus:ring-2 focus:ring-primary/20 transition-all" defaultValue={0}>
                                         <option disabled value={0}>{t('selectVehicle')}</option>
@@ -141,7 +144,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 {/* Motivo de la visita */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold text-slate-700">Motivo o detalles</span>
+                                        <span className="label-text font-bold mb-3 text-slate-700">Motivo o detalles</span>
                                     </label>
                                     <textarea
                                         placeholder="Describe brevemente qué necesita tu vehículo..."
@@ -152,7 +155,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 {/* Sección Calendario */}
                                 <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                                     <label className="label pt-0">
-                                        <span className="label-text font-bold text-slate-700">{t('selectDate')}</span>
+                                        <span className="label-text font-bold mb-2 text-slate-700">{t('selectDate')}</span>
                                     </label>
 
                                     <div className="bg-white rounded-xl shadow-sm p-2 mb-4 border border-gray-100 overflow-hidden">
@@ -186,7 +189,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 <form method="dialog" className="flex gap-3 w-full">
                                     <button
                                         className="btn btn-ghost flex-1 font-bold text-slate-500"
-                                        onClick={() => setServicioSeleccionado(null)}
+                                        onClick={() => cerrarModal()}
                                     >
                                         {t('cancel')}
                                     </button>

@@ -14,12 +14,12 @@ function Producto() {
   return (
     <>
       <Header />
-      
-      <div className='bg-base-200'>
-        <ProductoInfo />
-        <Valorations />
-        <Footer />
-      </div>
+
+
+      <ProductoInfo />
+      <Valorations />
+      <Footer />
+
 
 
 

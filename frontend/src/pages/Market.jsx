@@ -7,34 +7,24 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function App() {
-
   const { t, i18n } = useTranslation('market');
-  // Estados para datos de la API
   const [listaProductos, setListaProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
-
-  // Estados para filtros y UI
   const [search, setSearch] = useState('');
-  const [categoriaActiva, setCategoriaActiva] = useState(null); // Ahora guardaremos el ID (int)
+  const [categoriaActiva, setCategoriaActiva] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // useEffect para cargar Categorías y Productos simultáneamente
   useEffect(() => {
     setLoading(true);
-
     const fetchDatos = async () => {
       try {
         const headers = { 'accept-language': i18n.language };
-
-        // Lanzamos ambas peticiones a la vez
         const [resProd, resCat] = await Promise.all([
           fetch('https://yeray.informaticamajada.es/api/products', { headers }),
           fetch('https://yeray.informaticamajada.es/api/product_categories', { headers })
         ]);
-
         const dataProd = await resProd.json();
         const dataCat = await resCat.json();
-
         setListaProductos(dataProd);
         setCategorias(dataCat);
       } catch (err) {
@@ -43,12 +33,10 @@ function App() {
         setLoading(false);
       }
     };
-
     fetchDatos();
   }, [i18n.language]);
 
   const manejarClickCategoria = (id) => {
-    // Si haces clic en la que ya está activa, se desactiva (null)
     setCategoriaActiva(categoriaActiva === id ? null : id);
   };
 
@@ -58,66 +46,71 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-base-200">
       <Header />
-      <main className="grow">
-        <div className="flex-col grow p-4 justify-items-center">
+      <main className="grow pb-20">
+        <div className="flex flex-col items-center w-full">
 
           {/* Barra de búsqueda */}
-          <input
-            className='input mt-6 input-bordered w-full max-w-md'
-            type="search"
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("searchPlaceholder")}
-          />
+          <div className="w-full max-w-md px-4 mt-8">
+            <input
+              className='input input-bordered w-full shadow-sm focus:border-primary'
+              type="search"
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+            />
+          </div>
 
-          <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('products')}</h1>
+          <h1 className='mt-10 font-extrabold mb-4 text-3xl text-gray-800 w-full max-w-7xl px-6 md:px-10'>
+            {t('products')}
+          </h1>
 
-          {/* Navegación de Categorías Dinámicas */}
-          <nav className='relative mt-4 mb-5 w-full max-w-6xl px-10'>
-            <button onClick={() => scroll(-200)} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
-              <ChevronLeft size={24} />
+          {/* Navegación de Categorías */}
+          <nav className='relative group w-86 sm:w-135 md:w-189 lg:w-242 xl:w-272 mx-auto px-10'>
+            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-primary hover:text-white transition-all">
+              <ChevronLeft size={20} />
             </button>
 
             <div
               ref={scrollRef}
-              className="flex overflow-x-auto gap-3 py-4 no-scrollbar scroll-smooth"
+              className="flex overflow-x-auto gap-3 py-2 no-scrollbar scroll-smooth"
             >
               {categorias.map((cat) => (
-                <div key={cat.id} className="shrink-0">
-                  <button
-                    onClick={() => manejarClickCategoria(cat.id)}
-                    className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all ${categoriaActiva === cat.id ? "bg-primary text-white" : "btn-outline btn-primary"
+                <button
+                  key={cat.id}
+                  onClick={() => manejarClickCategoria(cat.id)}
+                  className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
+                        categoriaActiva === cat.id ? "bg-primary text-white border-none" : "btn-outline btn-primary"
                       }`}
-                  >
-                    {cat.name}
-                  </button>
-                </div>
+                >
+                  {cat.name}
+                </button>
               ))}
             </div>
 
-            <button onClick={() => scroll(200)} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-100 rounded-full shadow-md hover:bg-primary hover:text-white transition-all">
-              <ChevronRight size={24} />
+            <button onClick={() => scroll(250)} className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-primary hover:text-white transition-all">
+              <ChevronRight size={20} />
             </button>
           </nav>
 
-          {/* Listado de Productos */}
-          <div className="lg:w-[1000px] 2xl:w-[1350px] pt-4 ">
+          {/* LISTADO DE PRODUCTOS - El cambio clave está aquí */}
+          <div className="w-full max-w-7xl mx-auto px-4">
             {loading ? (
-              <div className="flex flex-col items-center gap-4">
-                <span className="loading loading-spinner loading-lg text-primary"></span>
-                <p>Cargando productos...</p>
+              <div className="flex flex-col items-center py-20">
+                <span className="loading loading-spinner loading-md text-primary"></span>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
+              /* Cambiamos a grid-cols-2 de base y hasta 5 en pantallas muy grandes */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-7 p-15">
                 <TableProducts
                   search={search}
-                  categoriaId={categoriaActiva} // Cambiamos 'props' por un nombre más claro
+                  categoriaId={categoriaActiva}
                   productos={listaProductos}
                 />
               </div>
             )}
           </div>
+
         </div>
       </main>
       <Footer />
