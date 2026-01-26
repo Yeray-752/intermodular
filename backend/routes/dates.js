@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { actualizarEstadoCita, crearCita, obtenerCitas, cancelarCita } from '../controllers/datesController.js';
-import { verifyToken, isAdmin } from '../middleware/auth.js';
+import { verifyToken, isAdmin } from '../middlewares/auth.js';
 import { validateCita, validateUpdateEstadoCita } from '../validators/dateValidator.js';
 
 const router = Router();

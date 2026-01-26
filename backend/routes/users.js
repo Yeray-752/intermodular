@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { registerClient, login, getClientProfile, updateClientProfile, changePassword } from "../controllers/userController.js";
-import { verifyToken } from "../middleware/auth.js";
-import { validateSchema } from "../middleware/validatorMiddleware.js";
+import { verifyToken } from "../middlewares/auth.js";
+import { validateSchema } from "../middlewares/validatorMiddleware.js";
 import { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema } from "../validators/userValidator.js";
 
 const router = Router();

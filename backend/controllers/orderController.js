@@ -20,7 +20,7 @@ export const createCompra = async (req, res) => {
 
         // 1. OBTENER TODO LO QUE EL USUARIO TIENE EN EL CARRITO
         const [itemsCarrito] = await connection.query(
-            "SELECT c.id_producto, c.cantidad, p.price, p.stock, p.nombre " +
+            "SELECT c.id_producto, c.cantidad, p.price, p.stock " +
             "FROM carrito c JOIN products p ON c.id_producto = p.id " +
             "WHERE c.id_usuario = ?", [id_user]
         );

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getCompras, createCompra, updateEstadoCompra,getOrderDetails } from '../controllers/orderController.js';
 import { validateCompra, validateUpdateEstado } from '../validators/orderValidator.js';
-import { verifyToken, isAdmin } from '../middleware/auth.js';
+import { verifyToken, isAdmin } from '../middlewares/auth.js';
 
 const router = Router();
 

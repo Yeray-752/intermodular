@@ -69,6 +69,7 @@ export const getProducts = async (req, res) => {
       p.price, 
       p.stock, 
       p.image_url, 
+      p.rating,
       p.category_id,
       t.name, 
       t.description
@@ -102,6 +103,7 @@ export const getProductsById = async (req, res) => {
         p.image_url,
         p.price,
         p.stock,
+        p.rating,
         t.name, 
         t.description
       FROM products p

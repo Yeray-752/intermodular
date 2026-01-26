@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import RatingSystem from './ValorationsAndComments';
 
 function Product() {
     const { id } = useParams();
@@ -344,7 +345,11 @@ function Product() {
                     </form>
                 </div>
             </dialog>
+            <div className="max-w-6xl mx-auto pb-20">
+                <RatingSystem id_producto={id} userId={producto?.user_id} />
+            </div>
         </div>
+        
     );
 }
 
