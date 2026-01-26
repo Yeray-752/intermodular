@@ -24,8 +24,8 @@ export default function Home() {
               <Trans
                 i18nKey="heroTitle"
                 components={{
-                  0: <span className=" bg-amber-500 text-primary" />,
-                  1: <span className="text-secondary" />
+                  1: <span className="text-blue-500" />,
+                  2: <span className="text-secondary" />
                 }}
               />
             </h1>
@@ -59,8 +59,8 @@ export default function Home() {
                 <Trans
                   i18nKey="offersTitle"
                   components={{
-                    0: <span className=" text-base-content" />,
-                    1: <span className="text-primary" />
+                    1: <span className=" text-base-content" />,
+                    2: <span className="text-primary" />
                   }}
                 />
               </h2>
@@ -154,8 +154,8 @@ export default function Home() {
                 <Trans
                   i18nKey="aboutUsTitle"
                   components={{
-                    0: <span className="text-secondary" />,
-                    1: <span className="text-primary" />
+                    1: <span className="text-secondary" />,
+                    2: <span className="text-primary" />
                   }}
                 />
               </h2>
