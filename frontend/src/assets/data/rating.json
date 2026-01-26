@@ -3,14 +3,12 @@
     "opinion_title": "¡Danos tu opinión!",
     "placeholder_textarea": "Escriba un comentario si lo desea...",
     "btn_send": "Enviar",
-    "user_image_alt": "Imagen de perfil",
     "user_name_placeholder": "Nombre del usuario"
   },
   "en": {
     "opinion_title": "Give us your feedback!",
     "placeholder_textarea": "Write a comment if you wish...",
     "btn_send": "Send",
-    "user_image_alt": "Profile picture",
     "user_name_placeholder": "User name"
   }
 }

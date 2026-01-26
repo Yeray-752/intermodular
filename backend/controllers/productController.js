@@ -221,7 +221,6 @@ export const purchaseProduct = async (req, res) => {
       [newStock, productId]
     );
 
-    // 4. (Opcional) Aquí podrías insertar una fila en una tabla 'orders' o 'sales'
 
     await connection.commit(); // Confirmamos todos los cambios
     res.json({ message: "Compra realizada con éxito", stock_restante: newStock });

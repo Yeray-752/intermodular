@@ -1,14 +1,9 @@
 import { Router } from 'express';
-import { getCompras, createCompra, updateEstadoCompra } from '../controllers/buyController.js';
-import { validateCompra, validateUpdateEstado } from '../validators/buyValidator.js';
+import { getCompras, createCompra, updateEstadoCompra,getOrderDetails } from '../controllers/orderController.js';
+import { validateCompra, validateUpdateEstado } from '../validators/orderValidator.js';
 import { verifyToken, isAdmin } from '../middleware/auth.js';
 
 const router = Router();
-
-/**
- * Aplicamos verifyToken a todas las rutas de este archivo 
- * porque mencionaste que el login es obligatorio para comprar.
- */
 
 // 1. Obtener compras: 
 // Si eres admin ves todas, si eres usuario podrías filtrar en el controlador para ver solo las tuyas.
@@ -39,5 +34,8 @@ router.patch('/:id', [verifyToken, isAdmin], (req, res, next) => {
     }
     next();
 }, updateEstadoCompra);
+
+
+router.get('/:id', verifyToken, getOrderDetails);
 
 export default router;

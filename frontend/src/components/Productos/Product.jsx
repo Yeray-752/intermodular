@@ -85,17 +85,18 @@ function Product() {
         }
 
         try {
+            // Dentro de finalizarCompra en Product.jsx
             const response = await fetch("http://localhost:3000/api/pedidos", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // Importante para saber quién compra
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     productos: [
                         {
-                            id_producto: id, // El id que viene de useParams
-                            cantidad: cantidad // El estado que creamos para las unidades
+                            id_producto: parseInt(id),
+                            cantidad: cantidad
                         }
                     ]
                 })
@@ -264,15 +265,23 @@ function Product() {
                                 <>
                                     <div className="flex items-center gap-4 mb-6">
                                         <p className="font-bold opacity-60 uppercase text-sm">{t('market:quantity')}:</p>
+                                        {/* Selector de cantidad corregido */}
                                         <div className="join border border-base-300">
-                                            <button className="btn join-item btn-sm" onClick={() => setCantidad(Math.max(1, cantidad - 1))}>-</button>
-                                            <input
-                                                type="number"
-                                                className="input input-sm join-item w-20 text-center font-bold"
-                                                value={cantidad}
-                                                onChange={handleCantidadChange}
+                                            <button
+                                                type="button" // <--- FUNDAMENTAL: evita que se envíe el formulario
+                                                className="btn join-item btn-sm"
+                                                onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                                            >-</button>
+
+                                            <input type="number" className="input input-sm join-item w-20 text-center font-bold" value={cantidad}
+                                                readOnly // Es mejor dejar que lo controlen los botones para evitar caracteres raros
                                             />
-                                            <button className="btn join-item btn-sm" onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}>+</button>
+
+                                            <button
+                                                type="button" // <--- FUNDAMENTAL
+                                                className="btn join-item btn-sm"
+                                                onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}
+                                            >+</button>
                                         </div>
                                         <span className="text-xs opacity-50">({producto.stock} {t('market:available')})</span>
                                     </div>

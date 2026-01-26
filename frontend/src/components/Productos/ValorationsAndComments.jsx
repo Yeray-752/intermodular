@@ -49,7 +49,6 @@ function App() {
 
                     <div className='card bg-base-100 shadow-sm'>
                         <div className='grid grid-cols-3 p-4'>
-                            <p>{t("user_image_alt")}</p>
                             <p>{t("user_name_placeholder")}</p>
                             <div className="rating rating-md rating-half pointer-events-none">
                                 <input type="radio" className="rating-hidden" />
