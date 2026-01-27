@@ -33,15 +33,16 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         }
     };
 
-    // 2. Función de envío corregid_productoa
+    // 2. Función de envío
     const handleSend = async () => {
-        // 1. Forzamos la conversión a número para evitar el NULL en el backend
-        const productid_productoNum = Number(id_producto);
+        setLoading(true);
+        const productIdNum = Number(id_producto);
 
-        console.log("Datos a enviar:", { productid_productoNum, rating, comment });
+        console.log("Datos a enviar:", { productIdNum, rating, comment });
 
-        if (!productid_productoNum || isNaN(productid_productoNum)) {
+        if (!productIdNum || isNaN(productIdNum)) {
             alert("Error: No se ha detectado el producto actual.");
+            setLoading(false);
             return;
         }
 
@@ -53,7 +54,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({
-                    id_producto: productid_productoNum, // Nombre exacto que espera el backend
+                    id_producto: productIdNum,
                     rating: rating,
                     comment: comment
                 })
@@ -61,115 +62,147 @@ export default function RatingSystem({ id_producto, userid_producto }) {
 
             if (res.ok) {
                 alert("¡Opinión enviada!");
-                fetchRatings(); // Refresca la lista
+                fetchRatings();
             } else {
                 const data = await res.json();
-                alert("Error del servid_productoor: " + data.error);
+                alert("Error del servidor: " + data.error);
             }
         } catch (err) {
             alert("Error de conexión: " + err.message);
+        } finally {
+            setLoading(false);
         }
     };
+
     return (
-        <div className='mx-8 my-10'>
-            <div className="grid_producto grid_producto-cols-1 lg:grid_producto-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                {/* FORMULARIO */}
-                <div className="card bg-base-100 shadow-xl border border-base-200">
-                    <div className="card-body">
-                        <h2 className="card-title text-2xl mb-4">{t("opinion_title")}</h2>
+            {/* FORMULARIO */}
+            <div className="space-y-6 bg-gradient-to-br from-base-200 to-base-300 rounded-xl p-8 shadow-lg">
 
-                        <p className="text-sm opacity-70 mb-2">Tu puntuación:</p>
-                        <div className="rating rating-lg rating-half mb-6">
-                            <input type="radio" name="rating-main" className="rating-hidden" />
-                            {[...Array(10)].map((_, i) => (
-                                <input
-                                    key={i}
-                                    type="radio"
-                                    name="rating-main"
-                                    className={`mask mask-star-2 bg-amber-400 ${i % 2 === 0 ? 'mask-half-1' : 'mask-half-2'}`}
-                                    onChange={() => setRating((i + 1) / 2)}
-                                    checked={rating === (i + 1) / 2}
-                                />
-                            ))}
-                        </div>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <p className="text-lg font-semibold text-base-content">{t("opinion_title")}</p>
+                </div>
 
-                        <div className="form-control">
-                            <textarea
-                                className="textarea textarea-bordered h-32 text-base"
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                placeholder={t("placeholder_textarea")}
+                <div>
+                    <label className="text-xs font-medium text-base-content/70 mb-2 block">
+                        Tu puntuación
+                    </label>
+                    <div className="rating rating-lg gap-2">
+                        {[1, 2, 3, 4, 5].map(n => (
+                            <input
+                                key={n}
+                                type="radio"
+                                name="rating-main"
+                                className="mask mask-star-2 bg-amber-400 hover:bg-amber-500 transition-colors duration-200"
+                                checked={rating === n}
+                                onChange={() => setRating(n)}
                             />
-                        </div>
-
-                        <div className="card-actions justify-end mt-4">
-                            <button
-                                className={`btn btn-primary ${loading ? 'loading' : ''}`}
-                                onClick={handleSend}
-                                disabled={loading}
-                            >
-                                {loading ? "Enviando..." : t("btn_send")}
-                            </button>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* LISTADO DE REVIEWS */}
-                <div className='flex flex-col gap-6'>
-                    <h3 className="text-xl font-bold px-2">Opiniones de otros usuarios</h3>
-                    {reviews.length === 0 ? (
-                        <div className="alert bg-base-200">No hay valoraciones aún. ¡Sé el primero!</div>
-                    ) : (
-                        reviews.map((rev) => (
-                            /* 1. Usamos rev.id (el de la valoración) como key única */
-                            <div key={rev.id} className='card bg-base-100 shadow-md border border-base-200'>
-                                <div className='p-5'>
-                                    <div className='flex justify-between items-center mb-3'>
-                                        <div className="flex items-center gap-3">
-                                            <div className="avatar placeholder">
-                                                <div className="bg-neutral text-neutral-content rounded-full w-8">
-                                                    {/* 2. Mostramos la inicial del nombre real */}
-                                                    <span>{rev.nombre?.charAt(0).toUpperCase()}</span>
-                                                </div>
-                                            </div>
-                                            {/* 3. Cambiamos username por nombre y apellidos */}
-                                            <span className='font-bold'>{rev.nombre} {rev.apellidos}</span>
-                                        </div>
+                <div>
+                    <label className="text-xs font-medium text-base-content/70 mb-2 block">
+                        {t("placeholder_textarea")}
+                    </label>
+                    <textarea
+                        className="textarea textarea-bordered w-full min-h-[120px] focus:textarea-primary transition-all duration-200 bg-base-100"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder={t("placeholder_textarea")}
+                    />
+                </div>
 
-                                        <div className="rating rating-sm rating-half pointer-events-none">
-                                            {[...Array(10)].map((_, i) => (
-                                                <input
-                                                    key={i}
-                                                    type="radio"
-                                                    name={`rating-list-${rev.id}`} /* Name único por fila */
-                                                    className={`mask mask-star-2 bg-amber-400 ${i % 2 === 0 ? 'mask-half-1' : 'mask-half-2'}`}
-                                                    checked={Math.round(rev.rating * 2) === (i + 1)}
-                                                    readOnly
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                <button
+                    className={`btn btn-primary w-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'loading' : ''}`}
+                    onClick={handleSend}
+                    disabled={loading || rating === 0}
+                >
+                    {loading ? "Enviando..." : t("btn_send")}
+                </button>
+            </div>
 
-                                    <p className='text-left text-base-content/80 italic'>
-                                        "{rev.comment}"
-                                    </p>
+            {/* LISTA OPINIONES */}
+            <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-base-content">
+                        Opiniones de otros usuarios ({reviews.length})
+                    </h3>
+                </div>
 
-                                    <div className="flex justify-between items-center mt-4">
-                                        <span className="text-xs opacity-50">
-                                            {new Date(rev.created_at).toLocaleDateString()}
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+
+                    {reviews.length === 0 && (
+                        <div className="text-center py-12 bg-base-200 rounded-xl">
+                            <svg className="w-16 h-16 text-base-content/20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <p className="text-sm text-base-content/50 italic">
+                                No hay valoraciones aún. ¡Sé el primero!
+                            </p>
+                        </div>
+                    )}
+
+                    {reviews.map((rev) => (
+                        <div
+                            key={rev.id}
+                            className="bg-base-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-base-300"
+                        >
+                            <div className="flex justify-between items-start mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span className="text-sm font-semibold text-primary">
+                                            {rev.nombre?.charAt(0).toUpperCase()}
                                         </span>
-                                        {/* 4. Verificación de si es el comentario del usuario logueado */}
-                                        {rev.id_usuario === userid_producto && (
-                                            <div className="badge badge-outline badge-info text-xs">Tu comentario</div>
-                                        )}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-base-content text-sm">
+                                            {rev.nombre} {rev.apellidos}
+                                        </p>
+                                        <p className="text-xs text-base-content/50">
+                                            {new Date(rev.created_at).toLocaleDateString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </p>
+
                                     </div>
                                 </div>
+                                <div className="rating rating-sm mb-3 pointer-events-none">
+                                    {[1, 2, 3, 4, 5].map(n => (
+                                        <input
+                                            key={n}
+                                            type="radio"
+                                            name={`rating-list-${rev.id}`}
+                                            className="mask mask-star-2 bg-amber-400"
+                                            checked={Math.round(rev.rating) === n}
+                                            readOnly
+                                        />
+                                    ))}
+                                </div>
+                                {rev.id_usuario === userid_producto && (
+                                    <div className="badge badge-outline badge-info text-xs">Tu comentario</div>
+                                )}
                             </div>
-                        ))
-                    )}
+
+
+
+                            <div className="bg-base-200/50 p-4 rounded-xl border border-base-200/50">
+                                <p className="text-sm text-base-content/80 leading-relaxed italic wrap-break-words whitespace-pre-wrap">
+                                    "{rev.comment}"
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
-    )
+    );
 }

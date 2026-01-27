@@ -13,8 +13,11 @@ function Header() {
     const { theme, setTheme } = useTheme();
     const { user } = useContext(AuthContext);
     
-    // Inicializamos con la estructura que devuelve tu backend
+    // Estados del carrito
     const [datosCarrito, setdatosCarrito] = useState({ items: [], totalCarrito: "0.00" });
+    
+    // Estado para la alerta superior
+    const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
 
     const hoverLink = 'text-base-content hover:text-primary transition-colors duration-300 font-medium';
 
@@ -24,7 +27,13 @@ function Header() {
         { label: t('nav.about'), path: '/sobre-nosotros' },
     ];
 
-    // Función para obtener los datos del carrito
+    // Función para mostrar alertas personalizadas arriba
+    const mostrarAlerta = (mensaje, tipo = "success") => {
+        setNotificacion({ mostrar: true, mensaje, tipo });
+        setTimeout(() => setNotificacion({ ...notificacion, mostrar: false }), 3000);
+    };
+
+    // Obtener datos del carrito
     const fetchCarrito = async () => {
         const token = localStorage.getItem('token'); 
         if (!user || !token) return;
@@ -35,34 +44,64 @@ function Header() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Enviamos el token para evitar el 403
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setdatosCarrito(data); // Guardamos { items, totalCarrito }
+                setdatosCarrito(data);
             }
         } catch (error) {
             console.error("Error cargando el carrito:", error);
         }
     };
 
-    // Efecto para carga inicial y suscripción a eventos
+    // Función para borrar un producto
+    const handleRemoveItem = async (idProducto) => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/cart/item/${idProducto}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                mostrarAlerta("Producto eliminado correctamente", "info");
+                fetchCarrito(); // Recargar datos
+            } else {
+                mostrarAlerta("No se pudo eliminar el producto", "error");
+            }
+        } catch (error) {
+            console.error("Error al borrar:", error);
+            mostrarAlerta("Error de conexión", "error");
+        }
+    };
+
     useEffect(() => {
         fetchCarrito();
-
-        // Escuchamos el evento global para actualizar cuando se haga un INSERT desde Productos
         window.addEventListener('cartUpdated', fetchCarrito);
         return () => window.removeEventListener('cartUpdated', fetchCarrito);
     }, [user, i18n.language]);
 
     return (
-        <div className="drawer drawer-end sticky top-0 z-60">
+        <div className="drawer drawer-end sticky top-0 z-[60]">
             <input id="my-drawer-5" type="checkbox" className="drawer-toggle" />
             
+            {/* Notificación Superior */}
+            {notificacion.mostrar && (
+                <div className="toast toast-top toast-center z-[100]">
+                    <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : notificacion.tipo === 'error' ? 'alert-error' : 'alert-info'} shadow-lg text-white font-bold`}>
+                        <span>{notificacion.mensaje}</span>
+                    </div>
+                </div>
+            )}
+
             <div className="drawer-content flex flex-col">
-                {/* --- HEADER --- */}
                 <header className="bg-base-100 dark:bg-base-200 text-base-content shadow-md border-b border-base-300 w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
@@ -75,7 +114,7 @@ function Header() {
                                 </div>
                             </div>
 
-                            {/* NAVEGACIÓN DESKTOP */}
+                            {/* NAV DESKTOP */}
                             <nav className="hidden md:flex items-center space-x-4">
                                 {navItems.map((item, index) => (
                                     <button key={index} onClick={() => navigate(item.path)} className={hoverLink}>
@@ -83,7 +122,6 @@ function Header() {
                                     </button>
                                 ))}
                                 
-                                {/* Theme Toggle */}
                                 <label className="swap swap-rotate mx-2">
                                     <input type="checkbox" checked={theme === "dark"} onChange={(e) => setTheme(e.target.checked ? "dark" : "light")} />
                                     <svg className="swap-off h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,1.41-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" /></svg>
@@ -113,7 +151,6 @@ function Header() {
                                 )}
                             </nav>
 
-                            {/* BOTÓN MÓVIL */}
                             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden btn btn-ghost btn-circle">
                                 {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
                             </button>
@@ -122,8 +159,8 @@ function Header() {
                 </header>
             </div>
 
-            {/* --- DRAWER SIDE (CONTENIDO LATERAL DEL CARRITO) --- */}
-            <div className="drawer-side z-80">
+            {/* SIDEBAR DEL CARRITO */}
+            <div className="drawer-side z-[80]">
                 <label htmlFor="my-drawer-5" aria-label="close sidebar" className="drawer-overlay"></label>
                 <div className="menu p-4 w-80 sm:w-96 min-h-full bg-base-100 text-base-content shadow-2xl flex flex-col">
                     <div className="flex items-center justify-between mb-6 border-b pb-4">
@@ -133,11 +170,10 @@ function Header() {
                         <label htmlFor="my-drawer-5" className="btn btn-sm btn-circle btn-ghost">✕</label>
                     </div>
                     
-                    {/* Lista de productos dinámica basada en tu SQL */}
                     <div className="grow overflow-y-auto space-y-4">
                         {datosCarrito.items && datosCarrito.items.length > 0 ? (
                             datosCarrito.items.map((item) => (
-                                <div key={item.id_producto} className="flex gap-4 bg-base-200 p-3 rounded-xl items-center">
+                                <div key={item.id_producto} className="flex gap-4 bg-base-200 p-3 rounded-xl items-center group">
                                     <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
                                     <div className="flex-1">
                                         <p className="font-bold text-sm leading-tight">{item.name}</p>
@@ -145,8 +181,14 @@ function Header() {
                                             {item.cantidad} x ${item.precio_unitario}
                                         </p>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="flex items-center gap-2">
                                         <p className="font-bold text-primary">${item.subtotal}</p>
+                                        <button 
+                                            onClick={() => handleRemoveItem(item.id_producto)}
+                                            className="btn btn-ghost btn-xs btn-circle text-error hover:bg-error/20"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                 </div>
                             ))
@@ -158,7 +200,6 @@ function Header() {
                         )}
                     </div>
 
-                    {/* Resumen y Botón de compra */}
                     {datosCarrito.items?.length > 0 && (
                         <div className="border-t pt-4 mt-4 space-y-4">
                             <div className="flex justify-between items-center font-bold text-lg px-2">
