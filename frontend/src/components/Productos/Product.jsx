@@ -138,7 +138,7 @@ function Product() {
             
             {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-[100] animate-bounce">
+                <div className="toast toast-top toast-center z-100 animate-bounce">
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : 'alert-error'} shadow-lg border-none text-white font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>

@@ -58,7 +58,7 @@ function Header() {
     }, [user, i18n.language]);
 
     return (
-        <div className="drawer drawer-end sticky top-0 z-[60]">
+        <div className="drawer drawer-end sticky top-0 z-60">
             <input id="my-drawer-5" type="checkbox" className="drawer-toggle" />
             
             <div className="drawer-content flex flex-col">
@@ -123,7 +123,7 @@ function Header() {
             </div>
 
             {/* --- DRAWER SIDE (CONTENIDO LATERAL DEL CARRITO) --- */}
-            <div className="drawer-side z-[80]">
+            <div className="drawer-side z-80">
                 <label htmlFor="my-drawer-5" aria-label="close sidebar" className="drawer-overlay"></label>
                 <div className="menu p-4 w-80 sm:w-96 min-h-full bg-base-100 text-base-content shadow-2xl flex flex-col">
                     <div className="flex items-center justify-between mb-6 border-b pb-4">
