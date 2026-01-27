@@ -13,15 +13,8 @@ function Producto() {
   return (
     <>
       <Header />
-
-
       <ProductoInfo />
-      <Valorations />
       <Footer />
-
-
-
-
     </>
   )
 }
