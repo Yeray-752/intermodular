@@ -10,7 +10,8 @@ const passwordRules = z.string()
 
 export const loginSchema = z.object({
     email: z.string().email("El formato del correo no es válido"),
-    password: z.string() // En login no solemos validar fuerza, solo que esté
+    password: z.string(),
+    captchaToken: z.string({ required_error: "La verificación de seguridad es obligatoria" })
 });
 
 export const registerSchema = z.object({

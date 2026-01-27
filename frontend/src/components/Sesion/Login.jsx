@@ -2,9 +2,10 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { loginSchema } from "../../schemas/loginSchema"
 import { useState, useContext } from "react";
-import Turnstile from "react-turnstile";
 import fondo from "/img/web/fondo_log.webp";
 import { AuthContext } from "../../context/AuthContext";
+import ReCAPTCHA from "react-google-recaptcha";
+import { GoogleLogin } from '@react-oauth/google';
 
 
 function Login() {
@@ -16,13 +17,16 @@ function Login() {
 
     const { t } = useTranslation("login");
 
+
+
     const handleLogin = async (e) => {
         e.preventDefault();
 
         if (!captchaToken) {
-            alert("Por favor, completa la verificación de seguridad.");
+            alert("Por favor, completa el captcha.");
             return;
         }
+
 
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
@@ -39,7 +43,8 @@ function Login() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: data.email,
-                    password: data.password
+                    password: data.password,
+                    captchaToken: captchaToken
                 }),
             });
 
@@ -55,9 +60,8 @@ function Login() {
 
             console.log("Login exitoso, token guardado.");
 
-            // MODIFICADO: Lógica de redirección inteligente
-            // Si venimos de un producto/servicio, location.state.from tendrá esa ruta.
-            // Si entramos al login directamente, irá a "/"
+            //si quieres comprar pero no tienes sesión, te manda al login, esta línea te manda de vuelta, y si no vienes
+            // de ningun sitio, te manda a home
             const destino = location.state?.from?.pathname || "/";
             navigate(destino, { replace: true });
 
@@ -118,11 +122,47 @@ function Login() {
                             </fieldset>
 
                             <div className="flex justify-center my-2">
-                                <Turnstile
-                                    sitekey="3x00000000000000000000FF" // Llave de prueba (cámbiala en producción)
-                                    onVerify={(token) => setCaptchaToken(token)}
-                                    onExpire={() => setCaptchaToken(null)}
-                                    onError={() => setCaptchaToken(null)}
+                                <ReCAPTCHA
+                                    sitekey="6LdVslcsAAAAAMbtWa8wBnuaYVmhM4O7h9mz7RMk"
+                                    onChange={(token) => setCaptchaToken(token)}
+                                    onExpired={() => setCaptchaToken(null)}
+                                />
+                            </div>
+                            <div className="flex flex-col items-center gap-4 mt-6">
+                                <div className="divider opacity-50 uppercase text-xs">O entra con</div>
+                                <GoogleLogin
+                                    onSuccess={async (credentialResponse) => {
+                                        try {
+                                            const response = await fetch("http://localhost:3000/api/users/google-login", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({ idToken: credentialResponse.credential }),
+                                            });
+
+                                            const json = await response.json();
+
+                                            if (response.ok) {
+                                                // 1. Guardar en localStorage
+                                                localStorage.setItem("token", json.token);
+                                                localStorage.setItem("rol", json.rol);
+
+                                                // 2. ACTUALIZAR EL CONTEXTO (si tu función login espera el token)
+                                                // login(json.token); 
+
+                                                // 3. Redirigir (usando tu lógica de destino previo)
+                                                const destino = location.state?.from?.pathname || "/";
+                                                navigate(destino, { replace: true });
+                                            } else {
+                                                setErrors({ general: [json.error || "Error con Google"] });
+                                            }
+                                        } catch (error) {
+                                            console.error("Error de red:", error);
+                                            setErrors({ general: ["No se pudo conectar con el servidor"] });
+                                        }
+                                    }}
+                                    onError={() => console.log('Error en Google Login')}
+                                    theme="filled_blue"
+                                    shape="circle"
                                 />
                             </div>
 

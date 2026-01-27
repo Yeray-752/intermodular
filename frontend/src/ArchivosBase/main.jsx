@@ -15,6 +15,7 @@ import Perfil from "../pages/perfil.jsx"
 import Texto from "../pages/texto.jsx"
 import AdminPage from "../pages/AdminPage.jsx"
 import { AuthProvider } from '../context/AuthContext.jsx';
+import { GoogleOAuthProvider } from '@react-oauth/google'; // <--- 1. Importar
 
 import { ThemeProvider } from "../context/ThemeContext.jsx";
 
@@ -22,29 +23,29 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <AuthProvider>
-    <ThemeProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/reservas' element={<Reservas />} />
-          <Route path='/productos' element={<Market />} />
-          <Route path="/producto/:id" element={<Producto />} />
+  <GoogleOAuthProvider clientId="132089921537-h1ijgechji2s3tbh51j1su0g49n1gf38.apps.googleusercontent.com">
+    <AuthProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/reservas' element={<Reservas />} />
+            <Route path='/productos' element={<Market />} />
+            <Route path="/producto/:id" element={<Producto />} />
 
-          <Route path='/registro' element={<SignUp />} />
-          <Route path='/sobre-nosotros' element={<About />} />
-          <Route path='/sobre-nosotros' element={<About />} />
-          <Route path='/perfil' element={<Perfil />} />
-          <Route path='/Aviso-legal' element={<Texto />} />
-          <Route path='*' element={<Error />} />
+            <Route path='/registro' element={<SignUp />} />
+            <Route path='/sobre-nosotros' element={<About />} />
+            <Route path='/perfil' element={<Perfil />} />
+            <Route path='/Aviso-legal' element={<Texto />} />
+            <Route path='*' element={<Error />} />
 
-          <Route path='/admin/dashboard'  element={<AdminPage />} />
-          
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
-  </AuthProvider>
+            <Route path='/admin/dashboard' element={<AdminPage />} />
 
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
+  </GoogleOAuthProvider>
 
 )

@@ -1,6 +1,9 @@
 import db from "../db.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import axios from 'axios'; // Importa axios al principio del archivo
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registerClient = async (req, res) => {
     const { email, password, nombre, apellidos, direccion } = req.body;
@@ -37,40 +40,71 @@ export const registerClient = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+
+    console.log("Body crudo del request:", req.body); 
+
+    const { email, password, captchaToken } = req.body;
+    console.log("Valor de captchaToken extraído:", captchaToken);
 
     try {
-        // 1. Buscar al usuario por email
+
+
+        const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+        const response = await axios.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            new URLSearchParams({
+                secret: secretKey,
+                response: captchaToken,
+            })
+        );
+        console.log("Respuesta de Google:", response.data);
+
+        if (!response.data.success) {
+            // Si entra aquí, es que Google recibió el token pero dijo que NO es válido
+            return res.status(400).json({
+                error: "Verificación de seguridad fallida",
+                details: response.data['error-codes']
+            });
+        }
+
         const [rows] = await db.query("SELECT * FROM Usuario WHERE email = ?", [email]);
 
-        if (rows.length === 0) return res.status(401).json({ error: "Credenciales incorrectas" });
+        if (rows.length === 0) {
+            return res.status(401).json({ error: "Credenciales incorrectas" });
+        }
 
         const user = rows[0];
 
-        // 2. Verificar contraseña
         const validPassword = await bcrypt.compare(password, user.contraseña);
-        if (!validPassword) return res.status(401).json({ error: "Credenciales incorrectas" });
-
-        // 3. Generar el Token
-        const secret = process.env.JWT_SECRET;
-
-        if (!secret) {
-            console.error("ERROR CRÍTICO: No se ha definido JWT_SECRET en el archivo .env");
-            return res.status(500).json({ error: "Configuración del servidor incompleta" });
+        if (!validPassword) {
+            return res.status(401).json({ error: "Credenciales incorrectas" });
         }
 
-        const token = jwt.sign(
-    { 
-        id: user.id || user.id_usuario,
-        rol: user.rol 
-    },
-    secret,
-    { expiresIn: '8h' }
-);
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error("ERROR: JWT_SECRET no definido en el entorno.");
+            return res.status(500).json({ error: "Error de configuración en el servidor" });
+        }
 
-        res.json({ message: "Login exitoso", token, rol: user.rol });
+        // el token contiene tanto id del usuario como su rol (paginas admin)
+        const token = jwt.sign(
+            {
+                id: user.id_usuario || user.id,
+                rol: user.rol
+            },
+            secret,
+            { expiresIn: '8h' } // Cuando pasen las 8 horas el token caduca y el frontend lo desecha (en teoria)
+        );
+
+        res.json({
+            message: "Login exitoso",
+            token,
+            rol: user.rol
+        });
+
     } catch (error) {
-        res.status(500).json({ error: "Error en el servidor" + error });
+        console.error("Error en el login:", error);
+        res.status(500).json({ error: "Hubo un error en el servidor al intentar iniciar sesión." });
     }
 };
 
@@ -145,5 +179,59 @@ export const changePassword = async (req, res) => {
         res.json({ message: "Contraseña actualizada con éxito" });
     } catch (error) {
         res.status(500).json({ error: "Error al cambiar la contraseña" });
+    }
+};
+
+export const googleLogin = async (req, res) => {
+    const { idToken } = req.body;
+    const connection = await db.getConnection(); // Para asegurar la transacción
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { email, name, given_name, family_name } = ticket.getPayload();
+
+        await connection.beginTransaction();
+
+        // 1. Buscar si el usuario ya existe
+        let [rows] = await connection.query("SELECT * FROM Usuario WHERE email = ?", [email]);
+        let user = rows[0];
+
+        if (!user) {
+            // 2. Crear entrada en tabla 'Usuario'
+            const [userRes] = await connection.query(
+                "INSERT INTO Usuario (email, rol) VALUES (?, 'cliente')",
+                [email]
+            );
+            const newId = userRes.insertId;
+
+            // 3. Crear entrada en tabla 'Cliente' 
+            // Usamos given_name (nombre) y family_name (apellidos) de Google
+            await connection.query(
+                "INSERT INTO Cliente (id_usuario, nombre, apellidos) VALUES (?, ?, ?)",
+                [newId, given_name || name, family_name || '']
+            );
+
+            user = { id_usuario: newId, rol: 'cliente' };
+        }
+
+        await connection.commit();
+
+        const token = jwt.sign(
+            { id: user.id_usuario, rol: user.rol },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' }
+        );
+
+        res.json({ token, rol: user.rol });
+
+    } catch (e) {
+        await connection.rollback();
+        console.error("Error:", e);
+        res.status(400).json({ error: "Fallo en la autenticación", detalle: e.message });
+    } finally {
+        connection.release();
     }
 };
