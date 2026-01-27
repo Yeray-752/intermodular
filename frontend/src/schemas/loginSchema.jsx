@@ -7,5 +7,6 @@ export const loginSchema = z.object({
     .regex(/[A-Z]/, "Debe tener al menos una mayúscula")
     .regex(/[a-z]/, "Debe tener al menos una minúscula")
     .regex(/[0-9]/, "Falta un número")
-    .regex(/^[A-Za-z0-9]+$/, "No se permiten caracteres especiales") // Tu regla específica
+    .regex(/^[A-Za-z0-9]+$/, "No se permiten caracteres especiales"), // Tu regla específica
+  captchaToken: z.string().optional(),
 });

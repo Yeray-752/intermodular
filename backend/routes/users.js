@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerClient, login, getClientProfile, updateClientProfile, changePassword } from "../controllers/userController.js";
+import { registerClient, login, getClientProfile, updateClientProfile, changePassword,googleLogin } from "../controllers/userController.js";
 import { verifyToken } from "../middlewares/auth.js";
 import { validateSchema } from "../middlewares/validatorMiddleware.js";
 import { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema } from "../validators/userValidator.js";
@@ -26,5 +26,7 @@ router.patch("/profile/password",
     validateSchema(changePasswordSchema), 
     changePassword
 );
+
+router.post("/google-login", googleLogin);
 
 export default router;
