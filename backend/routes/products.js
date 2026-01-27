@@ -9,6 +9,6 @@ router.get("/:id", getProductsById);
 router.put("/:id/update", updateProduct);
 router.delete("/:id/delete", deleteProduct);
 
-router.post('/:id/buy', purchaseProduct);
+router.post('/:id/order', purchaseProduct);
 
 export default router;

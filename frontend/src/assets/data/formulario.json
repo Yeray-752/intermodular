@@ -25,7 +25,7 @@
       "cardNumber": "Número de tarjeta",
       "expiry": "Vencimiento",
       "cvv": "CVV",
-      "confirmButton": "Confirmar Pago de",
+      "confirmButton": "Añadir al carrito pago de ",
       "errorValidation": "Por favor, corrige los errores en el formulario",
       "success": "¡Compra realizada con éxito!"
     },
@@ -58,7 +58,7 @@
       "cardNumber": "Card Number",
       "expiry": "Expiry Date",
       "cvv": "CVV",
-      "confirmButton": "Confirm Payment of",
+      "confirmButton": "Add to cart payment of ",
       "errorValidation": "Please correct the errors in the form",
       "success": "Purchase completed successfully!"
     },

@@ -14,7 +14,6 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
-//Esto evita que alguien se ponga "admin" en el local storage y se pueda meter con permisos de admin
 export const isAdmin = (req, res, next) => {
   if (req.user && req.user.rol === 'admin') {
     next();

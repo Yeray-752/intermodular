@@ -4,12 +4,14 @@ import dotenv from "dotenv";
 import usersRoutes from "./routes/users.js";
 import productosRoutes from "./routes/products.js"
 import serviceRoutes from "./routes/services.js"
-import { languageMiddleware } from './middleware/language.js';
+import { languageMiddleware } from './middlewares/language.js';
 import product_categoryRoutes from './routes/categories_product.js';
 import service_categoryRoutes from './routes/categories_services.js';
 import datesRoutes from "./routes/dates.js";
 import vehiculesRoutes from "./routes/vehicules.js";
-import buyRoutes from "./routes/buy.js";
+import orderRoutes from "./routes/order.js";
+import cartRoutes from "./routes/carts.js"
+import ratingRoutes from "./routes/rating.js"
 
 dotenv.config();
 
@@ -26,7 +28,9 @@ app.use('/api/product_categories', product_categoryRoutes);
 app.use('/api/service_categories', service_categoryRoutes);
 app.use('/api/dates', datesRoutes);
 app.use('/api/vehicules', vehiculesRoutes);
-app.use('/api/buys', buyRoutes);
+app.use('/api/order', orderRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/rating', ratingRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

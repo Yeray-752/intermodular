@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import RatingSystem from './ValorationsAndComments';
 
 function Product() {
     const { id } = useParams();
@@ -14,6 +15,7 @@ function Product() {
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [cantidad, setCantidad] = useState(1);
 
     // estados del formulario de compra
     const [tipoEntrega, setTipoEntrega] = useState("");
@@ -74,6 +76,49 @@ function Product() {
         if (modal) modal.close();
     };
 
+    const finalizarCompra = async (e) => {
+        e.preventDefault();
+
+        // Validaciones previas que ya tenías
+        if (!tarjetaValida || !vencimientoValido || (tipoEntrega === "domicilio" && !ciudadValida)) {
+            alert(t('formulario:checkout.errorValidation'));
+            return;
+        }
+
+        try {
+            // Dentro de finalizarCompra en Product.jsx
+            const response = await fetch("http://localhost:3000/api/pedidos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    productos: [
+                        {
+                            id_producto: parseInt(id),
+                            cantidad: cantidad
+                        }
+                    ]
+                })
+            });
+
+            const json = await response.json();
+
+            if (response.ok) {
+                alert(t('formulario:checkout.success'));
+                cerrarModal();
+                navigate('/');
+            } else {
+                // Aquí se mostrará el error si no hay stock en el backend
+                alert("Error: " + json.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("No se pudo conectar con el servidor");
+        }
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
     if (error || !producto) {
         return (
@@ -86,9 +131,23 @@ function Product() {
 
     const ciudades = ["Puerto del Rosario", "El Cotillo", "Corralejo", "Betancuria", "La Oliva", "Morro Jable"];
     const precioOriginal = parseFloat(producto.price);
+    const subtotal = precioOriginal * cantidad;
+    // Aplicamos el 5% extra solo si es domicilio sobre el subtotal acumulado
     const precioFinal = tipoEntrega === "domicilio"
-        ? (precioOriginal * 1.05).toFixed(2)
-        : precioOriginal.toFixed(2);
+        ? (subtotal * 1.05).toFixed(2)
+        : subtotal.toFixed(2);
+
+    // Función para manejar el cambio de cantidad
+    const handleCantidadChange = (e) => {
+        const val = parseInt(e.target.value);
+        if (val > producto.stock) {
+            setCantidad(producto.stock); // No deja poner más del stock real
+        } else if (val < 1) {
+            setCantidad(1);
+        } else {
+            setCantidad(val);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-base-200">
@@ -152,18 +211,10 @@ function Product() {
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
 
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!tarjetaValida || !vencimientoValido || (tipoEntrega === "domicilio" && !ciudadValida)) {
-                            alert(t('formulario:checkout.errorValidation'));
-                            return;
-                        }
-                        alert(t('formulario:checkout.success'));
-                        cerrarModal();
-                        navigate('/');
-                    }}>
+                    {/* Busca esta línea en tu código y cámbiala */}
+                    <form onSubmit={finalizarCompra}>
                         <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            📦 {t('formulario:checkout.title')}: {producto.nombre}
+                            📦 {t('formulario:checkout.title')}: {producto.name}
                         </h3>
 
                         <div className="space-y-6">
@@ -213,6 +264,28 @@ function Product() {
 
                             {(tipoEntrega === "recogida" || tipoEntrega === "domicilio") && (
                                 <>
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <p className="font-bold opacity-60 uppercase text-sm">{t('market:quantity')}:</p>
+                                        {/* Selector de cantidad corregido */}
+                                        <div className="join border border-base-300">
+                                            <button
+                                                type="button" // <--- FUNDAMENTAL: evita que se envíe el formulario
+                                                className="btn join-item btn-sm"
+                                                onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                                            >-</button>
+
+                                            <input type="number" className="input input-sm join-item w-20 text-center font-bold" value={cantidad}
+                                                readOnly // Es mejor dejar que lo controlen los botones para evitar caracteres raros
+                                            />
+
+                                            <button
+                                                type="button" // <--- FUNDAMENTAL
+                                                className="btn join-item btn-sm"
+                                                onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}
+                                            >+</button>
+                                        </div>
+                                        <span className="text-xs opacity-50">({producto.stock} {t('market:available')})</span>
+                                    </div>
                                     <div className="divider text-xs opacity-50 uppercase font-bold">{t('formulario:checkout.paymentSummary')}</div>
                                     <div className="flex justify-between items-center bg-primary text-primary-content p-4 rounded-lg">
                                         <span className="font-bold">{t('formulario:checkout.total')}:</span>
@@ -272,7 +345,11 @@ function Product() {
                     </form>
                 </div>
             </dialog>
+            <div className="max-w-6xl mx-auto pb-20">
+                <RatingSystem id_producto={id} userId={producto?.user_id} />
+            </div>
         </div>
+        
     );
 }
 

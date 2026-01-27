@@ -33,7 +33,7 @@ function SignUp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: data.email,
-          contraseña: data.password, // Mapeo para el Backend
+          password: data.password, // Mapeo para el Backend
           nombre: data.nombre,
           apellidos: data.apellidos,
           direccion: data.direccion || ""
