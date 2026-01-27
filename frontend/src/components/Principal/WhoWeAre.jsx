@@ -19,7 +19,7 @@ function WhoWeAre() {
             <div className="rounded-2xl overflow-hidden shadow-2xl">
               <img
                 src={coche}
-                alt="Taller Ekotan"
+                alt="Taller Akotan"
                 className="w-full h-[300px] md:h-[400px] object-cover"
               />
             </div>
@@ -143,8 +143,8 @@ function WhoWeAre() {
             </p>
             <p>
               📧 {t("correo")}:{" "}
-              <a href="mailto:ekotan@gmail.com" className="text-orange-600 font-semibold underline">
-                ekotan@gmail.com
+              <a href="mailto:akotan@gmail.com" className="text-orange-600 font-semibold underline">
+                akotan@gmail.com
               </a>
             </p>
           </div>
