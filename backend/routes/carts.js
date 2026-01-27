@@ -5,7 +5,6 @@ import { verifyToken } from '../middlewares/auth.js';
 const router = express.Router();
 
 router.use(verifyToken); // Todas las rutas del carrito requieren login
-
 router.get('/', getCart);             // Ver productos en el carrito
 router.post('/add', addToCart);       // Añadir/Actualizar cantidad
 router.delete('/item/:id', removeFromCart); // Quitar un producto específico
