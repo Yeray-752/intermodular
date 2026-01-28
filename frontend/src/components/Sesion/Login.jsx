@@ -51,11 +51,10 @@ function Login() {
             const json = await response.json();
 
             if (!response.ok) {
-                setErrors({ general: [json.error || "Error al iniciar sesión"] });
+                alert(data.message || "Error al iniciar sesión, compruebe si su usuario o contraseña es correcta");
                 return;
             }
 
-            // 1. Guardamos en el almacenamiento persistente
             localStorage.setItem("token", json.token);
             localStorage.setItem("rol", json.rol);
 
