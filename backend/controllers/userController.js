@@ -41,10 +41,7 @@ export const registerClient = async (req, res) => {
 
 export const login = async (req, res) => {
 
-    console.log("Body crudo del request:", req.body); 
-
     const { email, password, captchaToken } = req.body;
-    console.log("Valor de captchaToken extraído:", captchaToken);
 
     try {
 
@@ -57,7 +54,6 @@ export const login = async (req, res) => {
                 response: captchaToken,
             })
         );
-        console.log("Respuesta de Google:", response.data);
 
         if (!response.data.success) {
             // Si entra aquí, es que Google recibió el token pero dijo que NO es válido

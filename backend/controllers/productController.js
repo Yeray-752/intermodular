@@ -119,7 +119,6 @@ export const getProductsById = async (req, res) => {
       return res.status(404).json({ message: "Producto no encontrado." });
     }
 
-    // Como es un ID único, devolvemos el primer (y único) objeto
     res.json(rows[0]);
 
   } catch (error) {
