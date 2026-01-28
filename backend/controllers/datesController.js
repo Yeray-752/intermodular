@@ -1,43 +1,11 @@
 import db from "../db.js";
-import { validateCita, validateUpdateEstadoCita } from "../validators/dateValidator.js";
-
-export const crearCita = async (req, res) => {
-    // 1. Validamos con Zod (id_usuario ya no se pide en el body del validador)
-    const result = validateCita(req.body);
-
-    if (!result.success) {
-        return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-    }
-
-    // 2. Seguridad: El ID viene del TOKEN, no del body del formulario
-    const id_usuario_real = req.user.id;
-    const { matricula_vehiculo, fecha, motivo } = result.data;
-
-    try {
-        const query = `
-            INSERT INTO citas (id_usuario, matricula_vehiculo, fecha, motivo) 
-            VALUES (?, ?, ?, ?)
-        `;
-
-        const [dbResult] = await db.execute(query, [id_usuario_real, matricula_vehiculo, fecha, motivo]);
-
-        res.status(201).json({
-            message: "Cita creada con éxito",
-            id_cita: dbResult.insertId,
-            estado: 'pendiente'
-        });
-    } catch (error) {
-        res.status(500).json({ error: "Error al crear la cita", detalles: error.message });
-    }
-};
+import { validateCita } from "../validators/dateValidator.js";
 
 export const obtenerCitas = async (req, res) => {
     try {
-        let query = 'SELECT * FROM citas';
+        let query = 'SELECT * FROM Cita'; // O 'citas', según tu tabla
         let params = [];
 
-        // Lógica de privacidad:
-        // Si no es admin, filtramos para que solo vea SUS propias citas
         if (req.user.rol !== 'admin') {
             query += ' WHERE id_usuario = ?';
             params.push(req.user.id);
@@ -49,59 +17,94 @@ export const obtenerCitas = async (req, res) => {
         res.status(500).json({ error: "Error al obtener citas" });
     }
 };
+// Helper para insertar notificaciones de forma limpia
+const enviarNotificacion = async (id_usuario, titulo, mensaje, categoria) => {
+    try {
+        await db.execute(
+            `INSERT INTO Notificaciones (id_usuario, titulo, mensaje, categoria) VALUES (?, ?, ?, ?)`,
+            [id_usuario, titulo, mensaje, categoria]
+        );
+    } catch (error) {
+        console.error("Error silencioso al crear notificación:", error);
+    }
+};
+
+export const crearCita = async (req, res) => {
+    const result = validateCita(req.body);
+    if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
+
+    const id_usuario_real = req.user.id;
+    const { matricula_vehiculo, fecha, motivo } = req.body;
+
+    try {
+        // IMPORTANTE: He cambiado "citas" por "Cita" para que coincida con tu DESC
+        const query = `INSERT INTO Cita (id_usuario, matricula_vehiculo, fecha, motivo, estado) VALUES (?, ?, ?, ?, 'pendiente')`;
+        const [dbResult] = await db.execute(query, [id_usuario_real, matricula_vehiculo, fecha, motivo]);
+
+        // Notificar al ADMIN (Asumimos ID 1 o rol admin)
+        await enviarNotificacion(
+            1, 
+            "Nueva Cita", 
+            `El usuario ${id_usuario_real} ha solicitado una cita para el vehículo ${matricula_vehiculo}`, 
+            'cita'
+        );
+
+        res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export const actualizarEstadoCita = async (req, res) => {
-    // La validación de Zod ya se hizo en el middleware de la ruta
     const { id } = req.params;
     const { estado } = req.body;
 
     try {
-        const query = 'UPDATE citas SET estado = ? WHERE id_cita = ?';
-        const [result] = await db.execute(query, [estado, id]);
+        const [cita] = await db.execute('SELECT id_usuario, matricula_vehiculo FROM Cita WHERE id_cita = ?', [id]);
+        if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Cita no encontrada" });
-        }
+        await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', [estado, id]);
 
-        res.json({ message: "Estado actualizado", id_cita: id, nuevoEstado: estado });
+        // Notificar al CLIENTE sobre el cambio (Aceptada, Finalizada, etc.)
+        let titulo = estado === 'aceptada' ? "Cita Confirmada" : "Actualización de Cita";
+        await enviarNotificacion(
+            cita[0].id_usuario, 
+            titulo, 
+            `Tu cita para el vehículo ${cita[0].matricula_vehiculo} ahora está: ${estado}`, 
+            'cita'
+        );
+
+        res.json({ message: "Estado actualizado y cliente notificado" });
     } catch (error) {
-        res.status(500).json({ error: "Error al actualizar", detalles: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 export const cancelarCita = async (req, res) => {
     const { id } = req.params;
     const id_usuario_token = req.user.id;
+    const esAdmin = req.user.rol === 'admin';
 
     try {
-        // 1. Buscamos la cita y verificamos si le pertenece al usuario
-        const [cita] = await db.execute(
-            'SELECT id_usuario, estado FROM citas WHERE id_cita = ?', 
-            [id]
-        );
+        const [cita] = await db.execute('SELECT id_usuario, estado FROM Cita WHERE id_cita = ?', [id]);
+        if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
 
-        if (cita.length === 0) {
-            return res.status(404).json({ message: "Cita no encontrada" });
+        // Seguridad: El usuario solo cancela la suya, el Admin cancela cualquiera
+        if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
+            return res.status(403).json({ message: "No autorizado" });
         }
 
-        // 2. Verificamos que el id_usuario de la cita coincida con el del Token
-        if (cita[0].id_usuario !== id_usuario_token) {
-            return res.status(403).json({ message: "No tienes permiso para cancelar esta cita" });
+        await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', ['cancelada', id]);
+
+        // Si el Admin cancela -> Notifica al Cliente. Si el Cliente cancela -> Notifica al Admin.
+        if (esAdmin) {
+            await enviarNotificacion(cita[0].id_usuario, "Cita Cancelada", "El taller ha cancelado tu cita.", 'cita');
+        } else {
+            await enviarNotificacion(1, "Cita Cancelada por Cliente", `El cliente ha cancelado la cita #${id}`, 'cita');
         }
 
-        // 3. (Opcional) Evitar cancelar citas que ya pasaron o ya están completadas
-        if (cita[0].estado !== 'pendiente') {
-            return res.status(400).json({ message: "Solo se pueden cancelar citas en estado pendiente" });
-        }
-
-        // 4. Procedemos a la cancelación
-        await db.execute(
-            'UPDATE citas SET estado = ? WHERE id_cita = ?', 
-            ['cancelada', id]
-        );
-
-        res.json({ message: "Cita cancelada correctamente por el usuario" });
+        res.json({ message: "Cita cancelada correctamente" });
     } catch (error) {
-        res.status(500).json({ error: "Error al cancelar la cita", detalles: error.message });
+        res.status(500).json({ error: error.message });
     }
 };

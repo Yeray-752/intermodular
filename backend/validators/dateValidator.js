@@ -1,15 +1,23 @@
 import { z } from "zod";
 
-const EstadoCita = z.enum(['pendiente', 'confirmada', 'completada', 'cancelada']);
+// Coincidiendo con los ENUM de tu base de datos MariaDB
+const EstadoCita = z.enum(['pendiente', 'aceptada', 'cancelada', 'finalizada']);
 
 export const validateCita = (data) => {
   const schema = z.object({
-    id_servicio: z.number().int().positive("Servicio no válido"),
-    fecha: z.string().refine((val) => !isNaN(Date.parse(val)), {
-      message: "Fecha inválida (YYYY-MM-DD)",
+    // La matrícula es clave según tu tabla
+    matricula_vehiculo: z.string().min(1, "La matrícula es obligatoria").max(15),
+    
+    // Validamos que sea una fecha válida y no sea en el pasado
+    fecha: z.string().refine((val) => {
+        const date = new Date(val);
+        return !isNaN(date.getTime()) && date > new Date();
+    }, {
+      message: "La fecha debe ser válida y posterior a hoy",
     }),
-    hora: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Formato de hora inválido (HH:mm)"),
-    notas: z.string().max(255).optional()
+    
+    // 'motivo' en la BD es varchar(255)
+    motivo: z.string().max(255, "El motivo es demasiado largo").optional().default("Sin motivo especificado")
   });
 
   return schema.safeParse(data);
@@ -17,7 +25,7 @@ export const validateCita = (data) => {
 
 export const validateUpdateEstadoCita = (data) => {
   const schema = z.object({
-    id: z.coerce.number().int().positive(), // Coerce convierte string de params a número
+    id: z.coerce.number().int().positive(),
     estado: EstadoCita
   });
   return schema.safeParse(data);

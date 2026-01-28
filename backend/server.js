@@ -17,11 +17,12 @@ import vehiculesRoutes from "./routes/vehicules.js";
 import orderRoutes from "./routes/order.js";
 import cartRoutes from "./routes/carts.js"
 import ratingRoutes from "./routes/rating.js"
+import notificationRoutes from "./routes/notifications.js";
 
 //Middlewares
 import { languageMiddleware } from './middlewares/language.js';
 import {autoSanitize} from "./middlewares/sanitizer.js"
-import { getSafePath } from '../middlewares/path.js';
+import { getSafePath } from './middlewares/path.js';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use(cors());
 app.use(express.json());
 app.use(autoSanitize);
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/uploads', express.static('public/uploads'));
 
 app.use(languageMiddleware);
 
@@ -64,10 +67,10 @@ app.use(hpp()); //si hay datos duplicados, esto evita que explote la página
 
 app.use("/api/users", usersRoutes);
 app.use("/api/products", productosRoutes);
-app.use("/api/services", serviceRoutes);
+app.use("/api/dates", datesRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use('/api/product_categories', product_categoryRoutes);
 app.use('/api/service_categories', service_categoryRoutes);
-app.use('/api/dates', datesRoutes);
 app.use('/api/vehicules', vehiculesRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
