@@ -1,7 +1,7 @@
 {
     "es": {
         "searchPlaceholder": "Buscar servicios...",
-        "categories": "Categorías",
+        "categories": "Servicios",
         "duration": "Duración",
         "difficulty": "Dificultad",
         "book": "Reservar",
@@ -27,7 +27,7 @@
     },
     "en": {
         "searchPlaceholder": "Search services...",
-        "categories": "Categories",
+        "categories": "Services",
         "duration": "Duration",
         "difficulty": "Difficulty",
         "book": "Book",

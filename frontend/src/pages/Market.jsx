@@ -49,26 +49,26 @@ function App() {
     <div className="flex flex-col min-h-screen bg-base-200">
       <Header />
       <main className="grow pb-20">
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full p-4">
 
           {/* Barra de búsqueda */}
-          <div className="w-full max-w-md px-4 mt-8">
+          <div className="w-full max-w-md px-4">
             <input
-              className='input input-bordered w-full shadow-sm focus:border-primary'
+              className='input input-bordered w-full max-w-md mt-8 bg-base-100'
               type="search"
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("searchPlaceholder")}
             />
           </div>
 
-          <h1 className='mt-10 font-extrabold mb-4 text-3xl text-gray-800 w-full max-w-7xl px-6 md:px-10'>
+          <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>
             {t('products')}
           </h1>
 
           {/* Navegación de Categorías */}
-          <nav className='relative group w-86 sm:w-135 md:w-189 lg:w-242 xl:w-272 mx-auto px-10'>
-            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-primary hover:text-white transition-all">
-              <ChevronLeft size={20} />
+          <nav className='relative mt-5 group w-86 sm:w-135 md:w-189 lg:w-242 xl:w-272 mx-auto px-10'>
+            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+              <ChevronLeft size={24} />
             </button>
 
             <div
@@ -88,13 +88,13 @@ function App() {
               ))}
             </div>
 
-            <button onClick={() => scroll(250)} className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-primary hover:text-white transition-all">
-              <ChevronRight size={20} />
+            <button onClick={() => scroll(250)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+              <ChevronRight size={24} />
             </button>
           </nav>
 
           {/* LISTADO DE PRODUCTOS - El cambio clave está aquí */}
-          <div className="w-full max-w-7xl mx-auto px-4">
+          <div className="max-w-[1400px] pt-4">
             {loading ? (
               <div className="flex flex-col items-center py-20">
                 <span className="loading loading-spinner loading-md text-primary"></span>

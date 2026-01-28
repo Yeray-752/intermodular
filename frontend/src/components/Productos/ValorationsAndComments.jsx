@@ -77,8 +77,8 @@ export default function RatingSystem({ id_producto, userid_producto }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            {/* FORMULARIO */}
-            <div className="space-y-6 rounded-xl p-8 shadow-lg">
+            {/* FORMULARIO - Cambiado a bg-base-100 */}
+            <div className="space-y-6 rounded-xl p-8 shadow-lg bg-base-100 border border-base-300">
 
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -112,7 +112,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                         {t("placeholder_textarea")}
                     </label>
                     <textarea
-                        className="textarea textarea-bordered w-full min-h-[120px] focus:textarea-primary transition-all duration-200 bg-base-100"
+                        className="textarea textarea-bordered w-full min-h-[120px] focus:textarea-primary transition-all duration-200 bg-base-100 text-base-content"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={t("placeholder_textarea")}
@@ -152,7 +152,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                     {reviews.map((rev) => (
                         <div
                             key={rev.id}
-                            className="bg-base-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-base-300"
+                            className="bg-base-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-base-300"
                         >
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-3">
@@ -172,30 +172,30 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                                                 day: 'numeric'
                                             })}
                                         </p>
-
                                     </div>
                                 </div>
-                                <div className="rating rating-sm mb-3 pointer-events-none">
-                                    {[1, 2, 3, 4, 5].map(n => (
-                                        <input
-                                            key={n}
-                                            type="radio"
-                                            name={`rating-list-${rev.id}`}
-                                            className="mask mask-star-2 bg-amber-400"
-                                            checked={Math.round(rev.rating) === n}
-                                            readOnly
-                                        />
-                                    ))}
+                                <div className="flex flex-col items-end gap-2">
+                                    <div className="rating rating-sm pointer-events-none">
+                                        {[1, 2, 3, 4, 5].map(n => (
+                                            <input
+                                                key={n}
+                                                type="radio"
+                                                name={`rating-list-${rev.id}`}
+                                                className="mask mask-star-2 bg-amber-400"
+                                                checked={Math.round(rev.rating) === n}
+                                                readOnly
+                                            />
+                                        ))}
+                                    </div>
+                                    {rev.id_usuario === userid_producto && (
+                                        <div className="badge badge-info badge-outline text-[10px] uppercase font-bold">Tu comentario</div>
+                                    )}
                                 </div>
-                                {rev.id_usuario === userid_producto && (
-                                    <div className="badge badge-outline badge-info text-xs">Tu comentario</div>
-                                )}
                             </div>
 
-
-
-                            <div className="bg-base-200/50 p-4 rounded-xl border border-base-200/50">
-                                <p className="text-sm text-base-content/80 bg-white rounded-2xl p-3 leading-relaxed italic wrap-break-words whitespace-pre-wrap">
+                            <div className="bg-base-200/50 p-3 rounded-lg border border-base-300/50">
+                                {/* Cambiado bg-white por bg-base-100 para que no brille en modo oscuro */}
+                                <p className="text-sm text-base-content/90 bg-base-100 rounded-lg p-3 leading-relaxed italic break-words whitespace-pre-wrap">
                                     {rev.comment}
                                 </p>
                             </div>

@@ -51,7 +51,7 @@ function App() {
       <main className="grow">
         <div className="flex flex-col p-4 items-center">
           <input
-            className='input input-bordered w-full max-w-md mt-6 bg-base-100'
+            className='input input-bordered w-full max-w-md mt-8 bg-base-100'
             type="search"
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}

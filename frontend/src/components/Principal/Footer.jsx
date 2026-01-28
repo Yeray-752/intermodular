@@ -26,11 +26,11 @@ function Footer() {
     return (
         <footer className="bg-base-100 dark:bg-base-200 text-base-content pt-12 pb-8 mt-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
                     {/* Columna 1: Logo y descripción */}
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="flex items-center justify-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
                             <img src={logo} alt="Logo Akotan" className="w-20 h-20 object-contain" />
                             <div>
                                 <h2 className="text-2xl font-bold">AKOTAN</h2>
@@ -39,10 +39,8 @@ function Footer() {
                                 </p>
                             </div>
                         </div>
-                        <p className="text-base-content/70 text-sm leading-relaxed">
-                            {t('footer:description')}
-                        </p>
-                        <div className="flex items-center space-x-4 pt-2">
+                        
+                        <div className="flex items-center justify-center space-x-4 pt-2">
                             {[Facebook, Instagram, Phone].map((Icon, i) => (
                                 <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-300 dark:bg-base-400 flex items-center justify-center hover:bg-primary transition-colors duration-300">
                                     <Icon size={18} className="text-base-content" />
