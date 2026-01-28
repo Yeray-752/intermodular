@@ -93,8 +93,6 @@ export const updateService = async (req, res) => {
 export const deleteService = async (req, res) => {
     const { id } = req.params;
     try {
-        // Si tienes ON DELETE CASCADE en la BD, se borrarán las traducciones solas.
-        // Si no, borra primero las traducciones:
         await db.query("DELETE FROM service_translations WHERE service_id = ?", [id]);
         await db.query("DELETE FROM services WHERE id = ?", [id]);
         

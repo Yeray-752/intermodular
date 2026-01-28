@@ -17,7 +17,6 @@ export const obtenerCitas = async (req, res) => {
         res.status(500).json({ error: "Error al obtener citas" });
     }
 };
-// Helper para insertar notificaciones de forma limpia
 const enviarNotificacion = async (id_usuario, titulo, mensaje, categoria) => {
     try {
         await db.execute(

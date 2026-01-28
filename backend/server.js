@@ -63,10 +63,11 @@ app.use((req, res, next) => {
 
 app.use(limiter);
 
-app.use(hpp()); //si hay datos duplicados, esto evita que explote la página
+app.use(hpp());
 
 app.use("/api/users", usersRoutes);
 app.use("/api/products", productosRoutes);
+app.use("/api/services", serviceRoutes);
 app.use("/api/dates", datesRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use('/api/product_categories', product_categoryRoutes);
