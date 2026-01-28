@@ -15,6 +15,9 @@
         "lowDemand": "Baja demanda (Recomendado)",
         "mediumDemand": "Demanda media",
         "highDemand": "Alta demanda (Sujeto a cancelación)",
+        "motivo": "Motivo o detalle",
+        "descripcion": "Describe brevemente qué necesita tu vehículo...",
+        "cita": "Gestión de cita previa",
         "levels": {
             "Baja": "Baja",
             "Media": "Media",
@@ -38,6 +41,9 @@
         "lowDemand": "Low demand (Recommended)",
         "mediumDemand": "Medium demand",
         "highDemand": "High demand (Subject to cancellation)",
+        "motivo": "Reason or Details",
+        "descripcion": "Briefly describe the service your vehicle requires...",
+        "cita": "Manage Appointment",
         "levels": {
             "Baja": "Low",
             "Media": "Medium",

@@ -6,7 +6,9 @@
         "back": "Volver",
         "products": "Productos",
         "searchPlaceholder": "Amortiguador hidráulico...",
-        "productButton": "Comprar ahora"
+        "productButton": "Comprar ahora",
+        "cantidad": "Cantidad",
+        "confirmar": "Confirmar y Añadir"
     },
     "en": {
         "price": "Price",
@@ -15,6 +17,8 @@
         "back": "Back",
         "products": "Products",
         "searchPlaceholder": "Hydraulic shock absorber...",
-        "productButton": "Buy now"
+        "productButton": "Buy now",
+        "cantidad": "Quantity",
+        "confirmar": "Confirm & Add"
     }
 }

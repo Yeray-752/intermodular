@@ -3,12 +3,18 @@
     "opinion_title": "¡Danos tu opinión!",
     "placeholder_textarea": "Escriba un comentario si lo desea...",
     "btn_send": "Enviar",
-    "user_name_placeholder": "Nombre del usuario"
+    "user_name_placeholder": "Nombre del usuario",
+    "puntuacion": "Tu puntuación",
+    "opinion": "Opiniones de otros usuarios",
+    "noOpinion": "No hay valoraciones aún. ¡Sé el primero!"
   },
   "en": {
     "opinion_title": "Give us your feedback!",
     "placeholder_textarea": "Write a comment if you wish...",
     "btn_send": "Send",
-    "user_name_placeholder": "User name"
+    "user_name_placeholder": "User name",
+    "puntuacion": "Your Rating",
+    "opinion": "User Reviews",
+    "noOpinion": "No ratings yet. Be the first to review!"
   }
 }

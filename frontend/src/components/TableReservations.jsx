@@ -25,9 +25,9 @@ function TableReservations({ search, categoriaId, servicios }) {
 
     const getDifficultyColor = (level) => {
         switch (level) {
-            case 'low': return 'text-green-500';
-            case 'medium': return 'text-yellow-500';
-            case 'high': return 'text-red-500';
+            case 'low': return 'text-success'; // DaisyUI semantic color
+            case 'medium': return 'text-warning'; // DaisyUI semantic color
+            case 'high': return 'text-error'; // DaisyUI semantic color
             default: return '';
         }
     };
@@ -55,12 +55,11 @@ function TableReservations({ search, categoriaId, servicios }) {
 
     return (
         <div className="w-full">
-            {/* GRID INTERNO: Controla las tarjetas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
                 {serviciosFiltrados.map((servicio) => (
                     <div
                         key={servicio.id}
-                        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 w-full max-w-[320px] flex flex-col p-4 border border-gray-100"
+                        className="bg-base-100 text-base-content rounded-2xl shadow-md hover:shadow-xl w-full max-w-[320px] flex flex-col p-4 border border-base-300"
                     >
                         <div className="relative mb-4">
                             <img
@@ -68,14 +67,14 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 alt={servicio.name}
                                 className="h-44 w-full object-cover rounded-xl"
                             />
-                            <span className="absolute top-2 right-2 text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded-full">
+                            <span className="absolute top-2 right-2 text-xs font-semibold bg-primary text-primary-content px-3 py-1 rounded-full">
                                 {servicio.duration}
                             </span>
                         </div>
 
                         <div className="flex flex-col grow">
-                            <h2 className="text-lg font-bold mb-2 text-gray-900 line-clamp-1">{servicio.name}</h2>
-                            <p className="text-sm text-gray-500 mb-4 line-clamp-3 h-14">{servicio.description}</p>
+                            <h2 className="text-lg font-bold mb-2 text-base-content line-clamp-1">{servicio.name}</h2>
+                            <p className="text-sm text-base-content/70 mb-4 line-clamp-3 h-14">{servicio.description}</p>
 
                             <div className="mt-auto">
                                 <p className="text-xs mb-4">
@@ -84,10 +83,10 @@ function TableReservations({ search, categoriaId, servicios }) {
                                         {t(`levels.${servicio.difficulty}`)}
                                     </span>
                                 </p>
-                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                    <span className="text-2xl font-extrabold text-orange-500">{servicio.price}€</span>
+                                <div className="flex items-center justify-between pt-4 border-t border-base-300">
+                                    <span className="text-2xl font-extrabold text-secondary">{servicio.price}€</span>
                                     <button
-                                        className="btn btn-primary btn-sm rounded-full px-6 text-white"
+                                        className="btn btn-primary btn-sm rounded-full px-6"
                                         onClick={() => abrirModal(servicio)}
                                     >
                                         {t('book')}
@@ -101,18 +100,18 @@ function TableReservations({ search, categoriaId, servicios }) {
 
             {/* MODAL ÚNICO */}
             <dialog id="modal_reserva_unico" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
-                <div className="modal-box max-w-lg p-0 overflow-y-auto max-h-[90vh] rounded-2xl bg-white shadow-2xl border border-gray-100 flex flex-col">
+                <div className="modal-box max-w-lg p-0 overflow-y-auto max-h-[90vh] rounded-2xl bg-base-100 text-base-content shadow-2xl border border-base-300 flex flex-col">
 
                     {servicioSeleccionado ? (
                         <>
-                            {/* HEADER - Sticky para que no se pierda al hacer scroll */}
-                            <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-6 py-5 border-b border-gray-100">
+                            {/* HEADER */}
+                            <div className="sticky top-0 z-20 bg-base-100/90 backdrop-blur-md px-6 py-5 border-b border-base-300">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="font-extrabold text-2xl text-slate-800 tracking-tight">
+                                        <h3 className="font-extrabold text-2xl tracking-tight">
                                             {t('bookTitle')}
                                         </h3>
-                                        <p className="text-xs text-slate-500 mt-0.5">Gestión de cita previa</p>
+                                        <p className="text-xs opacity-60 mt-0.5">{t('cita')}</p>
                                     </div>
                                     <button
                                         className="btn btn-sm btn-circle btn-ghost"
@@ -126,74 +125,69 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 </div>
                             </div>
 
-                            {/* CONTENIDO - El área que tendrá el scroll */}
+                            {/* CONTENIDO */}
                             <div className="p-6 space-y-6">
-
-                                {/* Selección de Vehículo */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold mb-3 text-slate-700">{t('vehicleQuestion')}</span>
+                                        <span className="label-text font-bold mb-3">{t('vehicleQuestion')}</span>
                                     </label>
-                                    <select className="select select-bordered w-full bg-slate-50 focus:ring-2 focus:ring-primary/20 transition-all" defaultValue={0}>
+                                    <select className="select select-bordered w-full bg-base-200 focus:ring-2 focus:ring-primary/20 transition-all" defaultValue={0}>
                                         <option disabled value={0}>{t('selectVehicle')}</option>
                                         <option>Mi Toyota Corolla</option>
                                         <option>Añadir nuevo vehículo...</option>
                                     </select>
                                 </div>
 
-                                {/* Motivo de la visita */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold mb-3 text-slate-700">Motivo o detalles</span>
+                                        <span className="label-text font-bold mb-3">{t('motivo')}</span>
                                     </label>
                                     <textarea
-                                        placeholder="Describe brevemente qué necesita tu vehículo..."
-                                        className="textarea textarea-bordered w-full bg-slate-50 focus:ring-2 focus:ring-primary/20 h-24"
+                                        placeholder={t('descripcion')}
+                                        className="textarea textarea-bordered w-full bg-base-200 focus:ring-2 focus:ring-primary/20 h-24"
                                     />
                                 </div>
 
-                                {/* Sección Calendario */}
-                                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                                <div className="bg-base-200 rounded-2xl p-4 border border-base-300">
                                     <label className="label pt-0">
-                                        <span className="label-text font-bold mb-2 text-slate-700">{t('selectDate')}</span>
+                                        <span className="label-text font-bold mb-2">{t('selectDate')}</span>
                                     </label>
 
-                                    <div className="bg-white rounded-xl shadow-sm p-2 mb-4 border border-gray-100 overflow-hidden">
+                                    <div className="bg-base-100 rounded-xl shadow-sm p-2 mb-4 border border-base-300 overflow-hidden text-base-content">
                                         <Calendar
                                             tileClassName={obtenerClaseDia}
                                             locale={lang === 'es' ? 'es-ES' : 'en-US'}
-                                            className="mx-auto border-none"
+                                            className="mx-auto border-none bg-base-100 text-base-content"
                                         />
                                     </div>
 
-                                    {/* Leyenda de Disponibilidad */}
-                                    <div className="flex flex-wrap justify-center gap-4 text-[10px] uppercase font-bold tracking-widest text-slate-500">
+                                    <div className="flex flex-wrap justify-center gap-4 text-[10px] uppercase font-bold tracking-widest opacity-60">
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-200"></div>
+                                            <div className="w-2.5 h-2.5 rounded-full bg-success shadow-sm"></div>
                                             <span>{t('lowDemand')}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
+                                            <div className="w-2.5 h-2.5 rounded-full bg-warning shadow-sm"></div>
                                             <span>{t('mediumDemand')}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-200"></div>
+                                            <div className="w-2.5 h-2.5 rounded-full bg-error shadow-sm"></div>
                                             <span>{t('highDemand')}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* FOOTER - Sticky en la parte inferior */}
-                            <div className="sticky bottom-0 z-20 bg-white/90 backdrop-blur-md p-6 border-t border-gray-100">
+                            {/* FOOTER */}
+                            <div className="sticky bottom-0 z-20 bg-base-100/90 backdrop-blur-md p-6 border-t border-base-300">
                                 <form method="dialog" className="flex gap-3 w-full">
                                     <button
-                                        className="btn btn-ghost flex-1 font-bold text-slate-500"
+                                        className="btn btn-ghost flex-1 font-bold opacity-60"
                                         onClick={() => cerrarModal()}
                                     >
                                         {t('cancel')}
                                     </button>
-                                    <button className="btn btn-primary flex-2 text-white shadow-lg shadow-primary/30 font-bold">
+                                    <button className="btn btn-primary flex-2 shadow-lg shadow-primary/20 font-bold">
                                         {token ? t('confirm') : t('noToken')}
                                     </button>
                                 </form>
@@ -202,7 +196,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                     ) : (
                         <div className="py-24 flex flex-col items-center justify-center gap-4">
                             <span className="loading loading-ring loading-lg text-primary"></span>
-                            <p className="text-slate-400 font-medium animate-pulse uppercase tracking-widest text-sm">Cargando servicio...</p>
+                            <p className="text-base-content opacity-40 font-medium animate-pulse uppercase tracking-widest text-sm">Cargando servicio...</p>
                         </div>
                     )}
                 </div>

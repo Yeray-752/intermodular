@@ -78,7 +78,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
             {/* FORMULARIO */}
-            <div className="space-y-6 bg-gradient-to-br from-base-200 to-base-300 rounded-xl p-8 shadow-lg">
+            <div className="space-y-6 rounded-xl p-8 shadow-lg">
 
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
 
                 <div>
                     <label className="text-xs font-medium text-base-content/70 mb-2 block">
-                        Tu puntuación
+                        {t('puntuacion')}
                     </label>
                     <div className="rating rating-lg gap-2">
                         {[1, 2, 3, 4, 5].map(n => (
@@ -132,7 +132,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
             <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-base-content">
-                        Opiniones de otros usuarios ({reviews.length})
+                        {t('opinion')} ({reviews.length})
                     </h3>
                 </div>
 
@@ -144,7 +144,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                             <p className="text-sm text-base-content/50 italic">
-                                No hay valoraciones aún. ¡Sé el primero!
+                                {t('noOpinion')}
                             </p>
                         </div>
                     )}
@@ -195,8 +195,8 @@ export default function RatingSystem({ id_producto, userid_producto }) {
 
 
                             <div className="bg-base-200/50 p-4 rounded-xl border border-base-200/50">
-                                <p className="text-sm text-base-content/80 leading-relaxed italic wrap-break-words whitespace-pre-wrap">
-                                    "{rev.comment}"
+                                <p className="text-sm text-base-content/80 bg-white rounded-2xl p-3 leading-relaxed italic wrap-break-words whitespace-pre-wrap">
+                                    {rev.comment}
                                 </p>
                             </div>
                         </div>

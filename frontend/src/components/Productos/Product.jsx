@@ -2,6 +2,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RatingSystem from './ValorationsAndComments';
+import { CirclePlus, CircleMinus } from "lucide-react"
 
 function Product() {
     const { id } = useParams();
@@ -51,7 +52,7 @@ function Product() {
     // Función para mostrar la alerta arriba y que desaparezca a los 3 seg
     const mostrarAlerta = (mensaje, tipo = "success") => {
         setNotificacion({ mostrar: true, mensaje, tipo });
-        setTimeout(() => setNotificacion({ ...notificacion, mostrar: false }), 3000);
+        setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
     };
 
     const esTarjetaValida = (numero) => {
@@ -120,7 +121,7 @@ function Product() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-base-100">
                 <div className="flex flex-col items-center gap-4">
                     <span className="loading loading-spinner loading-lg text-primary"></span>
                     <p className="text-sm text-base-content/60">Cargando producto...</p>
@@ -131,7 +132,7 @@ function Product() {
 
     if (error || !producto) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-base-100 text-base-content">
                 <p className="text-xl font-bold">{error || "Producto no encontrado"}</p>
                 <button onClick={() => navigate(-1)} className="btn btn-primary shadow-lg">Volver</button>
             </div>
@@ -143,37 +144,33 @@ function Product() {
     const precioFinal = tipoEntrega === "domicilio" ? (subtotal * 1.05).toFixed(2) : subtotal.toFixed(2);
 
     const renderStars = (rating) => {
-        // Convertimos a número por seguridad y redondeamos
         const numericRating = Math.round(Number(rating));
 
         return (
             <>
-            
-            <span className="ml-2 text-sm font-bold opacity-60">{rating || 0}/5</span>
-            <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                        key={star}
-                        className={`w-4 h-5 ${star <= numericRating ? "text-amber-400" : "text-gray-300"
-                            }`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                ))}
-                
-            </div>
+                <span className="ml-2 text-sm font-bold opacity-60 text-base-content">{rating || 0}/5</span>
+                <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <svg
+                            key={star}
+                            className={`w-4 h-5 ${star <= numericRating ? "text-warning" : "text-base-content/20"}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                    ))}
+                </div>
             </>
         );
     };
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-base-200">
 
             {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-100 animate-bounce">
+                <div className="toast toast-top toast-center z-[100] animate-bounce">
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : 'alert-error'} shadow-lg border-none text-white font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
@@ -193,11 +190,11 @@ function Product() {
                 </button>
 
                 {/* PRODUCTO */}
-                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden border border-base-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
 
                         {/* Imagen */}
-                        <div className="bg-linear-to-br from-base-200 to-base-300 p-12 flex items-center justify-center">
+                        <div className="bg-base-200/50 p-12 flex items-center justify-center">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
                                 <img
@@ -209,9 +206,9 @@ function Product() {
                         </div>
 
                         {/* Info */}
-                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-6">
+                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-6 bg-base-100 text-base-content">
                             <div>
-                                <h1 className="text-3xl font-bold text-base-content mb-3">
+                                <h1 className="text-3xl font-bold mb-3">
                                     {producto.name}
                                 </h1>
                             </div>
@@ -233,13 +230,10 @@ function Product() {
                                 </div>
                                 <div className="h-12 w-px bg-base-content/10"></div>
                                 <div>
-                                    
                                     <p className="text-xs text-base-content/60 mb-1">{t('market:stock')}</p>
                                     <span className={`text-sm font-semibold ${producto.stock > 0 ? 'text-success' : 'text-error'}`}>
                                         {producto.stock > 0 ? `${producto.stock} uds` : t('market:outOfStock')}
                                     </span>
-
-
                                 </div>
                             </div>
 
@@ -255,22 +249,14 @@ function Product() {
                 </section>
 
                 {/* OPINIONES */}
-                <section className="bg-base-100 rounded-2xl shadow-xl p-8 md:p-12">
-                    <div className="flex items-center gap-3 mb-8">
-                        <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <h2 className="text-2xl font-bold text-base-content">
-                            Opiniones de usuarios
-                        </h2>
-                    </div>
+                <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12 border border-base-300">
                     <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
                 </section>
             </div>
 
             {/* Modal de Pago */}
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box max-w-2xl bg-base-100 rounded-2xl shadow-2xl">
+                <div className="modal-box max-w-2xl bg-base-100 text-base-content rounded-2xl shadow-2xl border border-base-300">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
@@ -287,7 +273,7 @@ function Product() {
 
                         <section>
                             <label className="label">
-                                <span className="label-text font-semibold">{t('formulario:checkout.deliveryType')}</span>
+                                <span className="label-text mb-4 font-semibold">{t('formulario:checkout.deliveryType')}</span>
                             </label>
                             <select
                                 className="select select-bordered w-full focus:select-primary transition-all duration-200"
@@ -301,37 +287,52 @@ function Product() {
                             </select>
                         </section>
 
+                        {tipoEntrega === "domicilio" && (
+                            <section className="animate-in fade-in slide-in-from-top-4 duration-300">
+                                <label className="label">
+                                    <span className="label-text font-semibold">Ciudad de entrega</span>
+                                </label>
+                                <select
+                                    className={`select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
+                                    value={ciudad}
+                                    onChange={(e) => {
+                                        setCiudad(e.target.value);
+                                        setCiudadValida(ciudades.includes(e.target.value));
+                                    }}
+                                    required
+                                >
+                                    <option value="" disabled>Selecciona tu ciudad</option>
+                                    {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </section>
+                        )}
+
                         {tipoEntrega && (
                             <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-6">
-                                <div className="bg-base-200 rounded-xl p-6">
-                                    <p className="font-semibold text-sm text-base-content/70 mb-4">{t('market:quantity')}:</p>
+                                <div className="flex justify-between items-center bg-base-200 rounded-xl p-6">
                                     <div className="flex items-center gap-4">
                                         <button
                                             type="button"
-                                            className="btn btn-circle btn-sm btn-primary"
+                                            className="btn btn-circle btn-sm btn-ghost"
                                             onClick={() => setCantidad(Math.max(1, cantidad - 1))}
                                         >
-                                            -
+                                            <CircleMinus />
                                         </button>
                                         <input
                                             type="number"
-                                            className="input input-bordered w-20 text-center font-bold"
+                                            className="input input-bordered w-20 text-center font-bold bg-base-100"
                                             value={cantidad}
                                             readOnly
                                         />
                                         <button
                                             type="button"
-                                            className="btn btn-circle btn-sm btn-primary"
+                                            className="btn btn-circle btn-sm btn-ghost"
                                             onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}
                                         >
-                                            +
+                                            <CirclePlus />
                                         </button>
                                     </div>
-                                </div>
-
-                                <div className="text-primary-content p-6 rounded-xl shadow-lg">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-bold text-lg">Total:</span>
+                                    <div className="text-primary text-right">
                                         <span className="text-3xl font-black">{precioFinal}€</span>
                                     </div>
                                 </div>
@@ -389,7 +390,7 @@ function Product() {
                                         type="submit"
                                         className="btn btn-primary btn-block btn-lg shadow-lg hover:shadow-xl transition-all duration-200 mt-6"
                                     >
-                                        Confirmar y Añadir
+                                        {t('confirmar')}
                                     </button>
                                 </div>
                             </div>

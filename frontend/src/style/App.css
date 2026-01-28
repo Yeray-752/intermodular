@@ -35,6 +35,9 @@ html, body, #root {
     animation: logo-spin infinite 20s linear;
   }
 }
+@plugin "daisyui" {
+  themes: all;
+}
 
 .card {
   padding: 2em;
