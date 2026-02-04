@@ -84,11 +84,11 @@ function Header() {
     }, [user, i18n.language]);
 
     return (
-        <div className="drawer drawer-end sticky top-0 z-[60]">
+        <div className="drawer drawer-end sticky top-0 z-60">
             <input id="my-drawer-5" type="checkbox" className="drawer-toggle" />
             
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-[100]">
+                <div className="toast toast-top toast-center z-100">
                     {/* Cambiado: text-success-content o similares para que el texto sea legible en el tema oscuro */}
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : notificacion.tipo === 'error' ? 'alert-error' : 'alert-info'} shadow-lg font-bold`}>
                         <span>{notificacion.mensaje}</span>
@@ -98,7 +98,7 @@ function Header() {
 
             <div className="drawer-content flex flex-col">
                 {/* Cambiado: Eliminado dark:bg-base-200 para dejar que DaisyUI lo gestione con bg-base-100 */}
-                <header className="bg-base-100 text-base-content shadow-md border-b border-base-300 w-full">
+                <header className="bg-base-200 text-base-content shadow-md border-b border-base-300 w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
                             <div onClick={() => navigate('/')} className="flex items-center space-x-4 cursor-pointer group">
