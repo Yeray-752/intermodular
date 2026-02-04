@@ -13,7 +13,7 @@ export default function Home() {
   document.documentElement.setAttribute("data-theme", theme);
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
+    <div className="min-h-screen flex flex-col bg-base-100 text-base-200">
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
@@ -24,7 +24,7 @@ export default function Home() {
               <Trans
                 i18nKey="heroTitle"
                 components={{
-                  1: <span className="text-blue-500" />,
+                  1: <span className="text-primary" />,
                   2: <span className="text-secondary" />
                 }}
               />
@@ -85,11 +85,11 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     29,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-200 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -104,11 +104,11 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     49,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-200 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -123,11 +123,11 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     39,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-200 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>

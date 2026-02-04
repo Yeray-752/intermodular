@@ -51,15 +51,16 @@ html, body, #root {
 
   /* Fondos: Más limpios y con un toque de brillo */
   --color-base-100: oklch(100% 0 0);          /* Blanco puro */
-  --color-base-200: oklch(97% 0.01 250);      /* Azulado muy suave para profundidad */
-  --color-base-300: oklch(92% 0.02 250);
+  --color-base-200: #1E2939;      /*yeray*/
+  --color-base-300: #F3F4F6;
+  --color-base-400: oklch(0.967 0.0029 264.54);
   --color-base-content: oklch(25% 0.02 250);  /* Texto oscuro pero no negro total */
 
   /* Colores de Marca: Más saturados y alegres */
   --color-primary: oklch(0.7 0.185 46.59);       /* Un azul vibrante y moderno */
   --color-primary-content: oklch(98% 0.01 260);
   
-  --color-secondary: oklch(70% 0.30 340);     /* Un rosa/fucsia energético */
+  --color-secondary: #1447E6;     /*yeray*/
   --color-secondary-content: oklch(98% 0.01 340);
   
   --color-accent: oklch(75% 0.20 150);        /* Un verde esmeralda brillante */
@@ -79,7 +80,9 @@ html, body, #root {
   --color-warning-content: oklch(35% 0.10 70);
   
   --color-error: oklch(65% 0.25 25);          /* Rojo coral intenso */
-  --color-error-content: oklch(98% 0.02 25);
+  --color-error-content: oklch(98% 0.02 25); 
+
+  --color-base-content/50: oklch(0.967 0.0029 264.54);
 
   /* Refinamientos visuales */
   --radius-selector: 0.75rem;

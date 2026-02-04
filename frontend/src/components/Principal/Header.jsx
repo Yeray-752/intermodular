@@ -17,7 +17,7 @@ function Header() {
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
 
     // Cambiado: text-base-content asegura que el texto cambie según el tema
-    const hoverLink = 'text-base-content hover:text-primary transition-colors duration-300 font-medium';
+    const hoverLink = 'text-base-100 hover:text-primary transition-colors duration-300 font-medium';
 
     const navItems = [
         { label: t('nav.bookings'), path: '/reservas' },
@@ -102,10 +102,10 @@ function Header() {
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
                             <div onClick={() => navigate('/')} className="flex items-center space-x-4 cursor-pointer group">
-                                <img src={logo} className="w-16 h-16 object-contain group-hover:scale-105 transition-transform" alt="Logo" />
+                                <img src={logo} className="w-20 h-20 object-contain group-hover:scale-105 transition-transform" alt="Logo" />
                                 <div className="hidden sm:block">
-                                    <h1 className="text-xl font-bold">AKOTAN</h1>
-                                    <p className="text-xs opacity-70">{t('subtitle')}</p>
+                                    <h1 className="text-xl text-base-100 font-bold">AKOTAN</h1>
+                                    <p className="text-xs text-base-100 opacity-70">{t('subtitle')}</p>
                                 </div>
                             </div>
 
