@@ -18,7 +18,7 @@ export const obtenerCitas = async (req, res) => {
     }
 };
 const enviarNotificacion = async (id_usuario, titulo, mensaje, categoria) => {
-    try {
+    try { 
         await db.execute(
             `INSERT INTO Notificaciones (id_usuario, titulo, mensaje, categoria) VALUES (?, ?, ?, ?)`,
             [id_usuario, titulo, mensaje, categoria]
@@ -32,19 +32,19 @@ export const crearCita = async (req, res) => {
     const result = validateCita(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
 
-    const id_usuario_real = req.user.id;
+    const id_user = req.user.id;
     const { matricula_vehiculo, fecha, motivo } = req.body;
 
     try {
-        // IMPORTANTE: He cambiado "citas" por "Cita" para que coincida con tu DESC
+
         const query = `INSERT INTO Cita (id_usuario, matricula_vehiculo, fecha, motivo, estado) VALUES (?, ?, ?, ?, 'pendiente')`;
-        const [dbResult] = await db.execute(query, [id_usuario_real, matricula_vehiculo, fecha, motivo]);
+        const [dbResult] = await db.execute(query, [id_user, matricula_vehiculo, fecha, motivo]);
 
         // Notificar al ADMIN (Asumimos ID 1 o rol admin)
         await enviarNotificacion(
             1, 
             "Nueva Cita", 
-            `El usuario ${id_usuario_real} ha solicitado una cita para el vehículo ${matricula_vehiculo}`, 
+            `El usuario ${id_user} ha solicitado una cita para el vehículo ${matricula_vehiculo}`, 
             'cita'
         );
 
