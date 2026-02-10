@@ -46,7 +46,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200">
+    <div className="flex flex-col min-h-screen bg-neutral">
       <Header />
       <main className="grow pb-20">
         <div className="flex flex-col items-center w-full p-4">

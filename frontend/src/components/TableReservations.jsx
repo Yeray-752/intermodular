@@ -67,26 +67,26 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 alt={servicio.name}
                                 className="h-44 w-full object-cover rounded-xl"
                             />
-                            <span className="absolute top-2 right-2 text-xs font-semibold bg-primary text-primary-content px-3 py-1 rounded-full">
+                            <span className="absolute top-2 right-2 text-xs font-semibold bg-primary text-base-100 px-3 py-1 rounded-full">
                                 {servicio.duration}
                             </span>
                         </div>
 
                         <div className="flex flex-col grow">
                             <h2 className="text-lg font-bold mb-2 text-base-content line-clamp-1">{servicio.name}</h2>
-                            <p className="text-sm text-base-content/70 mb-4 line-clamp-3 h-14">{servicio.description}</p>
+                            <p className="text-sm text-base-content font-semibold mb-4 line-clamp-3 h-14">{servicio.description}</p>
 
                             <div className="mt-auto">
                                 <p className="text-xs mb-4">
-                                    <span className="font-semibold">{t('difficulty')}:</span>{" "}
-                                    <span className={`font-semibold ${getDifficultyColor(servicio.difficulty)}`}>
+                                    <span className="font-semibold text-lg">{t('difficulty')}:</span>{" "}
+                                    <span className={`font-semibold text-lg ${getDifficultyColor(servicio.difficulty)}`}>
                                         {t(`levels.${servicio.difficulty}`)}
                                     </span>
                                 </p>
                                 <div className="flex items-center justify-between pt-4 border-t border-base-300">
                                     <span className="text-2xl font-extrabold text-secondary">{servicio.price}€</span>
                                     <button
-                                        className="btn btn-primary btn-sm rounded-full px-6"
+                                        className="btn btn-primary btn-sm text-base-100 text-lg rounded-full px-6"
                                         onClick={() => abrirModal(servicio)}
                                     >
                                         {t('book')}

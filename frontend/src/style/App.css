@@ -67,7 +67,7 @@ html, body, #root {
   --color-accent-content: oklch(20% 0.05 150);
 
   /* Estado: Colores definidos y claros */
-  --color-neutral: oklch(35% 0.05 250);
+  --color-neutral: #ebebeb; /* gris para pequeños detalles */
   --color-neutral-content: oklch(95% 0.01 250);
   
   --color-info: oklch(75% 0.15 220);          /* Cian vivo */

@@ -98,7 +98,7 @@ function Header() {
 
             <div className="drawer-content flex flex-col">
                 {/* Cambiado: Eliminado dark:bg-base-200 para dejar que DaisyUI lo gestione con bg-base-100 */}
-                <header className="bg-base-200 text-base-content shadow-md border-b border-base-300 w-full">
+                <header className="bg-base-200 text-base-content shadow-md border-b w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
                             <div onClick={() => navigate('/')} className="flex items-center space-x-4 cursor-pointer group">
@@ -122,12 +122,12 @@ function Header() {
                                     <svg className="swap-on h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" /></svg>
                                 </label>
 
-                                <div className="h-8 w-px bg-base-300 mx-2"></div>
+                                <div className="h-8 w-px bg-base-100 mx-2"></div>
 
                                 {user ? (
                                     <div className="flex items-center space-x-4">
                                         <label htmlFor="my-drawer-5" className="btn btn-ghost btn-circle drawer-button indicator">
-                                            <ShoppingCart size={24} />
+                                            <ShoppingCart size={24} className="text-base-100" />
                                             {datosCarrito.items?.length > 0 && (
                                                 <span className="badge badge-sm badge-primary indicator-item">
                                                     {datosCarrito.items.length}
@@ -135,7 +135,7 @@ function Header() {
                                             )}
                                         </label>
                                         <button onClick={() => navigate('/perfil')} className="btn btn-ghost btn-circle">
-                                            <User size={24} />
+                                            <User size={24} className="text-base-100" />
                                         </button>
                                     </div>
                                 ) : (

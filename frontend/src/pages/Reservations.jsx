@@ -61,7 +61,7 @@ function App() {
 
           <nav className='space-x-1.5 mt-4 mb-5 w-full'>
             <div className='relative group w-92 md:w-175 lg:w-225 xl:w-255 2xl:w-328 mx-auto px-10'>
-              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronLeft size={24} />
               </button>
 
@@ -71,7 +71,7 @@ function App() {
                     <button
                       onClick={() => manejarClickCategoria(cat.id)}
                       className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
-                        categoriaActiva === cat.id ? "bg-primary text-white border-none" : "btn-outline btn-primary"
+                        categoriaActiva === cat.id ? "bg-primary-content text-white border-none" : "btn-outline btn-primary hover:bg-primary-content hover:text-base-100"
                       }`}
                     >
                       {cat.name}
@@ -80,7 +80,7 @@ function App() {
                 ))}
               </div>
 
-              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronRight size={24} />
               </button>
             </div>

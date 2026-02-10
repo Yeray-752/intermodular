@@ -42,7 +42,7 @@ function Footer() {
                         
                         <div className="flex items-center justify-center space-x-4">
                             {[Facebook, Instagram, Phone].map((Icon, i) => (
-                                <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-300 dark:bg-base-400 flex items-center justify-center hover:bg-primary-content transition-colors duration-300">
+                                <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-100 dark:bg-base-400 flex items-center justify-center hover:bg-primary-content transition-colors duration-300">
                                     <Icon size={18} className="text-base-content" />
                                 </a>
                             ))}
@@ -82,7 +82,7 @@ function Footer() {
                                 <li key={index}>
                                     <button 
                                         onClick={() => navigate(link.href)} 
-                                        className="hover:text-primary-content transition-colors flex items-center gap-2 text-left"
+                                        className="hover:text-primary-content transition-colors flex items-center gap-2 text-left cursor-pointer"
                                     >
                                         <div className="w-1.5 h-1.5 bg-base-content/50 rounded-full"></div>
                                         {link.label}
@@ -117,18 +117,18 @@ function Footer() {
                         </p>
                         <p>
                             {t('footer:developedBy')} 
-                            <span className="text-primary-content font-medium ml-1">Yeray Carrión</span> & 
-                            <span className="text-primary-content font-medium ml-1">Óscar Gordillo</span>
+                            <span className="text-primary-content font-medium ml-1"><a target='_blank' href='https://github.com/Yeray-752'>Yeray Carrión</a></span> & 
+                            <span className="text-primary-content font-medium ml-1"><a target='_blank' href='https://github.com/zhor19'>Óscar Gordillo</a></span>
                         </p>
                         <div className="flex items-center gap-6">
                             {/* Enlaces al namespace 'legales' */}
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
                                 {t('legales:privacy')}
                             </button>
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
                                 {t('legales:terms')}
                             </button>
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
                                 {t('legales:legalNotice')}
                             </button>
                         </div>

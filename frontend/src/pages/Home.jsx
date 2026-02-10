@@ -30,7 +30,7 @@ export default function Home() {
               />
             </h1>
 
-            <p className="text-lg md:text-xl text-base-content leading-relaxed">
+            <p className="text-lg md:text-2xl font-semibold text-base-content leading-relaxed">
               {t("heroDescription")}
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function Home() {
                   }}
                 />
               </h2>
-              <p className="text-base-content-content text-lg max-w-2xl mx-auto">
+              <p className="text-base-content-content font-semibold text-2xl mx-auto">
                 {t("offersDescription")}
               </p>
             </div>
@@ -73,7 +73,7 @@ export default function Home() {
               {/* Oferta 1 */}
               <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-primary relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-primary text-primary-content px-4 py-1 rounded-full text-sm font-bold">
+                  <span className="bg-primary text-base-100 px-4 py-1 rounded-full text-sm font-bold">
                     {t("offerMostPopular")}
                   </span>
                 </div>
@@ -85,7 +85,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     29,99€
                   </span>
-                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -104,7 +104,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     49,99€
                   </span>
-                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -123,7 +123,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     39,99€
                   </span>
-                  <span className="text-sm bg-base-300 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
