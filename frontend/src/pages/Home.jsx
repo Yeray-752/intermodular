@@ -30,7 +30,7 @@ export default function Home() {
               />
             </h1>
 
-            <p className="text-lg md:text-xl text-base-content/80 leading-relaxed">
+            <p className="text-lg md:text-xl text-base-content leading-relaxed">
               {t("heroDescription")}
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function Home() {
                   }}
                 />
               </h2>
-              <p className="text-base-content/80 text-lg max-w-2xl mx-auto">
+              <p className="text-base-content-content text-lg max-w-2xl mx-auto">
                 {t("offersDescription")}
               </p>
             </div>
@@ -80,7 +80,7 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer1Title")}
                 </h3>
-                <p className="text-base-content/80 mb-6">{t("offer1Desc")}</p>
+                <p className="text-base-content mb-6">{t("offer1Desc")}</p>
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-3xl font-bold text-base-content">
                     29,99€
@@ -89,7 +89,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-200 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -108,7 +108,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-200 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -127,7 +127,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-200 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>

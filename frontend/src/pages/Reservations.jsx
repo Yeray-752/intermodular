@@ -46,9 +46,9 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200 text-base-content">
+    <div className="flex flex-col min-h-screen bg-base-100 text-base-content">
       <Header />
-      <main className="grow">
+      <main className="grow bg-base-100">
         <div className="flex flex-col p-4 items-center">
           <input
             className='input input-bordered w-full max-w-md mt-8 bg-base-100'

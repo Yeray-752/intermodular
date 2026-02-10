@@ -50,15 +50,15 @@ html, body, #root {
   color-scheme: "light";
 
   /* Fondos: Más limpios y con un toque de brillo */
-  --color-base-100: oklch(100% 0 0);          /* Blanco puro */
-  --color-base-200: #1E2939;      /*yeray*/
-  --color-base-300: #F3F4F6;
-  --color-base-400: oklch(0.967 0.0029 264.54);
+  --color-base-100: #F9FAFB;          /* Blanco medio apagado */
+  --color-base-200: #141C2C;      /*yeray azul del header */
+  --color-base-300: #F54A00; /* naranja de los detalless como de las palabras */
+  --color-base-400: #323D4F; /* azul flojito para los detalles de resrvar ahora */
   --color-base-content: oklch(25% 0.02 250);  /* Texto oscuro pero no negro total */
 
   /* Colores de Marca: Más saturados y alegres */
-  --color-primary: oklch(0.7 0.185 46.59);       /* Un azul vibrante y moderno */
-  --color-primary-content: oklch(98% 0.01 260);
+  --color-primary: #F54900;       /* Yeray amarillo del las 3 ofertas del home*/
+  --color-primary-content: #ff6900; /* naranja mas vivo par ael footer */
   
   --color-secondary: #1447E6;     /*yeray*/
   --color-secondary-content: oklch(98% 0.01 340);
