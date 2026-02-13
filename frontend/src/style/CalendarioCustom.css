@@ -2,7 +2,7 @@
    VARIABLES DE TEMA (Basadas en data-theme)
    ================================================= */
 :root, [data-theme="light"] {
-  --cal-bg: #ffffff;
+  --cal-bg: #f5f3f3;
   --cal-text: #374151;
   --cal-text-muted: #9ca3af;
   --cal-shadow: rgba(0, 0, 0, 0.05);
@@ -85,6 +85,61 @@
   font-size: 0.7rem;
   color: var(--cal-text-muted) !important;
   text-align: center;
+}
+.modal-custom-container {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.header-custom {
+  background-color: var(--cal-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.text-calendar-main { color: var(--cal-text); }
+.text-calendar-muted { color: var(--cal-text-muted); }
+.border-calendar-divider { border-color: var(--cal-neighbor); }
+
+.bg-calendar-inner { background-color: var(--cal-bg); }
+.bg-calendar-card { background-color: var(--cal-nav-btn-bg); }
+
+/* Inputs y Selects */
+.input-custom {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border: 1px solid var(--cal-neighbor);
+  padding: 0.75rem;
+  border-radius: 12px;
+}
+
+.input-custom:focus {
+  outline: 2px solid var(--cal-now-border);
+  border-color: transparent;
+}
+
+/* Badge personalizado */
+.badge-custom {
+  background-color: transparent;
+  border: 1px solid var(--cal-now-border);
+  color: var(--cal-now-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* Botón Primario basado en el color activo del calendario */
+.btn-primary-custom {
+  background-color: var(--cal-now-border);
+  color: #ffffff; /* Texto blanco para legibilidad */
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  transition: opacity 0.2s;
+}
+
+.btn-primary-custom:hover {
+  opacity: 0.9;
 }
 
 .react-calendar__month-view__weekdays abbr {

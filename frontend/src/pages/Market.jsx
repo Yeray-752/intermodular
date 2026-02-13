@@ -67,7 +67,7 @@ function App() {
 
           {/* Navegación de Categorías */}
           <nav className='relative mt-5 group w-86 sm:w-135 md:w-189 lg:w-242 xl:w-272 mx-auto px-10'>
-            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronLeft size={24} />
             </button>
 
@@ -76,19 +76,20 @@ function App() {
               className="flex overflow-x-auto gap-3 py-2 no-scrollbar scroll-smooth"
             >
               {categorias.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => manejarClickCategoria(cat.id)}
-                  className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
-                        categoriaActiva === cat.id ? "bg-primary text-white border-none" : "btn-outline btn-primary"
+                  <div key={cat.id} className="shrink-0">
+                    <button
+                      onClick={() => manejarClickCategoria(cat.id)}
+                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
+                        categoriaActiva === cat.id ? "bg-primary-content text-white border-none" : "btn-outline btn-primary hover:bg-primary-content hover:text-base-100"
                       }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+                    >
+                      {cat.name}
+                    </button>
+                  </div>
+                ))}
             </div>
 
-            <button onClick={() => scroll(250)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+            <button onClick={() => scroll(250)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronRight size={24} />
             </button>
           </nav>

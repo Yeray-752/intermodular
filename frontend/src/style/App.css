@@ -4,7 +4,7 @@
 }
 html, body, #root {
   height: 100%;
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 }
 
 
@@ -68,7 +68,7 @@ html, body, #root {
 
   /* Estado: Colores definidos y claros */
   --color-neutral: #ebebeb; /* gris para pequeños detalles */
-  --color-neutral-content: oklch(95% 0.01 250);
+  --color-neutral-content: #e9e7e7;
   
   --color-info: oklch(75% 0.15 220);          /* Cian vivo */
   --color-info-content: oklch(30% 0.05 220);

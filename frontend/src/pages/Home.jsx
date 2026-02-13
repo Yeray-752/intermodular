@@ -13,7 +13,7 @@ export default function Home() {
   document.documentElement.setAttribute("data-theme", theme);
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex flex-col bg-base-100 text-base-200">
+    <div className="min-h-screen flex flex-col bg-neutral text-base-200">
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">

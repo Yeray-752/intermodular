@@ -48,7 +48,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen bg-base-100 text-base-content">
       <Header />
-      <main className="grow bg-base-100">
+      <main className="grow bg-neutral">
         <div className="flex flex-col p-4 items-center">
           <input
             className='input input-bordered w-full max-w-md mt-8 bg-base-100'
@@ -61,7 +61,7 @@ function App() {
 
           <nav className='space-x-1.5 mt-4 mb-5 w-full'>
             <div className='relative group w-92 md:w-175 lg:w-225 xl:w-255 2xl:w-328 mx-auto px-10'>
-              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
+              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronLeft size={24} />
               </button>
 
@@ -80,7 +80,7 @@ function App() {
                 ))}
               </div>
 
-              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
+              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronRight size={24} />
               </button>
             </div>
