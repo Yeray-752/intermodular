@@ -6,7 +6,7 @@ function WhoWeAre() {
   const { t } = useTranslation("about");
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content px-4 md:px-6 py-12 md:py-16">
+    <div className="min-h-screen bg-neutral text-base-content px-4 md:px-6 py-12 md:py-16">
       <div className="max-w-7xl mx-auto space-y-20">
 
         <div className="inline-flex items-center gap-2 bg-base-100 px-4 py-2 rounded-full shadow-sm">
@@ -14,7 +14,7 @@ function WhoWeAre() {
           <span className="text-sm font-semibold text-base-content/70">{t("sobre_nosotros_badge")}</span>
         </div>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-28 items-center bg-base-200 p-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-28 items-center bg-base-100 rounded-2xl p-5">
           <div className="relative">
             <div className="rounded-2xl overflow-hidden shadow-2xl">
               <img
@@ -37,7 +37,7 @@ function WhoWeAre() {
           </div>
         </section>
 
-        <section className="bg-base-200 p-5">
+        <section className="bg-base-100 rounded-2xlx p-5">
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-1 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold leading-tight">
@@ -122,7 +122,7 @@ function WhoWeAre() {
           </section>
         </section>
 
-        <section className="bg-base-100 p-8 md:p-12 rounded-2xl shadow-xl border border-base-300 relative">
+        <section className="bg-base-100 p-8 md:p-12 rounded-2xl shadow-xl border relative">
 
           <div className="absolute -top-4 left-8 bg-base-content text-base-100 text-sm px-4 py-1 rounded-full font-semibold shadow-lg">
             {t("contacto_badge")}
