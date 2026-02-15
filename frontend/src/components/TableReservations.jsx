@@ -6,6 +6,8 @@ import 'react-calendar/dist/Calendar.css';
 import '../style/CalendarioCustom.css';
 import '../style/App.css';
 
+
+
 function TableReservations({ search, categoriaId, servicios }) {
     const { t, i18n } = useTranslation('servicios');
     const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
@@ -13,6 +15,24 @@ function TableReservations({ search, categoriaId, servicios }) {
     const location = useLocation();
     const navigate = useNavigate();
     const lang = i18n.language?.split('-')[0] || 'es';
+    const [vehiculo, setVehiculo] = useState("");
+    const [motivo, setMotivo] = useState("");
+    const [fecha, setFecha] = useState(new Date());
+
+    // 2. Función que se ejecuta al darle al botón "Confirmar"
+    const enviarConsulta = () => {
+        // Estructura los datos para tu API
+        const datosReserva = {
+            servicio: servicioSeleccionado.name,
+            vehiculoSeleccionado: vehiculo,
+            comentarios: motivo,
+            fechaCita: fecha.toISOString() // Formato estándar "2026-02-15T..."
+        };
+        console.log("Enviando estos datos:", datosReserva);
+
+        // Aquí haces tu fetch o axios
+        // fetch('/api/reserva', { method: 'POST', body: JSON.stringify(datosReserva) });
+    };
 
     const serviciosFiltrados = useMemo(() => {
         const filtro = (search || '').toLowerCase();
@@ -32,12 +52,12 @@ function TableReservations({ search, categoriaId, servicios }) {
         }
     };
 
-    const datosReservas = { "2026-01-20": "lleno", "2026-01-21": "medio", "2026-01-22": "disponible" };
+    const datosReservas2 = { "2026-01-20": "lleno", "2026-01-21": "medio", "2026-01-22": "disponible" };
 
     const obtenerClaseDia = ({ date, view }) => {
         if (view === 'month') {
             const fechaKey = date.toLocaleDateString('en-CA');
-            const estado = datosReservas[fechaKey];
+            const estado = datosReservas2[fechaKey];
             if (estado === 'lleno') return 'dia-rojo';
             if (estado === 'medio') return 'dia-amarillo';
             if (estado === 'disponible') return 'dia-verde';
@@ -52,6 +72,9 @@ function TableReservations({ search, categoriaId, servicios }) {
     const cerrarModal = () => {
         document.getElementById('modal_reserva_unico').close();
     };
+    const mostrar = (a) => {
+        console.log(a)
+    }
 
     return (
         <div className="w-full">
@@ -133,7 +156,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     <label className="label">
                                         <span className="label-text font-bold mb-3 text-calendar-main">{t('vehicleQuestion')}</span>
                                     </label>
-                                    <select className="input-custom w-full transition-all" defaultValue={0}>
+                                    <select onChange={(e) => setVehiculo(e.target.value)} className="input-custom w-full transition-all" defaultValue={0}>
                                         <option disabled value={0}>{t('selectVehicle')}</option>
                                         <option>Mi Toyota Corolla</option>
                                         <option>Añadir nuevo vehículo...</option>
@@ -147,6 +170,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     <textarea
                                         placeholder={t('descripcion')}
                                         className="input-custom w-full h-24"
+                                        onChange={(e) => setMotivo(e.target.value)}
                                     />
                                 </div>
 
@@ -160,6 +184,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                             tileClassName={obtenerClaseDia}
                                             locale={lang === 'es' ? 'es-ES' : 'en-US'}
                                             className="mx-auto"
+                                            onChange={(e) => setMotivo(e)}
                                         />
                                     </div>
 
@@ -190,7 +215,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     >
                                         {t('cancel')}
                                     </button>
-                                    <button className="btn-primary-custom flex-2 shadow-lg font-bold">
+                                    <button onClick={enviarConsulta} className="btn-primary-custom flex-2 shadow-lg font-bold">
                                         {token ? t('confirm') : t('noToken')}
                                     </button>
                                 </form>
