@@ -5,7 +5,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../style/CalendarioCustom.css';
 import '../style/App.css';
-
+import { jwtDecode } from "jwt-decode";
 
 
 function TableReservations({ search, categoriaId, servicios }) {
@@ -20,17 +20,36 @@ function TableReservations({ search, categoriaId, servicios }) {
     const [fecha, setFecha] = useState(new Date());
 
     // 2. Función que se ejecuta al darle al botón "Confirmar"
-    const enviarConsulta = () => {
+    const enviarConsulta = async () => {
         // Estructura los datos para tu API
+
+        if (!token) {
+        console.error("No hay token, usuario no autorizado");
+        return;
+    }
+
+
         const datosReserva = {
             servicio: servicioSeleccionado.name,
             vehiculoSeleccionado: vehiculo,
             comentarios: motivo,
-            fechaCita: fecha.toISOString() // Formato estándar "2026-02-15T..."
+            fechaCita: fecha.toISOString().split('T')[0] // Formato estándar "2026-02-15T..."
         };
         console.log("Enviando estos datos:", datosReserva);
 
-        // Aquí haces tu fetch o axios
+        try{
+            const response = await fetch("http://localhost:3000/api/dates", {
+                method: "POST",
+                headers: {
+                     "Content-Type": "application/json",
+                     "Authorization": `Bearer ${token}`
+                    },
+                body: JSON.stringify(datosReserva),
+            })
+        } catch (error){
+            console.error('problemitas con la consulta para las citas')
+        }
+        
         // fetch('/api/reserva', { method: 'POST', body: JSON.stringify(datosReserva) });
     };
 
@@ -184,7 +203,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                             tileClassName={obtenerClaseDia}
                                             locale={lang === 'es' ? 'es-ES' : 'en-US'}
                                             className="mx-auto"
-                                            onChange={(e) => setMotivo(e)}
+                                            onChange={(e) => setFecha(e)}
                                         />
                                     </div>
 

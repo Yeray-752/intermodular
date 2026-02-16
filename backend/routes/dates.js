@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { actualizarEstadoCita, crearCita, obtenerCitas, cancelarCita } from '../controllers/datesController.js';
+import { actualizarEstadoCita, crearCita, obtenerCitasTerminadas, cancelarCita } from '../controllers/datesController.js';
 import { verifyToken, isAdmin } from '../middlewares/auth.js';
-import { validateCita, validateUpdateEstadoCita } from '../validators/dateValidator.js';
+import { validateCita, validateUpdateEstadoCita, validateIdParam } from '../validators/dateValidator.js';
 
 const router = Router();
 
 // 1. Ver citas
 // Ahora protegido: el controlador decidirá si mostrar todas (admin) o solo las del usuario.
-router.get('/', verifyToken, obtenerCitas);
+router.get('/', verifyToken, obtenerCitasTerminadas);
 
 // 2. Crear cita
 // Validamos el token y luego el esquema de Zod antes de entrar al controlador.

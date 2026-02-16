@@ -4,12 +4,20 @@ const EstadoCita = z.enum(['pendiente', 'confirmada', 'completada', 'cancelada']
 
 export const validateCita = (data) => {
   const schema = z.object({
-    id_servicio: z.number().int().positive("Servicio no válido"),
-    fecha: z.string().refine((val) => !isNaN(Date.parse(val)), {
-      message: "Fecha inválida (YYYY-MM-DD)",
+    // Nuevo campo para el nombre del usuario
+    
+    servicio: z.string().min(1, "El nombre del servicio es obligatorio"),
+    
+    comentarios: z.string().max(255, "El comentario es demasiado largo").optional(),
+    
+    vehiculoSeleccionado: z.string().min(1, "Debes seleccionar un vehículo"),
+    
+    fechaCita: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Fecha inválida",
     }),
-    hora: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Formato de hora inválido (HH:mm)"),
-    notas: z.string().max(255).optional()
+
+    // Estado con valor por defecto si no se envía
+    estado: EstadoCita.default('pendiente'),
   });
 
   return schema.safeParse(data);

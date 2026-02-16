@@ -2,38 +2,92 @@ import db from "../db.js";
 import { validateCita, validateUpdateEstadoCita } from "../validators/dateValidator.js";
 
 export const crearCita = async (req, res) => {
-    // 1. Validamos con Zod (id_usuario ya no se pide en el body del validador)
+    // 1. Validamos con Zod los datos que vienen del body
     const result = validateCita(req.body);
 
     if (!result.success) {
         return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
-
-    // 2. Seguridad: El ID viene del TOKEN, no del body del formulario
     const id_usuario_real = req.user.id;
-    const { matricula_vehiculo, fecha, motivo } = result.data;
+    console.log(req.user.id)
+    // 2. Extraemos los datos validados
+    const { 
+        servicio, 
+        vehiculoSeleccionado, 
+        comentarios, 
+        fechaCita 
+    } = result.data;
+
+    // 3. Seguridad: Datos que NO vienen del formulario, sino del TOKEN
+    // Ajusta 'req.user.nombre' según cómo guardes el nombre en tu JWT
+    const nombre_usuario_real = req.user.nombre || req.user.name || "Usuario";
+    console.log(req.user)
+    const estado_inicial = 'pendiente';
 
     try {
+      
+
         const query = `
-            INSERT INTO citas (id_usuario, matricula_vehiculo, fecha, motivo) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO cita (
+                id_usuario, 
+                servicio, 
+                comentarios, 
+                vehiculo_seleccionado, 
+                fecha_cita, 
+                estado
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        const [dbResult] = await db.execute(query, [id_usuario_real, matricula_vehiculo, fecha, motivo]);
+        const [dbResult] = await db.execute(query, [
+            id_usuario_real, 
+            servicio, 
+            comentarios, 
+            vehiculoSeleccionado, 
+            fechaCita, 
+            estado_inicial
+        ]);
 
         res.status(201).json({
             message: "Cita creada con éxito",
             id_cita: dbResult.insertId,
-            estado: 'pendiente'
+            datos: {
+                usuario: nombre_usuario_real,
+                servicio,
+                estado: estado_inicial
+            }
         });
     } catch (error) {
-        res.status(500).json({ error: "Error al crear la cita", detalles: error.message });
+        console.error("Error en DB:", error);
+        res.status(500).json({ 
+            error: "Error al crear la cita en la base de datos", 
+            detalles: error.message 
+        });
     }
 };
 
-export const obtenerCitas = async (req, res) => {
+export const obtenerCitasTerminadas = async (req, res) => {
     try {
-        let query = 'SELECT * FROM citas';
+        let query = 'SELECT * FROM cita';
+        let params = [];
+
+        // Lógica de privacidad:
+        // Si no es admin, filtramos para que solo vea SUS propias citas
+        if (req.user.rol !== 'admin') {
+            query += ' WHERE id_usuario = ? AND estado != "completada"';
+            params.push(req.user.id);
+        }
+
+        const [rows] = await db.execute(query, params);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener citas" });
+    }
+};
+
+export const obtenerCitasActivas = async (req, res) => {
+    try {
+        let query = 'SELECT * FROM cita';
         let params = [];
 
         // Lógica de privacidad:
@@ -76,7 +130,7 @@ export const cancelarCita = async (req, res) => {
     try {
         // 1. Buscamos la cita y verificamos si le pertenece al usuario
         const [cita] = await db.execute(
-            'SELECT id_usuario, estado FROM citas WHERE id_cita = ?', 
+            'SELECT id_usuario, estado FROM cita WHERE id = ?', 
             [id]
         );
 
@@ -96,7 +150,7 @@ export const cancelarCita = async (req, res) => {
 
         // 4. Procedemos a la cancelación
         await db.execute(
-            'UPDATE citas SET estado = ? WHERE id_cita = ?', 
+            'UPDATE cita SET estado = ? WHERE id = ?', 
             ['cancelada', id]
         );
 
