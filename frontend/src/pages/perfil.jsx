@@ -270,7 +270,7 @@ function Perfil() {
 
                                 {citas.length > 0 ? (
                                     citas.map(citas => (
-                                        <div className="p-6 border border-base-300 bg-base-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4" key={citas.id}>
+                                        <div className="p-6 border  bg-base-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4" key={citas.id}>
                                 <div className="flex items-center gap-5">
                                     <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                                         <Calendar size={28} />
@@ -278,7 +278,7 @@ function Perfil() {
                                     <div>
                                         <h4 className="font-extrabold text-lg text-base-content uppercase tracking-tight">{citas.servicio}</h4>
                                         <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>
-                                        <div className="flex items-center gap-2 mt-1 text-primary font-bold text-xs">
+                                        <div className="flex items-center gap-2 mt-1 font-bold text-xs">
                                             <Clock size={14} />
                                             <span>{citas.fecha_cita}</span>
                                         </div>
@@ -364,7 +364,7 @@ function Perfil() {
     }
 
     return (
-        <div className='bg-base-200 min-h-screen flex flex-col'>
+        <div className='bg-neutral min-h-screen flex flex-col'>
             <Header />
 
             {/* Mobile menu - visible solo en móviles */}
@@ -417,7 +417,7 @@ function Perfil() {
                     </aside>
 
                     {/* Contenido principal */}
-                    <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg border border-base-300 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
+                    <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
                         {renderContent()}
                     </section>
                 </div>

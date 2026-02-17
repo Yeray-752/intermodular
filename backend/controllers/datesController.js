@@ -74,7 +74,7 @@ export const obtenerCitasTerminadas = async (req, res) => {
         // Lógica de privacidad:
         // Si no es admin, filtramos para que solo vea SUS propias citas
         if (req.user.rol !== 'admin') {
-            query += ' WHERE id_usuario = ? AND estado != "completada"';
+            query += ' WHERE id_usuario = ? AND estado = "completada" OR estado = "cancelada"';
             params.push(req.user.id);
         }
 
