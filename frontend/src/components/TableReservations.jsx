@@ -24,32 +24,37 @@ function TableReservations({ search, categoriaId, servicios }) {
         // Estructura los datos para tu API
 
         if (!token) {
-        console.error("No hay token, usuario no autorizado");
-        return;
-    }
+            console.error("No hay token, usuario no autorizado");
+            return;
+        }
 
+
+        const año = fecha.getFullYear();
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const fechaFormateada = `${año}-${mes}-${dia}T12:00:00`; // Ejemplo: "2026-02-20"
 
         const datosReserva = {
             servicio: servicioSeleccionado.name,
             vehiculoSeleccionado: vehiculo,
             comentarios: motivo,
-            fechaCita: fecha.toISOString().split('T')[0] // Formato estándar "2026-02-15T..."
+            // Enviamos la fecha limpia sin la "T" ni la "Z" de UTC
+            fechaCita: fechaFormateada
         };
-        console.log("Enviando estos datos:", datosReserva);
 
-        try{
+        try {
             const response = await fetch("http://localhost:3000/api/dates", {
                 method: "POST",
                 headers: {
-                     "Content-Type": "application/json",
-                     "Authorization": `Bearer ${token}`
-                    },
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(datosReserva),
             })
-        } catch (error){
+        } catch (error) {
             console.error('problemitas con la consulta para las citas')
         }
-        
+
         // fetch('/api/reserva', { method: 'POST', body: JSON.stringify(datosReserva) });
     };
 
