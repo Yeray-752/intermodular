@@ -14,6 +14,7 @@ import {
 import Header from "../components/Principal/Header";
 import Footer from "../components/Principal/Footer";
 import Calendario from "../components/AdminComponents/Calendario";
+import StockTable from '../components/AdminComponents/StockTable';
 import { useEffect } from 'react';
 
 function AdminPage() {
@@ -21,6 +22,8 @@ function AdminPage() {
     const [loading, setLoading] = useState(true);
     const [errors, setError] = useState({});
     const [eventos, setEventos] = useState([]);
+    const [listaProductos, setListaProductos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
 
     // --- DATOS (Consistencia con tus imágenes) ---
     const [reservas, setReservas] = useState([]);
@@ -73,21 +76,21 @@ function AdminPage() {
             });
 
             if (response.ok) {
-            const data = await response.json();
-            
-            // --- AQUÍ ESTÁ EL TRUCO ---
-            // Limpiamos los datos antes de guardarlos para que JS no los convierta en Date
-            const datosLimpios = data.map(res => ({
-                ...res,
-                // Si fecha_cita es un objeto Date o un string ISO, 
-                // lo forzamos a ser solo "YYYY-MM-DD"
-                fecha_cita: typeof res.fecha_cita === 'string' 
-                    ? res.fecha_cita.split('T')[0] 
-                    : new Date(res.fecha_cita).toISOString().split('T')[0]
-            }));
+                const data = await response.json();
 
-            setReservas(datosLimpios); 
-            console.log("Datos limpios guardados:", datosLimpios);
+                // --- AQUÍ ESTÁ EL TRUCO ---
+                // Limpiamos los datos antes de guardarlos para que JS no los convierta en Date
+                const datosLimpios = data.map(res => ({
+                    ...res,
+                    // Si fecha_cita es un objeto Date o un string ISO, 
+                    // lo forzamos a ser solo "YYYY-MM-DD"
+                    fecha_cita: typeof res.fecha_cita === 'string'
+                        ? res.fecha_cita.split('T')[0]
+                        : new Date(res.fecha_cita).toISOString().split('T')[0]
+                }));
+
+                setReservas(datosLimpios);
+                console.log("Datos limpios guardados:", datosLimpios);
             } else {
                 throw new Error("Error al obtener las citas");
             }
@@ -125,10 +128,32 @@ function AdminPage() {
         }
     };
 
+    const fetchDatos = async () => {
+        try {
+            
+            const [resProd, resCat] = await Promise.all([
+                fetch('https://yeray.informaticamajada.es/api/products'),
+                fetch('https://yeray.informaticamajada.es/api/product_categories')
+            ]);
+            const dataProd = await resProd.json();
+            const dataCat = await resCat.json();
+            setListaProductos(dataProd);
+            setCategorias(dataCat);
+        } catch (err) {
+            console.error("Error cargando el mercado:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     useEffect(() => {
         if (activeTab === 'reservas') {
             trearCitas();
             cargarEventosCalendario();
+        }
+        if (activeTab === 'stock'){
+            fetchDatos();
         }
     }, [activeTab]);
     console.log(reservas)
@@ -136,9 +161,9 @@ function AdminPage() {
     const menuItems = useMemo(() => [
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },
+        { id: 'stock', label: 'Stock de Productos', icon: Package },
         { id: 'servicios', label: 'Servicios', icon: Wrench },
         { id: 'productos', label: 'Productos', icon: Wrench },
-        { id: 'stock', label: 'Stock de Productos', icon: Package },
     ], []);
 
     // Estilo de botones: Sin azul, ahora negro/slate profesional
@@ -240,12 +265,30 @@ function AdminPage() {
             </div>
         </div>
     );
+    const RenderStock = () => (
+        <div>
+            <div className="flex justify-between items-end mb-8">
+                <div>
+                    <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Stock</h2>
+                    <p className="text-slate-500 text-sm">Administración de precios y existencias.</p>
+                </div>
+                <button className="btn bg-slate-900 hover:bg-slate-800 text-white border-none normal-case flex gap-2 rounded-xl px-6">
+                    <Plus size={18} /> Nuevo Registro
+                </button>
+            </div>
+
+            <div className=" ">
+                <StockTable productos={listaProductos} categorias={categorias} />
+            </div>
+        </div>
+    );
 
     const renderContent = () => {
         switch (activeTab) {
             case 'reservas': return <RenderReservas />;
             case 'servicios':
             case 'productos': return <RenderCatalogo />;
+            case 'stock': return <RenderStock />
             case 'metricas':
                 return (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
