@@ -69,14 +69,14 @@ export const getProducts = async (req, res) => {
       p.price, 
       p.stock, 
       p.image_url, 
-      p.rating,
+      p.rating AS rating,
       p.category_id,
       t.name, 
       t.description
       FROM products p
       LEFT JOIN product_translations t 
         ON p.id = t.product_id 
-      WHERE t.language_code = ?
+      AND t.language_code = ?
     `;
 
     const [rows] = await db.query(query, [lang]);
@@ -84,7 +84,7 @@ export const getProducts = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ message: "No se encontraron productos para este idioma." });
     }
-
+    console.log("Datos que salen del backend:", rows[0]);
     res.json(rows);
   } catch (error) {
     console.error("Error al obtener productos:", error);

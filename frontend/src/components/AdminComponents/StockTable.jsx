@@ -1,6 +1,30 @@
 import { Edit3, Trash2, Package, Star } from 'lucide-react';
 
 const StockTable = ({ productos, categorias }) => {
+  console.log(productos)
+
+  const renderStars = (rating) => {
+    const numericRating = Math.round(Number(rating));
+
+    return (
+      <>
+        <span className="ml-2 text-sm font-bold opacity-60 text-base-content">{rating || 0}/5</span>
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <svg
+              key={star}
+              className={`w-4 h-5 ${star <= numericRating ? "text-warning" : "text-base-content/20"}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <table className="w-full text-left border-collapse">
@@ -20,10 +44,10 @@ const StockTable = ({ productos, categorias }) => {
               {/* Imagen e Info Básica */}
               <td className="p-3">
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={prod.imagen_url} 
-                    alt={prod.nombre} 
-                    className="w-10 h-10 rounded-lg object-cover border border-slate-100" 
+                  <img
+                    src={prod.imagen_url}
+                    alt={prod.nombre}
+                    className="w-10 h-10 rounded-lg object-cover border border-slate-100"
                   />
                   <div>
                     <p className="text-sm font-bold text-slate-700 leading-none">{prod.nombre}</p>
@@ -35,7 +59,7 @@ const StockTable = ({ productos, categorias }) => {
               {/* Categoría */}
               <td className="p-3">
                 <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase">
-                  {prod.categoria}
+                  {prod.name}
                 </span>
               </td>
 
@@ -46,8 +70,8 @@ const StockTable = ({ productos, categorias }) => {
                     {prod.stock}
                   </span>
                   <div className="w-12 h-1 bg-slate-100 rounded-full mt-1 overflow-hidden">
-                    <div 
-                      className={`h-full ${prod.stock < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} 
+                    <div
+                      className={`h-full ${prod.stock < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`}
                       style={{ width: `${Math.min(prod.stock, 100)}%` }}
                     ></div>
                   </div>
@@ -63,7 +87,7 @@ const StockTable = ({ productos, categorias }) => {
               <td className="p-3">
                 <div className="flex items-center gap-1 text-amber-500">
                   <Star size={12} fill="currentColor" />
-                  <span className="text-xs font-bold">{prod.rating}</span>
+                  <span className="text-xs font-bold">{renderStars(prod.rating)}</span>
                 </div>
               </td>
 

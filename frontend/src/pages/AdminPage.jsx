@@ -90,7 +90,6 @@ function AdminPage() {
                 }));
 
                 setReservas(datosLimpios);
-                console.log("Datos limpios guardados:", datosLimpios);
             } else {
                 throw new Error("Error al obtener las citas");
             }
@@ -132,13 +131,12 @@ function AdminPage() {
         try {
             
             const [resProd, resCat] = await Promise.all([
-                fetch('https://yeray.informaticamajada.es/api/products'),
-                fetch('https://yeray.informaticamajada.es/api/product_categories')
+                fetch('https://yeray.informaticamajada.es/api/products')
             ]);
             const dataProd = await resProd.json();
-            const dataCat = await resCat.json();
+           console.log('Datos recibidos del servidor:', dataProd);
             setListaProductos(dataProd);
-            setCategorias(dataCat);
+           
         } catch (err) {
             console.error("Error cargando el mercado:", err);
         } finally {
@@ -175,7 +173,7 @@ function AdminPage() {
     `;
 
     // --- SECCIONES ---
-    console.log(eventos)
+ setInterval( console.log(listaProductos), 1000)
 
     const RenderReservas = () => (
         <div>
