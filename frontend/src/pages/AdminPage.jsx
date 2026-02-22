@@ -429,7 +429,7 @@ function AdminPage() {
                     </aside>
 
                     {/* Contenido Principal */}
-                    <section className="bg-white p-8 border border-slate-200 shadow-sm flex-1 rounded-3xl min-h-[600px]">
+                    <section className="bg-white p-8 border border-slate-200 shadow-sm flex-1 rounded-3xl min-h-150">
                         {renderContent()}
                     </section>
                 </div>
