@@ -5,7 +5,7 @@ import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
-import SelectorCanarias from '../components/Perfil/selectorCanarias';
+import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
@@ -82,35 +82,35 @@ function Perfil() {
         }
     }, [activeTab]);
 
-   const eliminarCitas = async (id) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const eliminarCitas = async (id) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
 
-    // Confirmación amistosa antes de borrar
-    if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
+        // Confirmación amistosa antes de borrar
+        if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
-            method: 'PATCH', // Importante: debe coincidir con router.patch
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
+        try {
+            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
+                method: 'PATCH', // Importante: debe coincidir con router.patch
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                // Optimistic UI: Filtramos la cita de la lista actual para que desaparezca al instante
+                setCitas(prevCitas => prevCitas.filter(cita => cita.id !== id));
+                alert(t('cancel_success') || "Cita cancelada correctamente");
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || "Error al cancelar la cita");
             }
-        });
-
-        if (response.ok) {
-            // Optimistic UI: Filtramos la cita de la lista actual para que desaparezca al instante
-            setCitas(prevCitas => prevCitas.filter(cita => cita.id !== id));
-            alert(t('cancel_success') || "Cita cancelada correctamente");
-        } else {
-            const errorData = await response.json();
-            alert(errorData.error || "Error al cancelar la cita");
+        } catch (err) {
+            console.error("Error en la petición:", err);
+            alert("No se pudo conectar con el servidor");
         }
-    } catch (err) {
-        console.error("Error en la petición:", err);
-        alert("No se pudo conectar con el servidor");
-    }
-};
+    };
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'es' ? 'en' : 'es';
@@ -268,33 +268,33 @@ function Perfil() {
                         <div className="space-y-4">
                             {/* Ejemplo de una cita activa */}
 
-                                {citas.length > 0 ? (
-                                    citas.map(citas => (
-                                        <div className="p-6 border  bg-base-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4" key={citas.id}>
-                                <div className="flex items-center gap-5">
-                                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                                        <Calendar size={28} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-extrabold text-lg text-base-content uppercase tracking-tight">{citas.servicio}</h4>
-                                        <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>
-                                        <div className="flex items-center gap-2 mt-1 font-bold text-xs">
-                                            <Clock size={14} />
-                                            <span>{citas.fecha_cita}</span>
+                            {citas.length > 0 ? (
+                                citas.map(citas => (
+                                    <div className="p-6 border  bg-base-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4" key={citas.id}>
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                                <Calendar size={28} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-extrabold text-lg text-base-content uppercase tracking-tight">{citas.servicio}</h4>
+                                                <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>
+                                                <div className="flex items-center gap-2 mt-1 font-bold text-xs">
+                                                    <Clock size={14} />
+                                                    <span>{citas.fecha_cita}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
+                                            <span className="badge badge-warning badge-md font-bold py-3 px-4 uppercase text-[10px]">{citas.estado}</span>
+                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => eliminarCitas(citas.id)}>{t('cancel')}</button>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
-                                    <span className="badge badge-warning badge-md font-bold py-3 px-4 uppercase text-[10px]">{citas.estado}</span>
-                                    <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={ () => eliminarCitas(citas.id)}>{t('cancel')}</button>
-                                </div>
-                            </div>
-                                    ))
-                                ) : (
-                                    <p className="text-center py-10">No tienes citas programadas.</p>
-                                )}
+                                ))
+                            ) : (
+                                <p className="text-center py-10">No tienes citas programadas.</p>
+                            )}
 
-                            
+
 
 
                         </div>

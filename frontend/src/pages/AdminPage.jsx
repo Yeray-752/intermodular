@@ -131,7 +131,7 @@ function AdminPage() {
         try {
             
             const [resProd, resCat] = await Promise.all([
-                fetch('https://yeray.informaticamajada.es/api/products')
+                fetch('http://localhost:3000/api/products')
             ]);
             const dataProd = await resProd.json();
            console.log('Datos recibidos del servidor:', dataProd);
@@ -270,9 +270,7 @@ function AdminPage() {
                     <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Stock</h2>
                     <p className="text-slate-500 text-sm">Administración de precios y existencias.</p>
                 </div>
-                <button className="btn bg-slate-900 hover:bg-slate-800 text-white border-none normal-case flex gap-2 rounded-xl px-6">
-                    <Plus size={18} /> Nuevo Registro
-                </button>
+                
             </div>
 
             <div className=" ">

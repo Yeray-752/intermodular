@@ -1,7 +1,10 @@
-import { Edit3, Trash2, Package, Star } from 'lucide-react';
+import { Edit3, Trash2, Package, Star, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 const StockTable = ({ productos, categorias }) => {
-  console.log(productos)
+
+  const [listaProductos, setListaProductos] = useState(productos)
+
 
   const renderStars = (rating) => {
     const numericRating = Math.round(Number(rating));
@@ -27,44 +30,47 @@ const StockTable = ({ productos, categorias }) => {
 
   return (
     <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div>
+        <button className="btn bg-slate-900 hover:bg-slate-800 m-4 text-white border-none normal-case flex gap-2 rounded-xl px-6">
+          <Plus size={18} /> Filtros
+        </button>
+      </div>
+
       <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-slate-50 border-b border-slate-200">
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Prod.</th>
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Categoría</th>
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider text-center">Stock</th>
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Precio</th>
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Rating</th>
-            <th className="p-3 text-[11px] font-bold uppercase text-slate-500 tracking-wider text-right">Acciones</th>
+        <thead className=''>
+          <tr className="bg-neutral ">
+            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Prod.</th>
+            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Categoría</th>
+            <th className="p-3 border text-[11px] font-bold uppercase tracking-wider text-center">Stock</th>
+            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Precio</th>
+            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Rating</th>
+            <th className="p-3 border text-[11px] font-bold uppercase tracking-wider text-center">Acciones</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {productos.map((prod) => (
+          {listaProductos.map((prod) => (
             <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
               {/* Imagen e Info Básica */}
-              <td className="p-3">
+              <td className="p-3 border-b border-l">
                 <div className="flex items-center gap-3">
                   <img
-                    src={prod.imagen_url}
+                    src={prod.image_url}
                     alt={prod.nombre}
                     className="w-10 h-10 rounded-lg object-cover border border-slate-100"
                   />
-                  <div>
-                    <p className="text-sm font-bold text-slate-700 leading-none">{prod.nombre}</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-mono">ID: {prod.id}</p>
-                  </div>
+
                 </div>
               </td>
 
               {/* Categoría */}
-              <td className="p-3">
+              <td className="p-3 border-b">
                 <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase">
                   {prod.name}
                 </span>
               </td>
 
               {/* Stock con aviso visual */}
-              <td className="p-3 text-center">
+              <td className="p-3 text-center border-b">
                 <div className="flex flex-col items-center">
                   <span className={`text-sm font-mono font-bold ${prod.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
                     {prod.stock}
@@ -79,20 +85,19 @@ const StockTable = ({ productos, categorias }) => {
               </td>
 
               {/* Precio */}
-              <td className="p-3 font-mono text-sm font-bold text-slate-600">
+              <td className="p-3 border-b font-mono text-sm font-bold text-slate-600">
                 {prod.price}€
               </td>
 
               {/* Rating */}
-              <td className="p-3">
+              <td className="p-3 border-b">
                 <div className="flex items-center gap-1 text-amber-500">
-                  <Star size={12} fill="currentColor" />
                   <span className="text-xs font-bold">{renderStars(prod.rating)}</span>
                 </div>
               </td>
 
               {/* Acciones Rápidas */}
-              <td className="p-3 text-right">
+              <td className="p-3 text-right border-b">
                 <div className="flex justify-end gap-2">
                   <button className="p-1.5 hover:bg-slate-200 rounded-md text-slate-400 transition-colors">
                     <Edit3 size={16} />
