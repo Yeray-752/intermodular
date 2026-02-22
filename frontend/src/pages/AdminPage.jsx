@@ -9,6 +9,12 @@ import {
     CheckCircle,
     XCircle,
     Plus,
+    ImageIcon,
+    Tag,
+    BarChart,
+    Clock,
+    FileText,
+    Save,   
     MoreHorizontal
 } from 'lucide-react';
 import Header from "../components/Principal/Header";
@@ -222,7 +228,7 @@ function AdminPage() {
         </div>
     );
 
-    const RenderCatalogo = () => (
+    const RenderActualilzacionProducto = () => (
         <div>
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -278,12 +284,102 @@ function AdminPage() {
             </div>
         </div>
     );
+    const RenderActualilzacionServicios = () => (
+        <div className="max-w-4xl mx-auto bg-base-100 rounded-2xl shadow-xl p-8 border border-base-200">
+            <div className="mb-8">
+                <h2 className="text-3xl font-black text-base-content uppercase tracking-tight flex items-center gap-3">
+                    <Plus className="text-primary" /> Crear Nuevo Servicio
+                </h2>
+                <p className="text-base-content/60 text-sm">Rellena los detalles para añadir un nuevo servicio al catálogo del taller.</p>
+            </div>
+
+            <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {/* Columna Izquierda: Imagen */}
+                    <div className="flex flex-col gap-4">
+                        <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
+                        <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">
+                            
+                                <div className="flex flex-col items-center text-base-content/40">
+                                    <ImageIcon size={48} strokeWidth={1} />
+                                    <span className="text-xs font-medium mt-2">Click para subir imagen</span>
+                                </div>
+                            
+                            <input 
+                                type="file" 
+                                name="foto"
+                            
+                                className="absolute inset-0 opacity-0 cursor-pointer" 
+                                accept="image/*"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Columna Derecha: Datos principales */}
+                    <div className="space-y-4">
+                        <div className="form-control">
+                            <label className="label text-[10px] font-boldx uppercase text-base-content/60 tracking-widest">Título del Servicio</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Tag size={18}/></span>
+                                <input type="text" name="titulo" placeholder="Ej: Cambio de Aceite Sintético" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
+                            </div>
+                        </div>
+
+                        <div className="form-control">
+                            <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Dificultad</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><BarChart size={18}/></span>
+                                <select name="dificultad" className="select select-bordered w-full pl-10 focus:select-primary bg-base-100" required>
+                                    <option value="baja">Baja</option>
+                                    <option value="media">Media</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="form-control">
+                                <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Tiempo Aprox.</label>
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Clock size={18}/></span>
+                                    <input type="text" name="tiempo" placeholder="1h 30m" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
+                                </div>
+                            </div>
+                            <div className="form-control">
+                                <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Precio (€)</label>
+                                <input type="number" name="precio" placeholder="0.00" step="0.01" className="input input-bordered w-full focus:input-primary bg-base-100 font-bold text-primary" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Descripción (Ancho completo) */}
+                <div className="form-control">
+                    <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Descripción Detallada</label>
+                    <div className="relative">
+                        <span className="absolute top-3 left-3 text-base-content/30"><FileText size={18}/></span>
+                        <textarea name="descripcion" className="textarea textarea-bordered w-full pl-10 h-32 focus:textarea-primary bg-base-100" placeholder="Describe qué incluye este servicio..."></textarea>
+                    </div>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex justify-end gap-3 pt-4 border-t border-base-200">
+                    <button type="button" className="btn btn-ghost">Cancelar</button>
+                    <button type="submit" className="btn btn-primary px-8 shadow-lg shadow-primary/20 gap-2">
+                        <Save size={18} />
+                        Guardar Servicio
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
 
     const renderContent = () => {
         switch (activeTab) {
             case 'reservas': return <RenderReservas />;
-            case 'servicios':
-            case 'productos': return <RenderCatalogo />;
+            case 'servicios': return <RenderActualilzacionServicios />;
+            case 'productos': return <RenderActualilzacionProducto />;
             case 'stock': return <RenderStock />
             case 'metricas':
                 return (

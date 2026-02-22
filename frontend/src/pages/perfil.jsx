@@ -13,6 +13,7 @@ function Perfil() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const { t, i18n } = useTranslation('profile');
@@ -51,10 +52,10 @@ function Perfil() {
     }, [navigate]);
 
     const trearCitas = async () => {
-        const token = localStorage.getItem("token"); // Obtener el token localmente
+        const token = localStorage.getItem("token");
         if (!token) return;
 
-        setLoading(true);
+        setLoadingCitas(true); // Cambiado aquí
         try {
             const response = await fetch("http://localhost:3000/api/dates", {
                 headers: {
@@ -65,15 +66,12 @@ function Perfil() {
 
             if (response.ok) {
                 const data = await response.json();
-                setCitas(data); // Ahora sí guardas los datos reales
-                console.log(citas);
-            } else {
-                throw new Error("Error al obtener las citas");
+                setCitas(data);
             }
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoading(false);
+            setLoadingCitas(false); // Cambiado aquí
         }
     };
     useEffect(() => {
@@ -90,7 +88,7 @@ function Perfil() {
         if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
+            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelada`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -184,9 +182,10 @@ function Perfil() {
             : 'text-base-content/70 hover:shadow-lg'}
     `;
 
-    if (loading) return <div className="h-screen flex justify-center items-center font-bold">Cargando...</div>;
+
 
     const renderContent = () => {
+        if (loading) return <div className="py-20 text-center font-bold">Cargando datos de perfil...</div>;
         switch (activeTab) {
             case 'informacion':
                 return (
@@ -267,8 +266,12 @@ function Perfil() {
 
                         <div className="space-y-4">
                             {/* Ejemplo de una cita activa */}
-
-                            {citas.length > 0 ? (
+                            {loadingCitas ? (
+                                <div className="py-10 text-center flex flex-col items-center gap-3">
+                                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                                    <p className="font-bold">Cargando tus citas...</p>
+                                </div>
+                            ) : citas.length > 0 ? (
                                 citas.map(citas => (
                                     <div className="p-6 border  bg-base-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4" key={citas.id}>
                                         <div className="flex items-center gap-5">
