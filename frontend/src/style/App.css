@@ -4,7 +4,7 @@
 }
 html, body, #root {
   height: 100%;
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 }
 
 
@@ -44,7 +44,7 @@ html, body, #root {
 
 
 @plugin "daisyui/theme" {
-  name: "vibrant-light";
+  name: "light";
   default: false;
   prefersdark: false;
   color-scheme: "light";
@@ -67,8 +67,8 @@ html, body, #root {
   --color-accent-content: oklch(20% 0.05 150);
 
   /* Estado: Colores definidos y claros */
-  --color-neutral: oklch(35% 0.05 250);
-  --color-neutral-content: oklch(95% 0.01 250);
+  --color-neutral: #ebebeb; /* gris para pequeños detalles */
+  --color-neutral-content: #e9e7e7;
   
   --color-info: oklch(75% 0.15 220);          /* Cian vivo */
   --color-info-content: oklch(30% 0.05 220);

@@ -1,77 +1,218 @@
-import { useState, useMemo } from 'react';
-import { 
-    LayoutDashboard, 
-    ClipboardList, 
-    Wrench, 
-    Package, 
-    TrendingUp, 
+import { useState, useMemo, use } from 'react';
+import {
+    LayoutDashboard,
+    ClipboardList,
+    Wrench,
+    Package,
+    TrendingUp,
     Bell,
     CheckCircle,
     XCircle,
     Plus,
+    ImageIcon,
+    Tag,
+    BarChart,
+    Clock,
+    FileText,
+    Save,   
     MoreHorizontal
 } from 'lucide-react';
 import Header from "../components/Principal/Header";
 import Footer from "../components/Principal/Footer";
+import Calendario from "../components/AdminComponents/Calendario";
+import StockTable from '../components/AdminComponents/StockTable';
+import { useEffect } from 'react';
 
 function AdminPage() {
     const [activeTab, setActiveTab] = useState('reservas');
+    const [loading, setLoading] = useState(true);
+    const [errors, setError] = useState({});
+    const [eventos, setEventos] = useState([]);
+    const [listaProductos, setListaProductos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
 
     // --- DATOS (Consistencia con tus imágenes) ---
-    const [reservas, setReservas] = useState([
-        { id: 1, cliente: "Marcos Soler", servicio: "Cambio de Aceite y Filtro", vehiculo: "toyota corolla", fecha: "2024-03-22", hora: "09:00", estado: "pendiente" },
-        { id: 2, cliente: "Laura Méndez", servicio: "Kit de Frenos Cerámicos", vehiculo: "Honde XR 650", fecha: "2024-03-23", hora: "11:30", estado: "pendiente" },
-    ]);
+    const [reservas, setReservas] = useState([]);
+
+    const ActualizarCitas = async (id, estado) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        // Confirmación amistosa antes de borrar
+        if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/dates/${id}/${estado}`, {
+                method: 'PATCH', // Importante: debe coincidir con router.patch
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                // Optimistic UI: Filtramos la cita de la lista actual para que desaparezca al instante
+                setReservas(prev => prev.filter(res => res.id !== id));
+
+                // 2. Si la pasamos a procesando, recargamos el calendario para que aparezca
+                if (estado === 'procesando') {
+                    cargarEventosCalendario();
+                }
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || "Error al cancelar la cita");
+            }
+        } catch (err) {
+            console.error("Error en la petición:", err);
+            alert("No se pudo conectar con el servidor");
+        }
+    };
+
+    const trearCitas = async () => {
+        const token = localStorage.getItem("token"); // Obtener el token localmente
+        if (!token) return;
+
+        setLoading(true);
+        try {
+            const response = await fetch("http://localhost:3000/api/dates/admin/pendientes", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // --- AQUÍ ESTÁ EL TRUCO ---
+                // Limpiamos los datos antes de guardarlos para que JS no los convierta en Date
+                const datosLimpios = data.map(res => ({
+                    ...res,
+                    // Si fecha_cita es un objeto Date o un string ISO, 
+                    // lo forzamos a ser solo "YYYY-MM-DD"
+                    fecha_cita: typeof res.fecha_cita === 'string'
+                        ? res.fecha_cita.split('T')[0]
+                        : new Date(res.fecha_cita).toISOString().split('T')[0]
+                }));
+
+                setReservas(datosLimpios);
+            } else {
+                throw new Error("Error al obtener las citas");
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const cargarEventosCalendario = async () => {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/dates/admin/procesando", {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const format = data.map(c => {
+                // Si la fecha viene como "2026-02-16T23:00:00.000Z"
+                // Al hacer el split por 'T', nos quedamos con "2026-02-16"
+                const fechaLimpia = c.fecha_cita.split('T')[0];
+
+                return {
+                    id: c.id.toString(),
+                    title: `${c.nombre_cliente} - ${c.servicio}`,
+                    // Forzamos una hora de inicio clara dentro del rango visible del calendario
+                    start: `${fechaLimpia}T09:00:00`,
+                    // Añadimos una hora de fin para que el bloque tenga cuerpo en la vista de semana
+                    end: `${fechaLimpia}T10:00:00`,
+                    backgroundColor: '#10b981', // Verde esmeralda para citas en proceso
+                    borderColor: '#059669',
+                    allDay: false
+                };
+            });
+            setEventos(format);
+        }
+    };
+
+    const fetchDatos = async () => {
+        try {
+            
+            const [resProd, resCat] = await Promise.all([
+                fetch('http://localhost:3000/api/products')
+            ]);
+            const dataProd = await resProd.json();
+           console.log('Datos recibidos del servidor:', dataProd);
+            setListaProductos(dataProd);
+           
+        } catch (err) {
+            console.error("Error cargando el mercado:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    useEffect(() => {
+        if (activeTab === 'reservas') {
+            trearCitas();
+            cargarEventosCalendario();
+        }
+        if (activeTab === 'stock'){
+            fetchDatos();
+        }
+    }, [activeTab]);
+    console.log(reservas)
 
     const menuItems = useMemo(() => [
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },
+        { id: 'stock', label: 'Stock de Productos', icon: Package },
         { id: 'servicios', label: 'Servicios', icon: Wrench },
         { id: 'productos', label: 'Productos', icon: Wrench },
-        { id: 'stock', label: 'Stock de Productos', icon: Package },
     ], []);
 
     // Estilo de botones: Sin azul, ahora negro/slate profesional
     const menuBtnStyle = (tab) => `
         w-full text-left px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-3
-        ${activeTab === tab 
-            ? 'bg-slate-900 text-white font-bold shadow-md' 
+        ${activeTab === tab
+            ? 'bg-slate-900 text-white font-bold shadow-md'
             : 'text-slate-500 hover:bg-slate-100'}
     `;
 
     // --- SECCIONES ---
+ setInterval( console.log(listaProductos), 1000)
 
     const RenderReservas = () => (
         <div>
             <div className="mb-8">
                 <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Reservas</h2>
             </div>
-            <div className="overflow-x-auto bg-white rounded-2xl border border-slate-200 shadow-sm">
+
+            <div className="overflow-x-auto bg-white rounded-2xl border-3 border-neutral shadow-sm">
                 <table className="table w-full border-collapse">
                     <thead className="bg-slate-50 border-b border-slate-200">
-                        <tr className="text-slate-400 uppercase text-[10px] tracking-widest text-left">
-                            <th className="p-4 font-bold">Cliente</th>
-                            <th className="p-4 font-bold">Servicio</th>
-                            <th className="p-4 font-bold">Vehiculo</th>
-                            <th className="p-4 font-bold">Horario</th>
-                            <th className="p-4 font-bold">Estado</th>
-                            <th className="p-4 font-bold text-center">Gestión</th>
+                        <tr className="text-slate-400 uppercase text-[10px] tracking-widest text-center">
+                            <th className="p-4 font-bold text-base-200">Cliente</th>
+                            <th className="p-4 font-bold text-base-200">Servicio</th>
+                            <th className="p-4 font-bold text-base-200">Vehiculo</th>
+                            <th className="p-4 font-bold text-base-200">Dia</th>
+                            <th className="p-4 font-bold text-base-200">Estado</th>
+                            <th className="p-4 font-bold text-base-200 text-center">Gestión</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {reservas.map((res) => (
-                            <tr key={res.id} className="hover:bg-slate-50/50">
-                                <td className="p-4 font-bold text-slate-700">{res.cliente}</td>
-                                <td className="p-4 text-sm text-slate-500">{res.servicio}</td>
-                                <td className="p-4 text-sm text-slate-500">{res.vehiculo}</td>
-                                <td className="p-4 text-xs font-mono text-slate-400">{res.fecha} • {res.hora}</td>
-                                <td className="p-4 text-sm text-slate-500">{res.estado}</td>
+                            <tr key={res.id} className="text-center">
+                                <td className="p-4 font-bold text-base-200">{res.nombre_cliente}</td>
+                                <td className="p-4 font-bold text-base-200">{res.servicio}</td>
+                                <td className="p-4 font-bold text-base-200">{res.vehiculo_seleccionado}</td>
+                                <td className="p-4 font-bold font-mono text-base-200">{res.fecha_cita.split('T')[0].split('-').reverse().join('/')}</td>
+                                <td className="p-4 font-bold text-base-200">{res.estado}</td>
                                 <td className="p-4">
                                     <div className="flex justify-center gap-3">
-                                        <button className="text-emerald-300 hover:text-emerald-500 transition-colors">
+                                        <button onClick={() => ActualizarCitas(res.id, 'procesando')} className="text-emerald-300 hover:text-emerald-500 transition-colors">
                                             <CheckCircle size={20} />
                                         </button>
-                                        <button className="text-rose-200 hover:text-rose-600 transition-colors">
+                                        <button onClick={() => ActualizarCitas(res.id, 'cancelada')} className="text-rose-200 hover:text-rose-600 transition-colors">
                                             <XCircle size={20} />
                                         </button>
                                     </div>
@@ -81,10 +222,13 @@ function AdminPage() {
                     </tbody>
                 </table>
             </div>
+            <div>
+                <Calendario key={eventos.length} initialEvents={eventos} />
+            </div>
         </div>
     );
 
-    const RenderCatalogo = () => (
+    const RenderActualilzacionProducto = () => (
         <div>
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -95,7 +239,7 @@ function AdminPage() {
                     <Plus size={18} /> Nuevo Registro
                 </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-800">
                 {/* Servicio */}
                 <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex gap-5 items-center">
@@ -125,12 +269,118 @@ function AdminPage() {
             </div>
         </div>
     );
+    const RenderStock = () => (
+        <div>
+            <div className="flex justify-between items-end mb-8">
+                <div>
+                    <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Stock</h2>
+                    <p className="text-slate-500 text-sm">Administración de precios y existencias.</p>
+                </div>
+                
+            </div>
+
+            <div className=" ">
+                <StockTable productos={listaProductos} categorias={categorias} />
+            </div>
+        </div>
+    );
+    const RenderActualilzacionServicios = () => (
+        <div className="max-w-4xl mx-auto bg-base-100 rounded-2xl shadow-xl p-8 border border-base-200">
+            <div className="mb-8">
+                <h2 className="text-3xl font-black text-base-content uppercase tracking-tight flex items-center gap-3">
+                    <Plus className="text-primary" /> Crear Nuevo Servicio
+                </h2>
+                <p className="text-base-content/60 text-sm">Rellena los detalles para añadir un nuevo servicio al catálogo del taller.</p>
+            </div>
+
+            <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {/* Columna Izquierda: Imagen */}
+                    <div className="flex flex-col gap-4">
+                        <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
+                        <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">
+                            
+                                <div className="flex flex-col items-center text-base-content/40">
+                                    <ImageIcon size={48} strokeWidth={1} />
+                                    <span className="text-xs font-medium mt-2">Click para subir imagen</span>
+                                </div>
+                            
+                            <input 
+                                type="file" 
+                                name="foto"
+                            
+                                className="absolute inset-0 opacity-0 cursor-pointer" 
+                                accept="image/*"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Columna Derecha: Datos principales */}
+                    <div className="space-y-4">
+                        <div className="form-control">
+                            <label className="label text-[10px] font-boldx uppercase text-base-content/60 tracking-widest">Título del Servicio</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Tag size={18}/></span>
+                                <input type="text" name="titulo" placeholder="Ej: Cambio de Aceite Sintético" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
+                            </div>
+                        </div>
+
+                        <div className="form-control">
+                            <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Dificultad</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><BarChart size={18}/></span>
+                                <select name="dificultad" className="select select-bordered w-full pl-10 focus:select-primary bg-base-100" required>
+                                    <option value="baja">Baja</option>
+                                    <option value="media">Media</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="form-control">
+                                <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Tiempo Aprox.</label>
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Clock size={18}/></span>
+                                    <input type="text" name="tiempo" placeholder="1h 30m" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
+                                </div>
+                            </div>
+                            <div className="form-control">
+                                <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Precio (€)</label>
+                                <input type="number" name="precio" placeholder="0.00" step="0.01" className="input input-bordered w-full focus:input-primary bg-base-100 font-bold text-primary" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Descripción (Ancho completo) */}
+                <div className="form-control">
+                    <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Descripción Detallada</label>
+                    <div className="relative">
+                        <span className="absolute top-3 left-3 text-base-content/30"><FileText size={18}/></span>
+                        <textarea name="descripcion" className="textarea textarea-bordered w-full pl-10 h-32 focus:textarea-primary bg-base-100" placeholder="Describe qué incluye este servicio..."></textarea>
+                    </div>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex justify-end gap-3 pt-4 border-t border-base-200">
+                    <button type="button" className="btn btn-ghost">Cancelar</button>
+                    <button type="submit" className="btn btn-primary px-8 shadow-lg shadow-primary/20 gap-2">
+                        <Save size={18} />
+                        Guardar Servicio
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
 
     const renderContent = () => {
         switch (activeTab) {
             case 'reservas': return <RenderReservas />;
-            case 'servicios':
-            case 'productos': return <RenderCatalogo />;
+            case 'servicios': return <RenderActualilzacionServicios />;
+            case 'productos': return <RenderActualilzacionProducto />;
+            case 'stock': return <RenderStock />
             case 'metricas':
                 return (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -148,22 +398,22 @@ function AdminPage() {
     };
 
     return (
-        <div className="bg-[#fcfcfc] min-h-screen flex flex-col">
+        <div className="bg-neutral min-h-screen flex flex-col">
             <Header />
 
             <main className="flex-1 p-4 md:p-8 lg:p-7">
                 <div className="flex flex-col lg:flex-row max-w-7xl mx-auto gap-4">
-                    
+
                     {/* Sidebar Refinado */}
                     <aside className="lg:flex flex-col bg-white w-full lg:w-80 flex-none p-8 rounded-3xl border border-slate-200 shadow-sm">
-                    
+
                         <nav className="space-y-3 flex-1">
                             {menuItems.map(item => {
                                 const Icon = item.icon;
                                 return (
-                                    <button 
-                                        key={item.id} 
-                                        className={menuBtnStyle(item.id)} 
+                                    <button
+                                        key={item.id}
+                                        className={menuBtnStyle(item.id)}
                                         onClick={() => setActiveTab(item.id)}
                                     >
                                         <Icon size={18} strokeWidth={2.5} />

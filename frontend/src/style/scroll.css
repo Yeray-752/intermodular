@@ -1,7 +1,7 @@
 /* Oculta la barra de scroll en todos los navegadores */
-.no-scrollbar::-webkit-scrollbar {
+/* .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
+} */
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE y Edge */
   scrollbar-width: none;  /* Firefox */

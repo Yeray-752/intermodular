@@ -1,0 +1,105 @@
+/* Contenedor principal */
+.calendar-mini-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Colores Globales de FullCalendar (Variables) */
+.fc {
+  --fc-button-bg-color: #3b82f6; /* blue-500 */
+  --fc-button-border-color: #3b82f6;
+  --fc-button-hover-bg-color: #2563eb; /* blue-600 */
+  --fc-button-active-bg-color: #1d4ed8; /* blue-700 */
+  --fc-event-bg-color: #3b82f6;
+  --fc-event-border-color: #3b82f6;
+  --fc-today-bg-color: #eff6ff; /* Azul muy clarito para resaltar el día actual */
+  --fc-border-color: #e2e8f0;
+}
+
+/* 1. Formato de la cabecera (lunes 12) */
+.fc .fc-col-header-cell {
+  background-color: #f8fafc; /* Fondo sutil para la cabecera */
+}
+
+.fc .fc-col-header-cell-cushion {
+  text-transform: capitalize;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e40af; /* Azul oscuro para los nombres de los días */
+  text-decoration: none !important;
+  padding: 10px 0 !important;
+}
+
+/* 2. Altura de las celdas y líneas internas */
+.fc .fc-timegrid-slot {
+  height: 1.5rem !important;
+}
+
+/* 3. Letra de las horas (Eje izquierdo) */
+.fc .fc-timegrid-slot-label-cushion {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b; /* slate-500 */
+}
+
+/* 4. Estilo de los eventos (Azul con degradado o sombra) */
+.fc-v-event {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+.fc-event-title {
+  font-size: 0.75rem !important;
+  font-weight: 600;
+  color: white !important;
+}
+
+/* 5. Toolbar (Título y Botones) */
+.fc .fc-toolbar-title {
+  font-size: 1.1rem !important;
+  font-weight: 800;
+  color: #1e3a8a; /* Azul marino */
+}
+
+.fc .fc-button {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease;
+  margin: 5px;
+  border: none;
+}
+
+/* Estilo para resaltar el número de día hoy si aparece */
+.fc .fc-day-today .fc-col-header-cell-cushion {
+  color: #0051ff !important;
+}
+
+/* 1. Líneas de los días (verticales) y de las horas (horizontales) */
+.fc-theme-standard td, 
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid {
+    border: 1px solid #cbd5e1 !important; /* Grosor aumentado a 2px y color slate-300 */
+}
+
+/* 2. Líneas divisorias de las celdas de tiempo internas */
+.fc .fc-timegrid-slot {
+    border-bottom: 0px solid #e2e8f0 !important; /* Líneas horizontales internas */
+}
+
+/* 3. Línea divisoria entre la cabecera (Lunes 16...) y el cuerpo */
+
+
+/* 4. Líneas laterales de las columnas para que no se vean débiles */
+.fc-timegrid-col {
+    border-left: 1px solid #cbd5e1 !important;
+}
+
+/* 5. Ajuste para que los eventos no tapen las líneas gruesas */
+.fc-v-event {
+    margin-right: 2px !important;
+    margin-left: 2px !important;
+    text-align: center;
+}
