@@ -61,7 +61,7 @@ html, body, #root {
   --color-primary-content: #ff6900; /* naranja mas vivo par ael footer */
   
   --color-secondary: #1447E6;     /*yeray*/
-  --color-secondary-content: oklch(98% 0.01 340);
+  --color-secondary-content: #e7e6e5; /* gris medio oscuro se usa en el home para lo del iva */
   
   --color-accent: oklch(75% 0.20 150);        /* Un verde esmeralda brillante */
   --color-accent-content: oklch(20% 0.05 150);
