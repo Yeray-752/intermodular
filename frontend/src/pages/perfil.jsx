@@ -223,7 +223,7 @@ function Perfil() {
                                 <SelectorCanarias />
                             </div>
 
-                            <button type="submit" className="mt-4 btn btn-primary flex items-center gap-2">
+                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary-content flex items-center gap-2">
                                 <Save size={18} />
                                 {t('saveChanges')}
                             </button>
@@ -338,7 +338,7 @@ function Perfil() {
                 );
             case 'seguridad':
                 return (
-                    <div>
+                    <div className='justify-self-center-safe'>
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('security')}</h2>
                             <p className="text-base-content/70 text-sm">{t('updatePasswordInfo')}</p>
@@ -353,7 +353,7 @@ function Perfil() {
                                 <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('newPassword')}</label>
                                 <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
                             </div>
-                            <button className="btn btn-primary shadow-lg shadow-primary/20 gap-2">
+                            <button className="btn bg-primary-content text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
                                 <Lock size={18} />
                                 {t('updatePassword')}
                             </button>
@@ -406,7 +406,7 @@ function Perfil() {
                                 );
                             })}
                         </nav>
-                        <div className="mt-auto pt-6 border-t border-base-300 space-y-1">
+                        <div className="mt-4 border-t border-base-300 space-y-1">
                             <AdminButton />
                             <button onClick={toggleLanguage} className='w-full text-left px-4 py-3 text-xs font-bold uppercase text-base-content/50 hover:text-primary flex items-center gap-3'>
                                 <span className="text-lg">🌐</span>

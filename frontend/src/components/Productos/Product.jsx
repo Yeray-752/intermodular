@@ -166,7 +166,7 @@ function Product() {
     };
 
     return (
-        <div className="min-h-screen bg-base-200">
+        <div className="min-h-screen bg-neutral">
 
             {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
             {notificacion.mostrar && (
@@ -190,13 +190,13 @@ function Product() {
                 </button>
 
                 {/* PRODUCTO */}
-                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden border border-base-300">
+                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
 
                         {/* Imagen */}
-                        <div className="bg-base-200/50 p-12 flex items-center justify-center">
+                        <div className="bg-base-100 p-12 flex items-center justify-center">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+                                <div className="absolute inset-0 rounded-full blur-3xl"></div>
                                 <img
                                     src={producto.image_url}
                                     alt={producto.name}
@@ -238,7 +238,7 @@ function Product() {
                             </div>
 
                             <button
-                                className="btn btn-primary btn-lg w-full md:w-auto shadow-lg hover:shadow-xl transition-all duration-200"
+                                className="btn border-0 bg-primary-content text-base-100 btn-lg w-full md:w-auto "
                                 onClick={() => token ? document.getElementById('my_modal_2').showModal() : navigate('/Login', { state: { from: location } })}
                                 disabled={producto.stock === 0}
                             >
@@ -249,7 +249,7 @@ function Product() {
                 </section>
 
                 {/* OPINIONES */}
-                <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12 border border-base-300">
+                <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12">
                     <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
                 </section>
             </div>
