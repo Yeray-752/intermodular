@@ -78,7 +78,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
             {/* FORMULARIO - Cambiado a bg-base-100 */}
-            <div className="space-y-6 rounded-xl p-8 shadow-lg bg-base-100 border border-base-300">
+            <div className="space-y-6 rounded-xl p-8 shadow-xl bg-base-100">
 
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -120,7 +120,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                 </div>
 
                 <button
-                    className={`btn btn-primary w-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'loading' : ''}`}
+                    className={`btn bg-primary-content border-0 text-base-100 w-full shadow-md hover:shadow-lg transition-all duration-200`}
                     onClick={handleSend}
                     disabled={loading || rating === 0}
                 >
@@ -152,7 +152,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                     {reviews.map((rev) => (
                         <div
                             key={rev.id}
-                            className="bg-base-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-base-300"
+                            className="bg-base-100 rounded-xl border p-5 shadow-sm hover:shadow-lg transition-all duration-200"
                         >
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                                 </div>
                             </div>
 
-                            <div className="bg-base-200/50 p-3 rounded-lg border border-base-300/50">
+                            <div className="rounded-lg border border-base-300/50">
                                 {/* Cambiado bg-white por bg-base-100 para que no brille en modo oscuro */}
                                 <p className="text-sm text-base-content/90 bg-base-100 rounded-lg p-3 leading-relaxed italic break-words whitespace-pre-wrap">
                                     {rev.comment}
