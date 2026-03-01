@@ -23,6 +23,22 @@ export const validateCita = (data) => {
   return schema.safeParse(data);
 };
 
+export const validaUpdate = (data) => {
+  const schema = z.object({
+    
+    vehiculoSeleccionado: z.string().min(1, "Debes seleccionar un vehículo"),
+    
+    fechaCita: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Fecha inválida",
+    }),
+
+
+  });
+
+  return schema.safeParse(data);
+};
+
+
 export const validateUpdateEstadoCita = (data) => {
   const schema = z.object({
     id: z.coerce.number().int().positive(), // Coerce convierte string de params a número

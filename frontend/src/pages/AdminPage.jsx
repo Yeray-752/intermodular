@@ -162,6 +162,8 @@ function AdminPage() {
     }, [activeTab]);
     console.log(reservas)
 
+    
+
     const menuItems = useMemo(() => [
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },

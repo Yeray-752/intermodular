@@ -66,6 +66,34 @@ export const crearCita = async (req, res) => {
     }
 };
 
+export const actualizarCita = async (req, res) => {
+    const { id } = req.params;
+    const { fechaCita } = req.body; // Solo extraemos lo que cambia
+    const fechaSQL = fechaCita.replace('T', ' ').substring(0, 19);
+    console.log(fechaSQL)
+    if (!fechaCita) {
+        return res.status(400).json({ error: "La nueva fecha es obligatoria" });
+    }
+
+    try {
+        const query = `
+            UPDATE cita 
+            SET fecha_cita = ?
+            WHERE id = ?
+        `;
+        console.log("Ejecutando:", query, "con valores:", [fechaSQL, id]);
+        const [dbResult] = await db.execute(query, [fechaFormateada, Number(id)]);
+
+        if (dbResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Cita no encontrada" });
+        }
+
+        res.status(200).json({ message: "Hora confirmada con éxito" });
+    } catch (error) {
+        res.status(500).json({ error: "Error al actualizar la hora" });
+    }
+};
+
 export const obtenerCitasTerminadas = async (req, res) => {
     try {
         // Ajustamos el JOIN para usar la tabla 'Cliente'
@@ -140,7 +168,7 @@ export const actualizarEstadoCita = async (req, res) => {
     try {
         const query = 'UPDATE cita SET estado = ? WHERE id = ?';
         const [result] = await db.execute(query, [estado, id]);
-        
+
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Cita no encontrada" });
