@@ -82,7 +82,7 @@ export const actualizarCita = async (req, res) => {
             WHERE id = ?
         `;
         console.log("Ejecutando:", query, "con valores:", [fechaSQL, id]);
-        const [dbResult] = await db.execute(query, [fechaFormateada, Number(id)]);
+        const [dbResult] = await db.execute(query, [fechaSQL, id]);
 
         if (dbResult.affectedRows === 0) {
             return res.status(404).json({ error: "Cita no encontrada" });

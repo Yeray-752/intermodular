@@ -115,15 +115,15 @@ function AdminPage() {
             const format = data.map(c => {
                 // Si la fecha viene como "2026-02-16T23:00:00.000Z"
                 // Al hacer el split por 'T', nos quedamos con "2026-02-16"
-                const fechaLimpia = c.fecha_cita.split('T')[0];
-
+              /*   const fechaLimpia = c.fecha_cita.split('T')[0]; */
+                console.log(c)
                 return {
                     id: c.id.toString(),
                     title: `${c.nombre_cliente} - ${c.servicio}`,
                     // Forzamos una hora de inicio clara dentro del rango visible del calendario
-                    start: `${fechaLimpia}T09:00:00`,
+                    start: `${c.fecha_cita}`,
                     // Añadimos una hora de fin para que el bloque tenga cuerpo en la vista de semana
-                    end: `${fechaLimpia}T10:00:00`,
+                    end: `${c.fecha_cita}`,
                     backgroundColor: '#10b981', // Verde esmeralda para citas en proceso
                     borderColor: '#059669',
                     allDay: false
@@ -140,7 +140,6 @@ function AdminPage() {
                 fetch('http://localhost:3000/api/products')
             ]);
             const dataProd = await resProd.json();
-           console.log('Datos recibidos del servidor:', dataProd);
             setListaProductos(dataProd);
            
         } catch (err) {
@@ -160,7 +159,7 @@ function AdminPage() {
             fetchDatos();
         }
     }, [activeTab]);
-    console.log(reservas)
+
 
     
 
@@ -181,7 +180,7 @@ function AdminPage() {
     `;
 
     // --- SECCIONES ---
- setInterval( console.log(listaProductos), 1000)
+
 
     const RenderReservas = () => (
         <div>
