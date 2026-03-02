@@ -24,7 +24,7 @@ const plantillas = {
     }
 };
 
-export const getNotifications = async (req, res) => {
+export const getNotificationsByID = async (req, res) => {
     try {
         // Obtenemos notificaciones del usuario logueado, las más recientes primero
         const [rows] = await db.execute(
@@ -34,6 +34,19 @@ export const getNotifications = async (req, res) => {
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener notificaciones" });
+    }
+};
+
+export const getNotificationsAdmin = async (req, res) => {
+    try {
+        // Usado para obtener las notificaciones que les sirven a los admins
+        const [rows] = await db.execute(
+            'SELECT * FROM Notificaciones WHERE rol = admin ORDER BY creado_en DESC',
+            [req.user.id]
+        );
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener notificaciones de admin" });
     }
 };
 

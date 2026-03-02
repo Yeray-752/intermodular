@@ -49,6 +49,8 @@ export const createService = async (req, res) => {
 
         await connection.commit();
         res.status(201).json({ message: "Servicio creado con imagen", id: servResult.insertId });
+
+        
     } catch (error) {
         await connection.rollback();
         res.status(500).json({ error: "Error al crear servicio con imagen" });

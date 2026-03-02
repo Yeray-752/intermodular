@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getNotifications, markAsRead } from '../controllers/notificationsController.js';
+import { getNotificationsByID, markAsRead } from '../controllers/notificationsController.js';
 import { verifyToken } from '../middlewares/auth.js';
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.use(verifyToken);
 
 // Ver mis notificaciones
-router.get('/', getNotifications);
+router.get('/', getNotificationsByID);
 
 // Marcar una como leída
 router.patch('/:id/read', markAsRead);
