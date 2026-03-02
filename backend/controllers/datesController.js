@@ -3,7 +3,7 @@ import { validateCita } from "../validators/dateValidator.js";
 
 export const obtenerCitas = async (req, res) => {
     try {
-        let query = 'SELECT * FROM Cita'; // O 'citas', según tu tabla
+        let query = 'SELECT * FROM Cita';
         let params = [];
 
         if (req.user.rol !== 'admin') {

@@ -123,7 +123,6 @@ export const getClientProfile = async (req, res) => {
 };
 
 export const updateClientProfile = async (req, res) => {
-    // El middleware validateSchema ya limpió req.body con Zod
     const { nombre, apellidos, direccion } = req.body;
     const userId = req.user.id;
 
@@ -132,7 +131,6 @@ export const updateClientProfile = async (req, res) => {
     }
 
     try {
-        // Construimos la query dinámicamente o actualizamos todo (Zod garantiza que lo que llegue es válido)
         const query = `
       UPDATE Cliente 
       SET nombre = COALESCE(?, nombre), 
