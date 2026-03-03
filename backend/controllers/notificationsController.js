@@ -1,5 +1,25 @@
 import db from "../db.js";
 
+const titulos = {
+    cliente: {
+        compra: "Compra Realizada",
+        cita: "Cita Programada",
+        cita_cancelada: "Cita Cancelada",
+        cita_estado: "Estado de Cita Actualizado",
+        valoración: "Valoración Enviada"
+    },
+    admin: {
+        producto_nuevo: "Nuevo Producto Agregado",
+        producto_precio_cambiado: "Precio de Producto Actualizado",
+        stock_nulo: "Stock Agotado",
+        stock_actualizado: "Stock Actualizado",
+        servicio_nuevo: "Nuevo Servicio Agregado",
+        servicio_precio_cambiado: "Precio de Servicio Actualizado",
+        cita_estado_admin: "Estado de Cita Actualizado",
+        cita_cancelada_admin: "Cita Cancelada"
+    }
+};
+
 const plantillas = {
     cliente: {
         compra: (data) => `¡Gracias! Tu compra de ${data.producto} se ha procesado.`, // Esto esta mal, porque compramos en base a carrito
@@ -69,13 +89,17 @@ export const markAsRead = async (req, res) => {
     }
 };
 
-export const createNotification = async (id_usuario, mensaje, rol) => {
+export const createNotification = async (id_usuario, tipo, rol, data = {}) => {
     try {
+        const titulo = titulos[rol][tipo];
+        const mensaje = plantillas[rol][tipo](data);
+
         await db.execute(
-            'INSERT INTO Notificaciones (id_usuario,titulo,mensaje,rol) VALUES (?, ?, ?, ?)',
-            [id_usuario, titulo, plantillas[rol](mensaje), rol]
+            'INSERT INTO Notificaciones (id_usuario, titulo, mensaje, rol) VALUES (?, ?, ?, ?)',
+            [id_usuario, titulo, mensaje, rol]
         );
     } catch (error) {
+        console.error("Error al crear notificación:", error);
         throw error;
     }
 };

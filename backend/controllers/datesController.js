@@ -36,17 +36,11 @@ export const crearCita = async (req, res) => {
     const { matricula_vehiculo, fecha, motivo } = req.body;
 
     try {
-
         const query = `INSERT INTO Cita (id_usuario, matricula_vehiculo, fecha, motivo, estado) VALUES (?, ?, ?, ?, 'pendiente')`;
         const [dbResult] = await db.execute(query, [id_user, matricula_vehiculo, fecha, motivo]);
 
-        // Notificar al ADMIN (Asumimos ID 1 o rol admin)
-        await enviarNotificacion(
-            1, 
-            "Nueva Cita", 
-            `El usuario ${id_user} ha solicitado una cita para el vehículo ${matricula_vehiculo}`, 
-            'cita'
-        );
+
+        await createNotification(id_user, 'cita', 'cliente', { fecha: fecha });
 
         res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
     } catch (error) {
@@ -59,18 +53,26 @@ export const actualizarEstadoCita = async (req, res) => {
     const { estado } = req.body;
 
     try {
-        const [cita] = await db.execute('SELECT id_usuario, matricula_vehiculo FROM Cita WHERE id_cita = ?', [id]);
+        // Necesitamos la fecha para la plantilla del cliente
+        const [cita] = await db.execute(
+            'SELECT id_usuario, fecha FROM Cita WHERE id_cita = ?', 
+            [id]
+        );
+        
         if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
 
         await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', [estado, id]);
 
-        // Notificar al CLIENTE sobre el cambio (Aceptada, Finalizada, etc.)
-        let titulo = estado === 'aceptada' ? "Cita Confirmada" : "Actualización de Cita";
-        await enviarNotificacion(
+        // NOTIFICACIÓN AL CLIENTE
+        // Usamos la clave 'cita_estado' que definiste en tus plantillas
+        await createNotification(
             cita[0].id_usuario, 
-            titulo, 
-            `Tu cita para el vehículo ${cita[0].matricula_vehiculo} ahora está: ${estado}`, 
-            'cita'
+            'cita_estado', 
+            'cliente', 
+            { 
+                fecha: cita[0].fecha, 
+                estado: estado 
+            }
         );
 
         res.json({ message: "Estado actualizado y cliente notificado" });
@@ -85,21 +87,39 @@ export const cancelarCita = async (req, res) => {
     const esAdmin = req.user.rol === 'admin';
 
     try {
-        const [cita] = await db.execute('SELECT id_usuario, estado FROM Cita WHERE id_cita = ?', [id]);
+        const [cita] = await db.execute(
+            'SELECT id_usuario, fecha FROM Cita WHERE id_cita = ?', 
+            [id]
+        );
+        
         if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
 
-        // Seguridad: El usuario solo cancela la suya, el Admin cancela cualquiera
         if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
             return res.status(403).json({ message: "No autorizado" });
         }
 
         await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', ['cancelada', id]);
 
-        // Si el Admin cancela -> Notifica al Cliente. Si el Cliente cancela -> Notifica al Admin.
+        // LÓGICA DE NOTIFICACIONES REFINADA
         if (esAdmin) {
-            await enviarNotificacion(cita[0].id_usuario, "Cita Cancelada", "El taller ha cancelado tu cita.", 'cita');
+            // El admin cancela -> Notificamos al cliente
+            await createNotification(
+                cita[0].id_usuario, 
+                'cita_cancelada', 
+                'cliente', 
+                { fecha: cita[0].fecha }
+            );
         } else {
-            await enviarNotificacion(1, "Cita Cancelada por Cliente", `El cliente ha cancelado la cita #${id}`, 'cita');
+            // El cliente cancela -> Notificamos al admin (ID 1 por ahora)
+            await createNotification(
+                1, 
+                'cita_cancelada_admin', 
+                'admin', 
+                { 
+                    fecha: cita[0].fecha, 
+                    usuario: id_usuario_token 
+                }
+            );
         }
 
         res.json({ message: "Cita cancelada correctamente" });
