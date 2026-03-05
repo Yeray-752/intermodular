@@ -112,16 +112,18 @@ function AdminPage() {
         });
         if (res.ok) {
             const data = await res.json();
+
             const format = data.map(c => {
                 // Si la fecha viene como "2026-02-16T23:00:00.000Z"
                 // Al hacer el split por 'T', nos quedamos con "2026-02-16"
               /*   const fechaLimpia = c.fecha_cita.split('T')[0]; */
-                console.log(c)
+
                 return {
                     id: c.id.toString(),
                     title: `${c.nombre_cliente} - ${c.servicio}`,
                     // Forzamos una hora de inicio clara dentro del rango visible del calendario
                     start: `${c.fecha_cita}`,
+                    descripcion: `${c.comentarios}`,
                     // Añadimos una hora de fin para que el bloque tenga cuerpo en la vista de semana
                     end: `${c.fecha_cita}`,
                     backgroundColor: '#10b981', // Verde esmeralda para citas en proceso
@@ -130,6 +132,7 @@ function AdminPage() {
                 };
             });
             setEventos(format);
+
         }
     };
 

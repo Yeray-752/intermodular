@@ -13,7 +13,7 @@ const EventTooltip = ({ info, position }) => {
 
   // Extraemos datos útiles del evento
   const { title, start } = info;
-  const descripcion = info.extendedProps?.descripcion || 'Sin descripción adicional'; // Asumiendo que envías esto en tus eventos
+  const descripcion = info.extendedProps?.descripcion || 'Sin descripción adicional'; 
   const hora = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
@@ -57,10 +57,12 @@ const CalendarioSemanalTailwind = ({ initialEvents, onUpdateAppointment }) => {
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+
   // Tu función original de actualización (sin cambios)
   const handleEventChange = async (changeInfo) => {
     const { event } = changeInfo;
     const token = localStorage.getItem('token');
+
   
     const datosParaEnviar = {
         fechaCita: event.startStr 
