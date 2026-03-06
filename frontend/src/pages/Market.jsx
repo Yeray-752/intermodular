@@ -66,7 +66,7 @@ function App() {
           </h1>
 
           {/* Navegación de Categorías */}
-          <nav className='relative mt-5 group w-86 sm:w-135 md:w-189 lg:w-242 xl:w-272 mx-auto px-10'>
+          <nav className='relative mt-5 group w-87 sm:w-135 md:w-190 lg:w-243 xl:w-274 mx-auto px-10'>
             <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronLeft size={24} />
             </button>
