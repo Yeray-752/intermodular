@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom'; // Necesario para el Portal
+import ReactDOM from 'react-dom';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import "./calendario.css";
 
-// Componente para el cuadro flotante personalizado (Tooltip)
-// Usamos Tailwind para darle un estilo moderno
+// Componente para el cuadro flotante posicionado a la DERECHA
 const EventTooltip = ({ info, position }) => {
   if (!info) return null;
 
-  // Extraemos datos útiles del evento
   const { title, start } = info;
   const descripcion = info.extendedProps?.descripcion || 'Sin descripción adicional'; 
   const hora = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const vehiculo = info.extendedProps?.vehiculo || 'No hay vehiculo';
 
   return (
     <div
@@ -22,16 +21,16 @@ const EventTooltip = ({ info, position }) => {
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        transform: 'translate(-50%, -110%)', // Centrado horizontal, arriba del cursor
+        // Se mueve 15px a la derecha para no tocar el evento y se centra verticalmente
+        transform: 'translate(15px, -50%)', 
       }}
     >
-      {/* Triángulo del bocadillo */}
-      <div className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b border-r border-gray-200 rotate-45"></div>
+      {/* Triángulo del bocadillo (Lado izquierdo) */}
+      <div className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-l border-b border-gray-200 rotate-45"></div>
 
-      {/* Contenido del cuadro */}
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 bg-primary rounded-full"></div> {/* Punto de color */}
+          <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
           <h3 className="text-lg font-bold text-gray-900 leading-tight">
             {title}
           </h3>
@@ -40,6 +39,7 @@ const EventTooltip = ({ info, position }) => {
         <p className="text-sm text-gray-600 mb-3">
           <span className="font-semibold text-gray-700">Hora:</span> {hora}
         </p>
+        <p>{vehiculo}</p>
         
         <div className="bg-gray-50 p-2.5 rounded border border-gray-100">
           <p className="text-xs text-gray-500 italic">
@@ -51,22 +51,14 @@ const EventTooltip = ({ info, position }) => {
   );
 };
 
-// Componente principal
 const CalendarioSemanalTailwind = ({ initialEvents, onUpdateAppointment }) => {
-  // --- ESTADO PARA EL HOVER ---
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-
-  // Tu función original de actualización (sin cambios)
   const handleEventChange = async (changeInfo) => {
     const { event } = changeInfo;
     const token = localStorage.getItem('token');
-
-  
-    const datosParaEnviar = {
-        fechaCita: event.startStr 
-    };
+    const datosParaEnviar = { fechaCita: event.startStr };
 
     try {
         const response = await fetch(`http://localhost:3000/api/dates/${event.id}/update`, {
@@ -78,35 +70,29 @@ const CalendarioSemanalTailwind = ({ initialEvents, onUpdateAppointment }) => {
             body: JSON.stringify(datosParaEnviar)
         });
 
-        if (response.ok) {
-            alert("Cita movida y confirmada");
-        } else {
-            changeInfo.revert();
-        }
+        if (!response.ok) changeInfo.revert();
     } catch (error) {
         changeInfo.revert();
     }
   };
 
-  // --- NUEVAS FUNCIONES PARA EL HOVER MEJORADO ---
   const handleMouseEnter = (info) => {
-    const rect = info.el.getBoundingClientRect(); // Obtenemos la posición del evento en pantalla
+    const rect = info.el.getBoundingClientRect();
     
-    // Guardamos la info del evento y la posición donde debe aparecer el cuadro
     setHoveredEvent(info.event);
     setTooltipPosition({
-      x: rect.left + rect.width / 2 + window.scrollX, // Centro horizontal del evento
-      y: rect.top + window.scrollY, // Parte superior del evento
+      // X: Borde derecho del evento
+      x: rect.right + window.scrollX, 
+      // Y: Centro vertical del evento
+      y: rect.top + (rect.height / 2) + window.scrollY, 
     });
 
-    // Opcional: efecto visual sutil en el borde del evento
-    info.el.style.borderColor = '#1d4ed8'; // blue-700
+    info.el.style.borderColor = '#1d4ed8';
   };
 
   const handleMouseLeave = (info) => {
-    // Limpiamos el estado para ocultar el cuadro
     setHoveredEvent(null);
-    info.el.style.borderColor = ''; // Restauramos borde
+    info.el.style.borderColor = ''; 
   };
 
   return (
@@ -124,15 +110,10 @@ const CalendarioSemanalTailwind = ({ initialEvents, onUpdateAppointment }) => {
             slotMaxTime="18:00:00"
             allDaySlot={false}
             height="525px"
-            
-            // Eventos de interacción
             eventDrop={handleEventChange}
             eventResize={handleEventChange}
-            
-            // --- EVENTOS DE HOVER ACTUALIZADOS ---
             eventMouseEnter={handleMouseEnter}
             eventMouseLeave={handleMouseLeave}
-            
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
@@ -142,8 +123,6 @@ const CalendarioSemanalTailwind = ({ initialEvents, onUpdateAppointment }) => {
         </div>
       </div>
 
-      {/* --- PORTAL DEL TOOLTIP --- */}
-      {/* Renderizamos el cuadro flotante al final del <body> para evitar problemas de z-index */}
       {hoveredEvent && ReactDOM.createPortal(
         <EventTooltip info={hoveredEvent} position={tooltipPosition} />,
         document.body
