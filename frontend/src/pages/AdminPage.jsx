@@ -21,6 +21,7 @@ import Header from "../components/Principal/Header";
 import Footer from "../components/Principal/Footer";
 import Calendario from "../components/AdminComponents/Calendario";
 import StockTable from '../components/AdminComponents/StockTable';
+import {VentasChart} from "../components/AdminComponents/estadisticas"
 import { useEffect } from 'react';
 
 function AdminPage() {
@@ -389,7 +390,7 @@ function AdminPage() {
             case 'servicios': return <RenderActualilzacionServicios />;
             case 'productos': return <RenderActualilzacionProducto />;
             case 'stock': return <RenderStock />
-            case 'metricas':
+            case 'metricas': return <VentasChart />
                 return (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         {['Ventas Hoy', 'Citas Pendientes', 'Cierre Mensual'].map((item, i) => (
