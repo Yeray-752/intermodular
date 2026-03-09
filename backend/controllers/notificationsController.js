@@ -6,15 +6,19 @@ const titulos = {
         cita: "Cita Programada",
         cita_cancelada: "Cita Cancelada",
         cita_estado: "Estado de Cita Actualizado",
-        valoración: "Valoración Enviada"
+        valoración: "Valoración Enviada",
+        valoracion_borrada: "Valoración Eliminada",
     },
     admin: {
-        producto_nuevo: "Nuevo Producto Agregado",
-        producto_precio_cambiado: "Precio de Producto Actualizado",
+        nueva_venta: "Nueva Venta Confirmada",
+        producto_creado: "Nuevo Producto Agregado",
+        producto_actualizado: "Producto Modificado",
+        producto_eliminado: "Producto Eliminado",
         stock_nulo: "Stock Agotado",
         stock_actualizado: "Stock Actualizado",
         servicio_nuevo: "Nuevo Servicio Agregado",
-        servicio_precio_cambiado: "Precio de Servicio Actualizado",
+        servicio_actualizado: "Datos de Servicio Actualizados",
+        servicio_eliminado: "Servicio Eliminado del Sistema",
         cita_estado_admin: "Estado de Cita Actualizado",
         cita_cancelada_admin: "Cita Cancelada"
     }
@@ -22,23 +26,30 @@ const titulos = {
 
 const plantillas = {
     cliente: {
-        compra: (data) => `¡Gracias! Tu compra de ${data.producto} se ha procesado.`, // Esto esta mal, porque compramos en base a carrito
+        compra: (data) => `¡Gracias! Tu pedido #${data.id_pedido} con ${data.cantidad_articulos} artículos 
+        por un total de ${data.total}€ se ha procesado correctamente.`,
 
         cita: (data) => `Cita programada para el día ${data.fecha}.`,
         cita_cancelada: (data) => `Tu cita del ${data.fecha} ha sido cancelada con éxito.`,
         cita_estado: (data) => `Tu cita del ${data.fecha} ahora está: ${data.estado}.`,
 
-        valoración: (data) => `¡Gracias por tu valoración! Tu opinión sobre ${data.producto} es muy valiosa para nosotros.`,
+        valoracion_borrada: (data) => `Tu reseña sobre el producto ha sido eliminada correctamente.`,
+        valoración: (data) => `¡Gracias! Tu opinión sobre "${data.producto}" se ha guardado correctamente.`,
     },
     admin: {
+        nueva_venta: (data) => `Nueva venta recibida: Pedido #${data.id_pedido} por un total de ${data.total}€.`,
 
-        producto_nuevo: (data) => `Se ha agregado un nuevo producto: ${data.producto}.`,
-        producto_precio_cambiado: (data) => `El precio de ${data.producto} ha sido actualizado a ${data.precio}.`,
+        producto_creado: (data) => `Se ha añadido el producto: ${data.nombre}. Stock inicial: ${data.stock}.`,
+        producto_actualizado: (data) => `Producto "${data.nombre_original}" actualizado. Cambios: ${data.cambios.join(', ')}.`,
+        producto_eliminado: (data) => `Eliminado: ${data.nombre}. (Precio: ${data.precio}€, Stock al borrar: ${data.stock}).`,
         stock_nulo: (data) => `El stock de ${data.producto} ha llegado a cero.`,
         stock_actualizado: (data) => `El stock de ${data.producto} ha sido actualizado a ${data.stock}.`,
 
         servicio_nuevo: (data) => `Se ha agregado un nuevo servicio: ${data.servicio}.`,
-        servicio_precio_cambiado: (data) => `El precio del servicio "${data.servicio}" ha sido actualizado a ${data.precio}.`,
+
+        //los servicios pueden tener varios datos cambiados, así que se le pasan todos los cambios en un array para mostrarlo en la notificación
+        servicio_actualizado: (data) => { return `Se ha modificado el servicio "${data.servicio_original}". Cambios realizados: ${data.cambios.join(', ')}.`; },
+        servicio_eliminado: (data) => `Se ha eliminado el servicio "${data.nombre}". Datos al momento del borrado - Precio: ${data.precio}€, Duración: ${data.duracion}min.`,
         cita_estado_admin: (data) => `La cita del usuario ${data.usuario} ha sido actualizada al estado "${data.estado}".`,
         cita_cancelada_admin: (data) => `La cita del ${data.fecha} con el usuario ${data.usuario} ha sido cancelada.` //Cuando el cliente o admin cancela tambien salta esto al admin
     }

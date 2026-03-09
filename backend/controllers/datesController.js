@@ -17,16 +17,6 @@ export const obtenerCitas = async (req, res) => {
         res.status(500).json({ error: "Error al obtener citas" });
     }
 };
-const enviarNotificacion = async (id_usuario, titulo, mensaje, categoria) => {
-    try { 
-        await db.execute(
-            `INSERT INTO Notificaciones (id_usuario, titulo, mensaje, categoria) VALUES (?, ?, ?, ?)`,
-            [id_usuario, titulo, mensaje, categoria]
-        );
-    } catch (error) {
-        console.error("Error silencioso al crear notificación:", error);
-    }
-};
 
 export const crearCita = async (req, res) => {
     const result = validateCita(req.body);
