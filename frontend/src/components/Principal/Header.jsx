@@ -129,7 +129,7 @@ function Header() {
                                         <label htmlFor="my-drawer-5" className="btn btn-ghost btn-circle drawer-button indicator">
                                             <ShoppingCart size={24} className="text-base-100" />
                                             {datosCarrito.items?.length > 0 && (
-                                                <span className="badge badge-sm badge-primary indicator-item">
+                                                <span className="badge badge-sm indicator-item">
                                                     {datosCarrito.items.length}
                                                 </span>
                                             )}

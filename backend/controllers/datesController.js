@@ -110,7 +110,7 @@ export const crearCita = async (req, res) => {
         const [dbResult] = await db.execute(query, [id_user,  servicio, comentarios, vehiculoSeleccionado, fechaCita, estado_inicial]);
 
 
-    /*     await createNotification(id_user, 'cita', 'cliente', { fecha: fechaCita });  */
+        await createNotification(id_user, 'cita', 'cliente', { fecha: fechaCita }); 
 
         res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
     } catch (error) {
