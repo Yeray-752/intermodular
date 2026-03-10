@@ -1,4 +1,5 @@
 import db from "../db.js";
+import {createNotification} from "./notificationsController.js";
 
 export const addToCart = async (req, res) => {
     const { id_producto, cantidad } = req.body;

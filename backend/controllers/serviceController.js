@@ -1,4 +1,5 @@
 import db from "../db.js";
+import {createNotification} from "./notificationsController.js";
 
 export const getServices = async (req, res) => {
     const lang = req.lang || 'es'; // Extraído por tu middleware de idioma
@@ -58,55 +59,7 @@ export const createService = async (req, res) => {
     }
 };
 
-export const saveRating = async (req, res) => {
-    const { id_producto, rating, comment } = req.body;
-    const id_usuario = req.user.id; 
-    const connection = await db.getConnection();
 
-    try {
-        await connection.beginTransaction();
-
-        // 1. Guardar o actualizar valoración
-        await connection.query(`
-            INSERT INTO valoraciones (id_usuario, id_producto, rating, comment)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE 
-                rating = VALUES(rating), 
-                comment = VALUES(comment),
-                created_at = CURRENT_TIMESTAMP
-        `, [id_usuario, id_producto, rating, comment]);
-
-        // 2. Obtener nombre del producto para la notificación
-        const [prodInfo] = await connection.query("SELECT name FROM products WHERE id = ?", [id_producto]);
-        const nombreProducto = prodInfo[0]?.name || "el producto";
-
-        // 3. Notificar al CLIENTE
-        await createNotification(id_usuario, 'valoración', 'cliente', { 
-            producto: nombreProducto 
-        });
-
-        // 4. Actualizar promedio (tu lógica actual...)
-        const [rows] = await connection.query(
-            "SELECT AVG(rating) as promedio FROM valoraciones WHERE id_producto = ?",
-            [id_producto]
-        );
-        const nuevoPromedio = rows[0].promedio || 0;
-
-        await connection.query(
-            "UPDATE products SET rating = ? WHERE id = ?",
-            [nuevoPromedio, id_producto]
-        );
-
-        await connection.commit();
-        res.json({ message: "Valoración guardada y notificación enviada", nuevoPromedio });
-
-    } catch (error) {
-        await connection.rollback();
-        res.status(500).json({ error: "Error al procesar la valoración" });
-    } finally {
-        connection.release();
-    }
-};
 
 export const updateService = async (req, res) => {
     const { id } = req.params;
