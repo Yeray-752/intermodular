@@ -96,7 +96,7 @@ export const obtenerCitasActivas = async (req, res) => {
 export const crearCita = async (req, res) => {
     const result = validateCita(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-
+     const estado_inicial = 'pendiente';
     console.log('parte 2')
 
     const id_user = req.user.id;
@@ -106,11 +106,11 @@ export const crearCita = async (req, res) => {
         fechaCita } = req.body;
 
     try {
-        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, 'pendiente')`;
-        const [dbResult] = await db.execute(query, [id_user,  servicio, comentarios, vehiculoSeleccionado, fechaCita]);
+        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?)`;
+        const [dbResult] = await db.execute(query, [id_user,  servicio, comentarios, vehiculoSeleccionado, fechaCita, estado_inicial]);
 
 
-        await createNotification(id_user, 'cita', 'cliente', { fecha: fecha });
+    /*     await createNotification(id_user, 'cita', 'cliente', { fecha: fechaCita });  */
 
         res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
     } catch (error) {
