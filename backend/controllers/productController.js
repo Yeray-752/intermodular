@@ -1,4 +1,5 @@
 import db from "../db.js";
+import {createNotification} from "./notificationsController.js";
 
 export const createProduct = async (req, res) => {
   const lang = req.lang;

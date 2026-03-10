@@ -97,7 +97,7 @@ function App() {
           </nav>
 
           {/* LISTADO DE PRODUCTOS - El cambio clave está aquí */}
-          <div className="max-w-[1400px] pt-4">
+          <div className="max-w-1400px pt-4">
             {loading ? (
               <div className="flex flex-col items-center py-20">
                 <span className="loading loading-spinner loading-md text-primary"></span>
