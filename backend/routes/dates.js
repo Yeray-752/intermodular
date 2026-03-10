@@ -25,7 +25,7 @@ router.post('/', verifyToken, (req, res, next) => {
 router.patch('/:id/update', verifyToken, (req, res, next) => {
     const result = validateIdParam({ id: req.params.id });
     if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-    console.log('sefunda base')
+    console.log('segunda base')
     next();
 }, actualizarCita);
 
@@ -36,7 +36,7 @@ router.patch('/:id/:estado', [verifyToken, isAdmin], (req, res, next) => {
         id: req.params.id,
         estado: req.params.estado
     });
-  
+
 
     if (!result.success) {
         return res.status(400).json({ errors: result.error.flatten().fieldErrors });

@@ -110,7 +110,7 @@ const CalendarioSemanalTailwind = ({ initialEvents }) => {
 
       {/* --- POP-UP DE CONFIRMACIÓN --- */}
       {showConfirm && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-10000 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 animate-in fade-in zoom-in duration-200">
             <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">
               <AlertCircle className="text-orange-500" /> ¿Confirmar cambio?

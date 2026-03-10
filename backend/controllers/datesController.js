@@ -1,70 +1,5 @@
 import db from "../db.js";
-import { validateCita, validateUpdateEstadoCita } from "../validators/dateValidator.js";
-
-export const crearCita = async (req, res) => {
-    // 1. Validamos con Zod los datos que vienen del body
-    const result = validateCita(req.body);
-
-    if (!result.success) {
-        return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-    }
-    const id_usuario_real = req.user.id;
-    console.log(req.user.id)
-    // 2. Extraemos los datos validados
-    const {
-        servicio,
-        vehiculoSeleccionado,
-        comentarios,
-        fechaCita
-    } = result.data;
-
-    // 3. Seguridad: Datos que NO vienen del formulario, sino del TOKEN
-    // Ajusta 'req.user.nombre' según cómo guardes el nombre en tu JWT
-    const nombre_usuario_real = req.user.nombre || req.user.name || "Usuario";
-    console.log(req.user)
-    const estado_inicial = 'pendiente';
-
-    try {
-
-
-        const query = `
-            INSERT INTO cita (
-                id_usuario, 
-                servicio, 
-                comentarios, 
-                vehiculo_seleccionado, 
-                fecha_cita, 
-                estado
-            ) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-
-        const [dbResult] = await db.execute(query, [
-            id_usuario_real,
-            servicio,
-            comentarios,
-            vehiculoSeleccionado,
-            fechaCita,
-            estado_inicial
-        ]);
-
-        res.status(201).json({
-            message: "Cita creada con éxito",
-            id_cita: dbResult.insertId,
-            datos: {
-                usuario: nombre_usuario_real,
-                servicio,
-                estado: estado_inicial
-            }
-        });
-    } catch (error) {
-        console.error("Error en DB:", error);
-        res.status(500).json({
-            error: "Error al crear la cita en la base de datos",
-            detalles: error.message
-        });
-    }
-};
+import { validateCita } from "../validators/dateValidator.js";
 
 export const actualizarCita = async (req, res) => {
     const { id } = req.params;
@@ -146,8 +81,6 @@ export const obtenerCitasActivas = async (req, res) => {
         let query = 'SELECT * FROM cita';
         let params = [];
 
-        // Lógica de privacidad:
-        // Si no es admin, filtramos para que solo vea SUS propias citas
         if (req.user.rol !== 'admin') {
             query += ' WHERE id_usuario = ?';
             params.push(req.user.id);
@@ -160,8 +93,32 @@ export const obtenerCitasActivas = async (req, res) => {
     }
 };
 
+export const crearCita = async (req, res) => {
+    const result = validateCita(req.body);
+    if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
+
+    console.log('parte 2')
+
+    const id_user = req.user.id;
+    const { servicio,
+        vehiculoSeleccionado,
+        comentarios,
+        fechaCita } = req.body;
+
+    try {
+        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, 'pendiente')`;
+        const [dbResult] = await db.execute(query, [id_user,  servicio, comentarios, vehiculoSeleccionado, fechaCita]);
+
+
+        await createNotification(id_user, 'cita', 'cliente', { fecha: fecha });
+
+        res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export const actualizarEstadoCita = async (req, res) => {
-    // La validación de Zod ya se hizo en el middleware de la ruta
     const { id } = req.params;
     const { estado } = req.params;
     console.log(id, estado)
@@ -174,30 +131,63 @@ export const actualizarEstadoCita = async (req, res) => {
             return res.status(404).json({ message: "Cita no encontrada" });
         }
 
-        res.json({ message: "Estado actualizado", id_cita: id, nuevoEstado: estado });
+        // NOTIFICACIÓN AL CLIENTE
+        // Usamos la clave 'cita_estado' que definiste en tus plantillas
+        await createNotification(
+            cita[0].id_usuario,
+            'cita_estado',
+            'cliente',
+            {
+                fecha: cita[0].fecha,
+                estado: estado
+            }
+        );
+
+        res.json({ message: "Estado actualizado y cliente notificado" });
     } catch (error) {
-        res.status(500).json({ error: "Error al actualizar", detalles: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 export const cancelarCita = async (req, res) => {
     const { id } = req.params;
     const id_usuario_token = req.user.id;
+    const esAdmin = req.user.rol === 'admin';
 
     try {
-        // 1. Buscamos la cita y verificamos si le pertenece al usuario
         const [cita] = await db.execute(
             'SELECT id_usuario, estado FROM cita WHERE id = ?',
             [id]
         );
 
-        if (cita.length === 0) {
-            return res.status(404).json({ message: "Cita no encontrada" });
+        if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
+
+        if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
+            return res.status(403).json({ message: "No autorizado" });
         }
 
-        // 2. Verificamos que el id_usuario de la cita coincida con el del Token
-        if (cita[0].id_usuario !== id_usuario_token) {
-            return res.status(403).json({ message: "No tienes permiso para cancelar esta cita" });
+        await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', ['cancelada', id]);
+
+        // LÓGICA DE NOTIFICACIONES REFINADA
+        if (esAdmin) {
+            // El admin cancela -> Notificamos al cliente
+            await createNotification(
+                cita[0].id_usuario,
+                'cita_cancelada',
+                'cliente',
+                { fecha: cita[0].fecha }
+            );
+        } else {
+            // El cliente cancela -> Notificamos al admin (ID 1 por ahora)
+            await createNotification(
+                1,
+                'cita_cancelada_admin',
+                'admin',
+                {
+                    fecha: cita[0].fecha,
+                    usuario: id_usuario_token
+                }
+            );
         }
 
         // 3. (Opcional) Evitar cancelar citas que ya pasaron o ya están completadas
@@ -213,7 +203,7 @@ export const cancelarCita = async (req, res) => {
 
         res.json({ message: "Cita cancelada correctamente por el usuario" });
     } catch (error) {
-        res.status(500).json({ error: "Error al cancelar la cita", detalles: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 

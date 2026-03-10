@@ -72,8 +72,6 @@ export const checkout = async (req, res) => {
     const connection = await db.getConnection();
     try {
         await connection.beginTransaction();
-
-        // 1. Traer items usando los nombres reales: p.id y p.price
         const [items] = await connection.query(
             `SELECT c.id_producto, c.cantidad, p.price, p.stock 
              FROM carrito c 
@@ -84,37 +82,55 @@ export const checkout = async (req, res) => {
 
         if (items.length === 0) throw new Error("El carrito está vacío");
 
-        // 2. Calcular total usando item.price (ya no item.precio)
         const total = items.reduce((acc, item) => acc + (item.price * item.cantidad), 0);
+        const totalArticulos = items.reduce((acc, item) => acc + item.cantidad, 0);
         
-        // 3. Crear cabecera del pedido
         const [pedido] = await connection.query(
             "INSERT INTO pedido (id_usuario, total, estado) VALUES (?, ?, 'pagado')",
             [req.user.id, total]
         );
         const id_pedido = pedido.insertId;
 
-        // 4. Procesar cada producto
         for (const item of items) {
             if (item.stock < item.cantidad) {
                 throw new Error(`Stock insuficiente para el producto ID: ${item.id_producto}`);
             }
 
-            // Insertar detalle usando item.price
             await connection.query(
                 "INSERT INTO pedido_detalle (id_pedido, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)",
                 [id_pedido, item.id_producto, item.cantidad, item.price]
             );
 
-            // Restar stock usando la columna 'id'
             await connection.query(
                 "UPDATE products SET stock = stock - ? WHERE id = ?",
                 [item.cantidad, item.id_producto]
             );
         }
 
-        // 5. Limpiar carrito
         await connection.query("DELETE FROM carrito WHERE id_usuario = ?", [req.user.id]);
+
+        //cliente
+        await createNotification(
+            req.user.id, 
+            'compra', 
+            'cliente', 
+            { 
+                id_pedido: id_pedido,
+                cantidad_articulos: totalArticulos, 
+                total: total.toFixed(2)
+            }
+        );
+
+        //admin
+        await createNotification(
+            1, 
+            'nueva_venta', 
+            'admin', 
+            { 
+                id_pedido: id_pedido, 
+                total: total.toFixed(2) 
+            }
+        );
 
         await connection.commit();
         res.json({ message: "Compra realizada con éxito", id_pedido });

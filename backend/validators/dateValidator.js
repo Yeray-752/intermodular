@@ -3,6 +3,7 @@ import { z } from "zod";
 const EstadoCita = z.enum(['pendiente','procesando','completada','cancelada']);
 
 export const validateCita = (data) => {
+  
   const schema = z.object({
     // Nuevo campo para el nombre del usuario
     
@@ -19,7 +20,7 @@ export const validateCita = (data) => {
     // Estado con valor por defecto si no se envía
     estado: EstadoCita.default('pendiente'),
   });
-
+console.log(data)
   return schema.safeParse(data);
 };
 
@@ -41,7 +42,7 @@ export const validaUpdate = (data) => {
 
 export const validateUpdateEstadoCita = (data) => {
   const schema = z.object({
-    id: z.coerce.number().int().positive(), // Coerce convierte string de params a número
+    id: z.coerce.number().int().positive(),
     estado: EstadoCita
     
   });

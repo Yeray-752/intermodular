@@ -51,6 +51,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                 },
                 body: JSON.stringify(datosReserva),
             })
+            console.log('parte 1')
         } catch (error) {
             console.error('problemitas con la consulta para las citas')
         }

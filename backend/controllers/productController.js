@@ -1,60 +1,41 @@
 import db from "../db.js";
 
 export const createProduct = async (req, res) => {
-  // lang viene de tu middleware (ej: 'es' o 'en')
   const lang = req.lang;
+  const { category_id, image_url, price, stock, name, description } = req.body;
 
-  // Extraemos datos del producto y datos de la traducción
-  const { category_id, image_url, price, stock, duration, name, description } = req.body;
-
-  // Validación básica: Si no es español y no envías nombre, podría ser un problema
-  if (!name) {
-    return res.status(400).json({ message: "El nombre del producto es obligatorio" });
-  }
+  if (!name) return res.status(400).json({ message: "El nombre del producto es obligatorio" });
 
   try {
-    // 1. Insertar en la tabla 'products' (Datos generales)
-    const formattedDuration = duration ? duration.replace(/(\d+)([a-zA-Z]+)/, '$1 $2') : null;
-
+    // 1. Insertar datos técnicos (Quitamos duration)
     const productQuery = `
-      INSERT INTO products (category_id, image_url, price, stock, duration) 
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO products (category_id, image_url, price, stock) 
+      VALUES (?, ?, ?, ?)
     `;
 
     const [productResult] = await db.execute(productQuery, [
       category_id,
       image_url,
       price,
-      stock,
-      formattedDuration
+      stock
     ]);
 
-    // 2. Obtener el ID del producto recién creado
     const newProductId = productResult.insertId;
 
-    // 3. Insertar en la tabla de traducciones
-    // Usamos el 'lang' que detectó tu middleware y el 'newProductId'
-    const translationQuery = `
-      INSERT INTO product_translations (product_id, language_code, name, description) 
-      VALUES (?, ?, ?, ?)
-    `;
+    // 2. Insertar traducción
+    await db.execute(
+      "INSERT INTO product_translations (product_id, language_code, name, description) VALUES (?, ?, ?, ?)",
+      [newProductId, lang, name, description || null]
+    );
 
-    await db.execute(translationQuery, [
-      newProductId,
-      lang,         // 'es' o 'en'
-      name,
-      description || null
-    ]);
-
-    // Si todo sale bien
-    res.status(201).json({
-      message: "Producto y traducción creados con éxito",
-      productId: newProductId,
-      language: lang
+    // 3. Notificación al Admin
+    await createNotification(req.user.id, 'producto_nuevo', 'admin', { 
+        producto: name 
     });
 
+    res.status(201).json({ message: "Producto creado con éxito", productId: newProductId });
+
   } catch (error) {
-    console.error("Error en la transacción:", error);
     res.status(500).json({ message: "Error al crear el producto" });
   }
 };
@@ -119,7 +100,6 @@ export const getProductsById = async (req, res) => {
       return res.status(404).json({ message: "Producto no encontrado." });
     }
 
-    // Como es un ID único, devolvemos el primer (y único) objeto
     res.json(rows[0]);
 
   } catch (error) {
@@ -129,43 +109,55 @@ export const getProductsById = async (req, res) => {
 };
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const lang = req.lang; // Idioma detectado (es/en)
-  const { category_id, image_url, price, stock, duration, name, description } = req.body;
+  const lang = req.lang;
+  const { category_id, image_url, price, stock, name, description } = req.body;
 
   const connection = await db.getConnection();
 
   try {
+    // Obtener datos actuales para comparar cambios
+    const [old] = await connection.query(
+      "SELECT p.price, p.stock, t.name FROM products p JOIN product_translations t ON p.id = t.product_id WHERE p.id = ? AND t.language_code = ?",
+      [id, lang]
+    );
+
     await connection.beginTransaction();
 
-    // 1. Formatear duración si viene en el body
-    const formattedDuration = duration ? duration.replace(/(\d+)([a-zA-Z]+)/, '$1 $2') : null;
+    // 1. Actualizar tabla principal
+    await connection.execute(
+      "UPDATE products SET category_id = ?, image_url = ?, price = ?, stock = ? WHERE id = ?",
+      [category_id, image_url, price, stock, id]
+    );
 
-    // 2. Actualizar tabla principal 'products'
-    const productQuery = `
-      UPDATE products 
-      SET category_id = ?, image_url = ?, price = ?, stock = ?, duration = ?
-      WHERE id = ?
-    `;
-    await connection.execute(productQuery, [
-      category_id, image_url, price, stock, formattedDuration, id
-    ]);
+    // 2. Actualizar traducción
+    await connection.execute(
+      `INSERT INTO product_translations (product_id, language_code, name, description)
+       VALUES (?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)`,
+      [id, lang, name, description]
+    );
 
-    // 3. Actualizar tabla de traducciones 'product_translations'
-    // Usamos INSERT ... ON DUPLICATE KEY UPDATE por si el producto no tenía ese idioma aún
-    const translationQuery = `
-      INSERT INTO product_translations (product_id, language_code, name, description)
-      VALUES (?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)
-    `;
-    await connection.execute(translationQuery, [id, lang, name, description]);
+    // 3. Notificación consolidada
+    if (old.length > 0) {
+        const cambios = [];
+        if (parseFloat(old[0].price) !== parseFloat(price)) cambios.push(`precio: ${price}€`);
+        if (parseInt(old[0].stock) !== parseInt(stock)) cambios.push(`stock: ${stock}`);
+        if (old[0].name !== name) cambios.push(`nombre: ${name}`);
+
+        if (cambios.length > 0) {
+            await createNotification(req.user.id, 'producto_actualizado', 'admin', {
+                nombre_original: old[0].name,
+                cambios: cambios
+            });
+        }
+    }
 
     await connection.commit();
     res.json({ message: "Producto actualizado correctamente" });
 
   } catch (error) {
     await connection.rollback();
-    console.error("Error al actualizar:", error);
-    res.status(500).json({ error: "Error al intentar actualizar el producto" });
+    res.status(500).json({ error: "Error al actualizar el producto" });
   } finally {
     connection.release();
   }
