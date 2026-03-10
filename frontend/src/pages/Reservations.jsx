@@ -46,12 +46,12 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200 text-base-content">
+    <div className="flex flex-col min-h-screen bg-base-100 text-base-content">
       <Header />
-      <main className="grow">
+      <main className="grow bg-neutral">
         <div className="flex flex-col p-4 items-center">
           <input
-            className='input input-bordered w-full max-w-md mt-6 bg-base-100'
+            className='input input-bordered w-full max-w-md mt-8 bg-base-100'
             type="search"
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
@@ -60,8 +60,8 @@ function App() {
           <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('categories')}</h1>
 
           <nav className='space-x-1.5 mt-4 mb-5 w-full'>
-            <div className='relative group w-92 md:w-175 lg:w-225 xl:w-255 2xl:w-328 mx-auto px-10'>
-              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+            <div className='relative group w-92 md:w-175 lg:w-225 xl:w-256 2xl:w-330 mx-auto px-10'>
+              <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronLeft size={24} />
               </button>
 
@@ -70,8 +70,10 @@ function App() {
                   <div key={cat.id} className="shrink-0">
                     <button
                       onClick={() => manejarClickCategoria(cat.id)}
-                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-colors ${
-                        categoriaActiva === cat.id ? "bg-primary text-white border-none" : "btn-outline btn-primary"
+                      className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all active:translate-y-1 active:border-b-0
+                        ${categoriaActiva === cat.id
+                        ? "bg-primary-content text-white border-b-4 border-orange-700"
+                        : "btn-outline btn-base-200 border-b-4 border-gray-400 hover:bg-primary-content hover:text-white"
                       }`}
                     >
                       {cat.name}
@@ -80,7 +82,7 @@ function App() {
                 ))}
               </div>
 
-              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+              <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronRight size={24} />
               </button>
             </div>

@@ -2,7 +2,7 @@
    VARIABLES DE TEMA (Basadas en data-theme)
    ================================================= */
 :root, [data-theme="light"] {
-  --cal-bg: #ffffff;
+  --cal-bg: #f5f3f3;
   --cal-text: #374151;
   --cal-text-muted: #9ca3af;
   --cal-shadow: rgba(0, 0, 0, 0.05);
@@ -85,6 +85,61 @@
   font-size: 0.7rem;
   color: var(--cal-text-muted) !important;
   text-align: center;
+}
+.modal-custom-container {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.header-custom {
+  background-color: var(--cal-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.text-calendar-main { color: var(--cal-text); }
+.text-calendar-muted { color: var(--cal-text-muted); }
+.border-calendar-divider { border-color: var(--cal-neighbor); }
+
+.bg-calendar-inner { background-color: var(--cal-bg); }
+.bg-calendar-card { background-color: var(--cal-nav-btn-bg); }
+
+/* Inputs y Selects */
+.input-custom {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border: 1px solid var(--cal-neighbor);
+  padding: 0.75rem;
+  border-radius: 12px;
+}
+
+.input-custom:focus {
+  outline: 2px solid var(--cal-now-border);
+  border-color: transparent;
+}
+
+/* Badge personalizado */
+.badge-custom {
+  background-color: transparent;
+  border: 1px solid var(--cal-now-border);
+  color: var(--cal-now-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* Botón Primario basado en el color activo del calendario */
+.btn-primary-custom {
+  background-color: var(--cal-now-border);
+  color: #ffffff; /* Texto blanco para legibilidad */
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  transition: opacity 0.2s;
+}
+
+.btn-primary-custom:hover {
+  opacity: 0.9;
 }
 
 .react-calendar__month-view__weekdays abbr {
@@ -171,4 +226,29 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+/* Efecto de elevación y cambio de color en hover */
+.fc-event {
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+}
+
+/* Efecto hover sobre el evento en sí */
+.fc-event:hover {
+    cursor: pointer;
+    filter: brightness(90%); /* Oscurece el color de fondo sutilmente */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    z-index: 50 !important;
+}
+
+/* Mejora la legibilidad del texto dentro del evento */
+.fc-event-title {
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+
+.fc-event-time {
+    font-size: 0.8rem !important;
+    opacity: 0.9;
 }

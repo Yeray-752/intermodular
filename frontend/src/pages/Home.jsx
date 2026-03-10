@@ -13,7 +13,7 @@ export default function Home() {
   document.documentElement.setAttribute("data-theme", theme);
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
+    <div className="min-h-screen flex flex-col bg-neutral text-base-200">
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
@@ -24,13 +24,13 @@ export default function Home() {
               <Trans
                 i18nKey="heroTitle"
                 components={{
-                  1: <span className="text-blue-500" />,
+                  1: <span className="text-primary" />,
                   2: <span className="text-secondary" />
                 }}
               />
             </h1>
 
-            <p className="text-lg md:text-xl text-base-content/80 leading-relaxed">
+            <p className="text-lg md:text-2xl font-semibold text-base-content leading-relaxed">
               {t("heroDescription")}
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function Home() {
                   }}
                 />
               </h2>
-              <p className="text-base-content/80 text-lg max-w-2xl mx-auto">
+              <p className="text-base-content-content font-semibold text-2xl mx-auto">
                 {t("offersDescription")}
               </p>
             </div>
@@ -73,23 +73,23 @@ export default function Home() {
               {/* Oferta 1 */}
               <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-primary relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-primary text-primary-content px-4 py-1 rounded-full text-sm font-bold">
+                  <span className="bg-primary text-base-100 px-4 py-1 rounded-full text-sm font-bold">
                     {t("offerMostPopular")}
                   </span>
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer1Title")}
                 </h3>
-                <p className="text-base-content/80 mb-6">{t("offer1Desc")}</p>
+                <p className="text-base-content mb-6">{t("offer1Desc")}</p>
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-3xl font-bold text-base-content">
                     29,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -104,11 +104,11 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     49,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>
@@ -123,11 +123,11 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     39,99€
                   </span>
-                  <span className="text-sm text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-primary">
+                <button className="w-full py-3 btn btn-base-400 text-base-100">
                   {t("bookNow")}
                 </button>
               </div>

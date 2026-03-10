@@ -2,6 +2,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RatingSystem from './ValorationsAndComments';
+import { CirclePlus, CircleMinus } from "lucide-react"
 
 function Product() {
     const { id } = useParams();
@@ -31,7 +32,7 @@ function Product() {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`https://yeray.informaticamajada.es/api/products/${id}`, {
+        fetch(`http://localhost:3000/api/products/${id}`, {
             headers: { 'accept-language': i18n.language }
         })
             .then(response => {
@@ -51,7 +52,7 @@ function Product() {
     // Función para mostrar la alerta arriba y que desaparezca a los 3 seg
     const mostrarAlerta = (mensaje, tipo = "success") => {
         setNotificacion({ mostrar: true, mensaje, tipo });
-        setTimeout(() => setNotificacion({ ...notificacion, mostrar: false }), 3000);
+        setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
     };
 
     const esTarjetaValida = (numero) => {
@@ -118,13 +119,22 @@ function Product() {
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
-    
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-base-100">
+                <div className="flex flex-col items-center gap-4">
+                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                    <p className="text-sm text-base-content/60">Cargando producto...</p>
+                </div>
+            </div>
+        );
+    }
+
     if (error || !producto) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-base-100 text-base-content">
                 <p className="text-xl font-bold">{error || "Producto no encontrado"}</p>
-                <button onClick={() => navigate(-1)} className="btn btn-primary">Volver</button>
+                <button onClick={() => navigate(-1)} className="btn btn-primary shadow-lg">Volver</button>
             </div>
         );
     }
@@ -133,51 +143,102 @@ function Product() {
     const subtotal = parseFloat(producto.price) * cantidad;
     const precioFinal = tipoEntrega === "domicilio" ? (subtotal * 1.05).toFixed(2) : subtotal.toFixed(2);
 
+    const renderStars = (rating) => {
+        const numericRating = Math.round(Number(rating));
+
+        return (
+            <>
+                <span className="ml-2 text-sm font-bold opacity-60 text-base-content">{rating || 0}/5</span>
+                <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <svg
+                            key={star}
+                            className={`w-4 h-5 ${star <= numericRating ? "text-warning" : "text-base-content/20"}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                    ))}
+                </div>
+            </>
+        );
+    };
+
     return (
-        <div className="min-h-screen bg-base-200 relative">
-            
+        <div className="min-h-screen bg-neutral">
+
             {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-100 animate-bounce">
+                <div className="toast toast-top toast-center z-[100] animate-bounce">
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : 'alert-error'} shadow-lg border-none text-white font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
                 </div>
             )}
 
-            <div className="max-w-6xl mx-auto pt-6 px-4">
-                <button onClick={() => navigate(-1)} className="btn btn-sm btn-ghost gap-2">
-                    ← {t('formulario:back')}
+            <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+                {/* VOLVER */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 group"
+                >
+                    <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    {t('formulario:back')}
                 </button>
-            </div>
 
-            <section className="pt-10 pb-24 flex justify-center px-4">
-                <div className="card lg:card-side bg-base-100 shadow-2xl max-w-6xl w-full">
-                    <figure className="p-6 bg-neutral-100 lg:w-1/2">
-                        <img src={producto.image_url} alt={producto.name} className="rounded-xl w-full h-80 object-contain" />
-                    </figure>
+                {/* PRODUCTO */}
+                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
 
-                    <div className="card-body lg:w-1/2">
-                        <div className="badge badge-outline mb-2">{producto.category_id}</div>
-                        <h1 className="card-title text-4xl font-bold mb-4">{producto.name}</h1>
-                        <p className="text-justify text-base-content/80 mb-6">{producto.description}</p>
-
-                        <div className="flex flex-wrap gap-16 mb-8">
-                            <div>
-                                <p className="text-sm opacity-60 font-bold uppercase">{t('market:price')}</p>
-                                <p className="text-3xl font-black text-primary">{producto.price}€</p>
-                            </div>
-                            <div>
-                                <p className="text-sm opacity-60 font-bold uppercase">{t('market:stock')}</p>
-                                <p className={`text-xl font-bold ${producto.stock > 0 ? 'text-success' : 'text-error'}`}>
-                                    {producto.stock > 0 ? `${producto.stock} uds` : t('market:outOfStock')}
-                                </p>
+                        {/* Imagen */}
+                        <div className="bg-base-100 p-12 flex items-center justify-center">
+                            <div className="relative">
+                                <div className="absolute inset-0 rounded-full blur-3xl"></div>
+                                <img
+                                    src={producto.image_url}
+                                    alt={producto.name}
+                                    className="relative max-h-80 w-full object-contain drop-shadow-2xl"
+                                />
                             </div>
                         </div>
 
-                        <div className="card-actions">
+                        {/* Info */}
+                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-6 bg-base-100 text-base-content">
+                            <div>
+                                <h1 className="text-3xl font-bold mb-3">
+                                    {producto.name}
+                                </h1>
+                            </div>
+
+                            <p className="text-sm text-base-content/70 leading-relaxed">
+                                {producto.description}
+                            </p>
+
+                            <div className="flex items-center gap-8 pt-4">
+                                <div>
+                                    <p className="text-xs text-base-content/60 mb-1">{t('market:price')}</p>
+                                    <span className="text-3xl font-bold text-primary">
+                                        {producto.price} €
+                                    </span>
+                                </div>
+                                <div className="h-12 w-px bg-base-content/10"></div>
+                                <div>
+                                    <p>{renderStars(producto.rating)}</p>
+                                </div>
+                                <div className="h-12 w-px bg-base-content/10"></div>
+                                <div>
+                                    <p className="text-xs text-base-content/60 mb-1">{t('market:stock')}</p>
+                                    <span className={`text-sm font-semibold ${producto.stock > 0 ? 'text-success' : 'text-error'}`}>
+                                        {producto.stock > 0 ? `${producto.stock} uds` : t('market:outOfStock')}
+                                    </span>
+                                </div>
+                            </div>
+
                             <button
-                                className="btn btn-warning btn-block text-lg font-bold shadow-lg"
+                                className="btn border-0 bg-primary-content text-base-100 btn-lg w-full md:w-auto "
                                 onClick={() => token ? document.getElementById('my_modal_2').showModal() : navigate('/Login', { state: { from: location } })}
                                 disabled={producto.stock === 0}
                             >
@@ -185,50 +246,116 @@ function Product() {
                             </button>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+
+                {/* OPINIONES */}
+                <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12">
+                    <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
+                </section>
+            </div>
 
             {/* Modal de Pago */}
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box max-w-2xl bg-base-100">
+                <div className="modal-box max-w-2xl bg-base-100 text-base-content rounded-2xl shadow-2xl border border-base-300">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
 
                     <form onSubmit={finalizarCompra} className="space-y-6">
-                        <h3 className="text-2xl font-bold mb-6">📦 {producto.name}</h3>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-bold">{producto.name}</h3>
+                        </div>
 
                         <section>
-                            <label className="label font-bold">{t('formulario:checkout.deliveryType')}</label>
-                            <select className="select select-bordered w-full" value={tipoEntrega} onChange={(e) => setTipoEntrega(e.target.value)} required>
+                            <label className="label">
+                                <span className="label-text mb-4 font-semibold">{t('formulario:checkout.deliveryType')}</span>
+                            </label>
+                            <select
+                                className="select select-bordered w-full focus:select-primary transition-all duration-200"
+                                value={tipoEntrega}
+                                onChange={(e) => setTipoEntrega(e.target.value)}
+                                required
+                            >
                                 <option value="" disabled>{t('formulario:checkout.deliverySelect')}</option>
                                 <option value="recogida">{t('formulario:checkout.pickup')}</option>
                                 <option value="domicilio">{t('formulario:checkout.homeDelivery')}</option>
                             </select>
                         </section>
 
+                        {tipoEntrega === "domicilio" && (
+                            <section className="animate-in fade-in slide-in-from-top-4 duration-300">
+                                <label className="label">
+                                    <span className="label-text font-semibold">Ciudad de entrega</span>
+                                </label>
+                                <select
+                                    className={`select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
+                                    value={ciudad}
+                                    onChange={(e) => {
+                                        setCiudad(e.target.value);
+                                        setCiudadValida(ciudades.includes(e.target.value));
+                                    }}
+                                    required
+                                >
+                                    <option value="" disabled>Selecciona tu ciudad</option>
+                                    {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </section>
+                        )}
+
                         {tipoEntrega && (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="flex items-center gap-4 mb-6 bg-base-200 p-4 rounded-lg">
-                                    <p className="font-bold opacity-60 uppercase text-sm">{t('market:quantity')}:</p>
-                                    <div className="join border border-base-300">
-                                        <button type="button" className="btn join-item btn-sm" onClick={() => setCantidad(Math.max(1, cantidad - 1))}>-</button>
-                                        <input type="number" className="input input-sm join-item w-16 text-center font-bold" value={cantidad} readOnly />
-                                        <button type="button" className="btn join-item btn-sm" onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}>+</button>
+                            <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-6">
+                                <div className="flex justify-between items-center bg-base-200 rounded-xl p-6">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            type="button"
+                                            className="btn btn-circle btn-sm btn-ghost"
+                                            onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                                        >
+                                            <CircleMinus />
+                                        </button>
+                                        <input
+                                            type="number"
+                                            className="input input-bordered w-20 text-center font-bold bg-base-100"
+                                            value={cantidad}
+                                            readOnly
+                                        />
+                                        <button
+                                            type="button"
+                                            className="btn btn-circle btn-sm btn-ghost"
+                                            onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}
+                                        >
+                                            <CirclePlus />
+                                        </button>
+                                    </div>
+                                    <div className="text-primary text-right">
+                                        <span className="text-3xl font-black">{precioFinal}€</span>
                                     </div>
                                 </div>
 
-                                <div className="bg-primary text-primary-content p-4 rounded-lg flex justify-between items-center mb-6">
-                                    <span className="font-bold uppercase">Total:</span>
-                                    <span className="text-2xl font-black">{precioFinal}€</span>
-                                </div>
-
                                 {/* Formulario Tarjeta */}
-                                <div className="grid grid-cols-1 gap-4">
-                                    <input required type="text" placeholder={t('formulario:checkout.cardHolder')} className="input input-bordered w-full" />
+                                <div className="space-y-4">
+                                    <h4 className="font-semibold text-base-content/80 flex items-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                        {t('formulario:checkout.cardHolder')}
+                                    </h4>
                                     <input
-                                        type="text" required placeholder="Nº Tarjeta"
-                                        className={`input input-bordered w-full ${!tarjetaValida && "input-error"}`}
+                                        required
+                                        type="text"
+                                        placeholder={t('formulario:checkout.cardHolder')}
+                                        className="input input-bordered w-full focus:input-primary transition-all duration-200"
+                                    />
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Nº Tarjeta"
+                                        className={`input input-bordered w-full focus:input-primary transition-all duration-200 ${!tarjetaValida && "input-error"}`}
                                         value={tarjeta}
                                         onChange={(e) => {
                                             const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
@@ -239,8 +366,10 @@ function Product() {
                                     />
                                     <div className="grid grid-cols-2 gap-4">
                                         <input
-                                            type="text" placeholder="MM/AA" required
-                                            className={`input input-bordered w-full ${!vencimientoValido && "input-error"}`}
+                                            type="text"
+                                            placeholder="MM/AA"
+                                            required
+                                            className={`input input-bordered w-full focus:input-primary transition-all duration-200 ${!vencimientoValido && "input-error"}`}
                                             value={vencimiento}
                                             onChange={(e) => {
                                                 let v = e.target.value.replace(/\D/g, "");
@@ -249,21 +378,29 @@ function Product() {
                                                 setVencimientoValido(v.length === 5 ? esFechaValida(v) : true);
                                             }}
                                         />
-                                        <input required type="password" placeholder="CVV" className="input input-bordered w-full" maxLength={4} />
+                                        <input
+                                            required
+                                            type="password"
+                                            placeholder="CVV"
+                                            className="input input-bordered w-full focus:input-primary transition-all duration-200"
+                                            maxLength={4}
+                                        />
                                     </div>
-                                    <button type="submit" className="btn btn-primary btn-block text-lg mt-4">
-                                        Confirmar y Añadir
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary btn-block btn-lg shadow-lg hover:shadow-xl transition-all duration-200 mt-6"
+                                    >
+                                        {t('confirmar')}
                                     </button>
                                 </div>
                             </div>
                         )}
                     </form>
                 </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
             </dialog>
-
-            <div className="max-w-6xl mx-auto pb-20">
-                <RatingSystem id_producto={id} userId={producto?.user_id} />
-            </div>
         </div>
     );
 }

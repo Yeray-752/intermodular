@@ -1,6 +1,12 @@
 {
   "es": {
     "subtitle": "TALLER MECÁNICO",
+    "cart":{
+      "title": "Carrito",
+      "finalizarCompra": "Finalizar Compra",
+      "total": "Total:",
+      "vacio": "El carrito esta vacio."
+    },
     "nav": {
       "home": "Inicio",
       "bookings": "Reservas",
@@ -11,6 +17,12 @@
   },
   "en": {
     "subtitle": "MECHANIC WORKSHOP",
+    "cart": {
+      "title": "Cart",
+      "finalizarCompra": "Checkout",
+      "total": "Total:",
+      "vacio": "Your cart is empty."
+    },
     "nav": {
       "home": "Home",
       "bookings": "Bookings",

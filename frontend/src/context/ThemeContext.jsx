@@ -6,7 +6,7 @@ const ThemeContext = createContext();
 // 2. Creamos el Proveedor (Provider)
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
+    return localStorage.getItem("theme") || "vibrant-light";
   });
 
   useEffect(() => {
@@ -16,6 +16,7 @@ export const ThemeProvider = ({ children }) => {
 
 
 
+  
   return (
     <ThemeContext.Provider value={{ theme, setTheme}}>
       {children}

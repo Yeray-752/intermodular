@@ -2,38 +2,148 @@ import db from "../db.js";
 import { validateCita, validateUpdateEstadoCita } from "../validators/dateValidator.js";
 
 export const crearCita = async (req, res) => {
-    // 1. Validamos con Zod (id_usuario ya no se pide en el body del validador)
+    // 1. Validamos con Zod los datos que vienen del body
     const result = validateCita(req.body);
 
     if (!result.success) {
         return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
-
-    // 2. Seguridad: El ID viene del TOKEN, no del body del formulario
     const id_usuario_real = req.user.id;
-    const { matricula_vehiculo, fecha, motivo } = result.data;
+    console.log(req.user.id)
+    // 2. Extraemos los datos validados
+    const {
+        servicio,
+        vehiculoSeleccionado,
+        comentarios,
+        fechaCita
+    } = result.data;
+
+    // 3. Seguridad: Datos que NO vienen del formulario, sino del TOKEN
+    // Ajusta 'req.user.nombre' según cómo guardes el nombre en tu JWT
+    const nombre_usuario_real = req.user.nombre || req.user.name || "Usuario";
+    console.log(req.user)
+    const estado_inicial = 'pendiente';
 
     try {
+
+
         const query = `
-            INSERT INTO citas (id_usuario, matricula_vehiculo, fecha, motivo) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO cita (
+                id_usuario, 
+                servicio, 
+                comentarios, 
+                vehiculo_seleccionado, 
+                fecha_cita, 
+                estado
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        const [dbResult] = await db.execute(query, [id_usuario_real, matricula_vehiculo, fecha, motivo]);
+        const [dbResult] = await db.execute(query, [
+            id_usuario_real,
+            servicio,
+            comentarios,
+            vehiculoSeleccionado,
+            fechaCita,
+            estado_inicial
+        ]);
 
         res.status(201).json({
             message: "Cita creada con éxito",
             id_cita: dbResult.insertId,
-            estado: 'pendiente'
+            datos: {
+                usuario: nombre_usuario_real,
+                servicio,
+                estado: estado_inicial
+            }
         });
     } catch (error) {
-        res.status(500).json({ error: "Error al crear la cita", detalles: error.message });
+        console.error("Error en DB:", error);
+        res.status(500).json({
+            error: "Error al crear la cita en la base de datos",
+            detalles: error.message
+        });
     }
 };
 
-export const obtenerCitas = async (req, res) => {
+export const actualizarCita = async (req, res) => {
+    const { id } = req.params;
+    const { fechaCita } = req.body; // Solo extraemos lo que cambia
+    const fechaSQL = fechaCita.replace('T', ' ').substring(0, 19);
+    console.log(fechaSQL)
+    if (!fechaCita) {
+        return res.status(400).json({ error: "La nueva fecha es obligatoria" });
+    }
+
     try {
-        let query = 'SELECT * FROM citas';
+        const query = `
+            UPDATE cita 
+            SET fecha_cita = ?
+            WHERE id = ?
+        `;
+        console.log("Ejecutando:", query, "con valores:", [fechaSQL, id]);
+        const [dbResult] = await db.execute(query, [fechaSQL, id]);
+
+        if (dbResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Cita no encontrada" });
+        }
+
+        res.status(200).json({ message: "Hora confirmada con éxito" });
+    } catch (error) {
+        res.status(500).json({ error: "Error al actualizar la hora" });
+    }
+};
+
+export const obtenerCitasTerminadas = async (req, res) => {
+    try {
+        // Ajustamos el JOIN para usar la tabla 'Cliente'
+        let query = `
+            SELECT 
+                c.*, 
+                CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente 
+            FROM cita c
+            INNER JOIN Cliente cl ON c.id_usuario = cl.id_usuario
+        `;
+        let params = [];
+
+        // Lógica de filtrado por rol
+        if (req.user.rol !== 'admin') {
+            // Usuario normal: Solo sus citas completadas o canceladas
+            query += ' WHERE c.id_usuario = ? AND (c.estado = "completada" OR c.estado = "cancelada")';
+            params.push(req.user.id);
+        } else {
+            // Admin: Todas las citas completadas o canceladas de todos los clientes
+            query += ' WHERE c.estado = "completada" OR c.estado = "cancelada"';
+        }
+
+        const [rows] = await db.execute(query, params);
+        res.json(rows);
+    } catch (error) {
+        console.error("Error en la consulta SQL:", error);
+        res.status(500).json({ error: "Error al obtener citas de la tabla Cliente" });
+    }
+};
+export const obtenerCitasAdmin = async (req, res) => {
+    try {
+        const query = `
+            SELECT c.*, CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente 
+            FROM cita c
+            INNER JOIN Cliente cl ON c.id_usuario = cl.id_usuario
+            WHERE c.estado = "pendiente"
+            ORDER BY c.fecha_cita ASC
+        `;
+
+        const [rows] = await db.execute(query);
+        res.json(rows);
+    } catch (error) {
+        console.error("Error SQL Admin:", error);
+        res.status(500).json({ error: "Error al cargar panel de administración" });
+    }
+};
+
+export const obtenerCitasActivas = async (req, res) => {
+    try {
+        let query = 'SELECT * FROM cita';
         let params = [];
 
         // Lógica de privacidad:
@@ -53,11 +163,12 @@ export const obtenerCitas = async (req, res) => {
 export const actualizarEstadoCita = async (req, res) => {
     // La validación de Zod ya se hizo en el middleware de la ruta
     const { id } = req.params;
-    const { estado } = req.body;
-
+    const { estado } = req.params;
+    console.log(id, estado)
     try {
-        const query = 'UPDATE citas SET estado = ? WHERE id_cita = ?';
+        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
         const [result] = await db.execute(query, [estado, id]);
+
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Cita no encontrada" });
@@ -76,7 +187,7 @@ export const cancelarCita = async (req, res) => {
     try {
         // 1. Buscamos la cita y verificamos si le pertenece al usuario
         const [cita] = await db.execute(
-            'SELECT id_usuario, estado FROM citas WHERE id_cita = ?', 
+            'SELECT id_usuario, estado FROM cita WHERE id = ?',
             [id]
         );
 
@@ -96,12 +207,28 @@ export const cancelarCita = async (req, res) => {
 
         // 4. Procedemos a la cancelación
         await db.execute(
-            'UPDATE citas SET estado = ? WHERE id_cita = ?', 
+            'UPDATE cita SET estado = ? WHERE id = ?',
             ['cancelada', id]
         );
 
         res.json({ message: "Cita cancelada correctamente por el usuario" });
     } catch (error) {
         res.status(500).json({ error: "Error al cancelar la cita", detalles: error.message });
+    }
+};
+
+export const obtenerCitasEnProceso = async (req, res) => {
+    try {
+        const query = `
+            SELECT c.*, CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente 
+            FROM cita c
+            INNER JOIN Cliente cl ON c.id_usuario = cl.id_usuario
+            WHERE c.estado = "procesando"
+        `;
+
+        const [rows] = await db.execute(query);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener citas en proceso" });
     }
 };
