@@ -7,7 +7,7 @@ export const saveRating = async (req, res) => {
 
     try {
         await connection.beginTransaction();
-
+      
         // 1. Guardar o actualizar valoración
         await connection.query(`
             INSERT INTO valoraciones (id_usuario, id_producto, rating, comment)
@@ -20,12 +20,14 @@ export const saveRating = async (req, res) => {
 
         // 2. Obtener nombre del producto para la notificación
         const [prodInfo] = await connection.query("SELECT name FROM products WHERE id = ?", [id_producto]);
+        console.log(prodInfo)
+        console.log('hola 2')
         const nombreProducto = prodInfo[0]?.name || "el producto";
 
         // 3. Notificar al CLIENTE
-        await createNotification(id_usuario, 'valoración', 'cliente', { 
+        /* await createNotification(id_usuario, 'valoración', 'cliente', { 
             producto: nombreProducto 
-        });
+        }); */
 
         // 4. Actualizar promedio (tu lógica actual...)
         const [rows] = await connection.query(

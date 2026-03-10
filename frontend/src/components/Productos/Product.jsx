@@ -226,7 +226,7 @@ function Product() {
                                 </div>
                                 <div className="h-12 w-px bg-base-content/10"></div>
                                 <div>
-                                    <p>{renderStars(producto.rating)}</p>
+                                    {renderStars(producto.rating)}
                                 </div>
                                 <div className="h-12 w-px bg-base-content/10"></div>
                                 <div>
