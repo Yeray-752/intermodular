@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-
+import { useTranslation } from 'react-i18next';
+    
 const datosCanarias = {
   "Tenerife": ["Adeje", "Arafo", "Arico", "Arona", "Buenavista del Norte", "Candelaria", "El Rosario", "El Sauzal", "El Tanque", "Fasnia", "Garachico", "Granadilla de Abona", "Guía de Isora", "Güímar", "Icod de los Vinos", "La Guancha", "La Matanza de Acentejo", "La Orotava", "La Victoria de Acentejo", "Los Realejos", "Los Silos", "Puerto de la Cruz", "San Cristóbal de La Laguna", "San Juan de la Rambla", "San Miguel de Abona", "Santa Cruz de Tenerife", "Santa Úrsula", "Santiago del Teide", "Tacoronte", "Tegueste", "Vilaflor de Chasna"],
   "Gran Canaria": ["Agaete", "Agüimes", "Artenara", "Arucas", "Firgas", "Gáldar", "Ingenio", "La Aldea de San Nicolás", "Las Palmas de Gran Canaria", "Mogán", "Moya", "San Bartolomé de Tirajana", "Santa Brígida", "Santa Lucía de Tirajana", "Santa María de Guía de Gran Canaria", "Tejeda", "Telde", "Teror", "Valleseco", "Valsequillo de Gran Canaria", "Vega de San Mateo"],
@@ -14,6 +15,8 @@ const SelectorCanarias = () => {
   const [isla, setIsla] = useState("");
   const [municipio, setMunicipio] = useState("");
 
+  const { t, i18n } = useTranslation('SelectorCanarias');
+
   const handleIslaChange = (e) => {
     setIsla(e.target.value);
     setMunicipio("");
@@ -23,7 +26,6 @@ const SelectorCanarias = () => {
     <div className="w-full max-w-4xl p-6 bg-white rounded-xl shadow-md border border-gray-100 mt-5 mb-5">
       <h2 className="text-xl font-bold text-gray-800 mb-6">Ubicación en Canarias</h2>
       
-      {/* Contenedor Horizontal con Flexbox */}
       <div className="flex flex-col md:flex-row gap-6 items-end">
         
         {/* Selector de Isla */}
@@ -66,7 +68,6 @@ const SelectorCanarias = () => {
         </div>
       </div>
 
-      {/* Badge de confirmación */}
       {municipio && (
         <div className="mt-6 flex items-center gap-2 text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-100 animate-fade-in">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

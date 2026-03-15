@@ -51,7 +51,6 @@ function App() {
       <main className="grow pb-20">
         <div className="flex flex-col items-center w-full p-4">
 
-          {/* Barra de búsqueda */}
           <div className="w-full max-w-md px-4">
             <input
               className='input input-bordered w-full max-w-md mt-8 bg-base-100'
@@ -65,7 +64,6 @@ function App() {
             {t('products')}
           </h1>
 
-          {/* Navegación de Categorías */}
           <nav className='relative mt-5 group w-87 sm:w-135 md:w-190 lg:w-243 xl:w-274 mx-auto px-10'>
             <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronLeft size={24} />
@@ -96,14 +94,12 @@ function App() {
             </button>
           </nav>
 
-          {/* LISTADO DE PRODUCTOS - El cambio clave está aquí */}
           <div className="max-w-1400px pt-4">
             {loading ? (
               <div className="flex flex-col items-center py-20">
                 <span className="loading loading-spinner loading-md text-primary"></span>
               </div>
             ) : (
-              /* Cambiamos a grid-cols-2 de base y hasta 5 en pantallas muy grandes */
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-7 p-15">
                 <TableProducts
                   search={search}

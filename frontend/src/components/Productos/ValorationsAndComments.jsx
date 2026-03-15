@@ -77,7 +77,6 @@ export default function RatingSystem({ id_producto, userid_producto }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            {/* FORMULARIO - Cambiado a bg-base-100 */}
             <div className="space-y-6 rounded-xl p-8 shadow-xl bg-base-100">
 
                 <div className="flex items-center gap-3">
@@ -112,7 +111,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                         {t("placeholder_textarea")}
                     </label>
                     <textarea
-                        className="textarea textarea-bordered w-full min-h-[120px] focus:textarea-primary transition-all duration-200 bg-base-100 text-base-content"
+                        className="textarea textarea-bordered w-full min-h-30 focus:textarea-primary transition-all duration-200 bg-base-100 text-base-content"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={t("placeholder_textarea")}
@@ -128,7 +127,6 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                 </button>
             </div>
 
-            {/* LISTA OPINIONES */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-base-content">
@@ -136,7 +134,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                     </h3>
                 </div>
 
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                <div className="space-y-4 max-h-125 overflow-y-auto pr-2">
 
                     {reviews.length === 0 && (
                         <div className="text-center py-12 bg-base-200 rounded-xl">
@@ -194,8 +192,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                             </div>
 
                             <div className="rounded-lg border border-base-300/50">
-                                {/* Cambiado bg-white por bg-base-100 para que no brille en modo oscuro */}
-                                <p className="text-sm text-base-content/90 bg-base-100 rounded-lg p-3 leading-relaxed italic break-words whitespace-pre-wrap">
+                                <p className="text-sm text-base-content/90 bg-base-100 rounded-lg p-3 leading-relaxed italic wrap-break-word whitespace-pre-wrap">
                                     {rev.comment}
                                 </p>
                             </div>

@@ -60,7 +60,7 @@ function App() {
           <h1 className='mt-10 font-bold text-2xl w-full max-w-6xl px-10'>{t('categories')}</h1>
 
           <nav className='space-x-1.5 mt-4 mb-5 w-full'>
-            <div className='relative group w-92 md:w-175 lg:w-225 xl:w-256 2xl:w-330 mx-auto px-10'>
+            <div className='relative group w-92 md:w-175 lg:w-225 xl:w-5xl 2xl:w-330 mx-auto px-10'>
               <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary-content hover:text-white transition-all text-gray-800">
                 <ChevronLeft size={24} />
               </button>
@@ -88,8 +88,7 @@ function App() {
             </div>
           </nav>
 
-          {/* CONTENEDOR DE RESERVAS: Se ha eliminado el grid de aquí para evitar conflictos */}
-          <div className="max-w-[1400px] pt-4">
+          <div className="max-w-350 pt-4">
             {loading ? (
               <div className="flex justify-center py-10">
                 <span className="loading loading-spinner loading-lg text-primary"></span>

@@ -146,15 +146,12 @@ function TableReservations({ search, categoriaId, servicios }) {
                 ))}
             </div>
 
-            {/* MODAL ÚNICO */}
             <dialog id="modal_reserva_unico" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
-                {/* 1. Quitamos 'overflow-y-auto' de aquí para dárselo solo al contenido central */}
                 <div className="modal-box max-w-lg p-0 max-h-[90vh] rounded-2xl bg-base-100 text-base-content shadow-2xl flex flex-col overflow-hidden">
 
                     {servicioSeleccionado ? (
                         <div className="flex flex-col h-full overflow-hidden">
 
-                            {/* HEADER - Fijo arriba */}
                             <div className="sticky top-0 z-30 header-custom px-6 py-5 border-b border-calendar-divider bg-base-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -175,7 +172,6 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 </div>
                             </div>
 
-                            {/* CONTENIDO CENTRAL - Este es el que hace SCROLL */}
                             <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-calendar-inner">
                                 <div className="form-control w-full">
                                     <label className="label">
@@ -213,7 +209,6 @@ function TableReservations({ search, categoriaId, servicios }) {
                                         />
                                     </div>
 
-                                    {/* LEYENDA */}
                                     <div className="flex flex-wrap justify-center gap-4 text-[10px] uppercase font-bold tracking-widest text-calendar-muted mt-4">
                                         <div className="flex items-center gap-1.5">
                                             <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-sm"></div>
@@ -231,7 +226,6 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 </div>
                             </div>
 
-                            {/* FOOTER - Fijo abajo */}
                             <div className="sticky bottom-0 z-30 header-custom p-6 border-t border-calendar-divider bg-base-100">
                                 <form method="dialog" className="flex gap-3 w-full">
                                     <button

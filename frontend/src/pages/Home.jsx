@@ -17,7 +17,6 @@ export default function Home() {
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
-        {/* Hero Section */}
         <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mb-20 md:mb-28">
           <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -40,7 +39,7 @@ export default function Home() {
               <img
                 src={ImagenPrincipal}
                 alt={t("heroAlt")}
-                className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover"
+                className="w-full h-75 md:h-100 lg:h-125 object-cover"
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent rounded-2xl md:rounded-3xl"></div>
             </div>
@@ -49,7 +48,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Offers Section */}
         <section className="mb-20 md:mb-28">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 md:mb-20">
@@ -70,7 +68,6 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Oferta 1 */}
               <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-primary relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-base-100 px-4 py-1 rounded-full text-sm font-bold">
@@ -94,7 +91,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Oferta 2 */}
               <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer2Title")}
@@ -113,7 +109,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Oferta 3 */}
               <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer3Title")}
@@ -135,7 +130,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* About Us Section */}
         <section className="mb-10">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
             <div className="relative">
@@ -143,7 +137,7 @@ export default function Home() {
                 <img
                   src={ImagenPrincipal}
                   alt={t("aboutUsAlt")}
-                  className="w-full h-[300px] md:h-[400px] object-cover"
+                  className="w-full h-75 md:h-100 object-cover"
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-secondary rounded-full opacity-5 -z-10"></div>

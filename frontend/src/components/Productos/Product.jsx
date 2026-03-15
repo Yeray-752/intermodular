@@ -168,9 +168,8 @@ function Product() {
     return (
         <div className="min-h-screen bg-neutral">
 
-            {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-[100] animate-bounce">
+                <div className="toast toast-top toast-center z-100 animate-bounce">
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : 'alert-error'} shadow-lg border-none text-white font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
@@ -178,7 +177,6 @@ function Product() {
             )}
 
             <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-                {/* VOLVER */}
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 group"
@@ -189,11 +187,9 @@ function Product() {
                     {t('formulario:back')}
                 </button>
 
-                {/* PRODUCTO */}
                 <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
 
-                        {/* Imagen */}
                         <div className="bg-base-100 p-12 flex items-center justify-center">
                             <div className="relative">
                                 <div className="absolute inset-0 rounded-full blur-3xl"></div>
@@ -205,7 +201,6 @@ function Product() {
                             </div>
                         </div>
 
-                        {/* Info */}
                         <div className="p-8 md:p-12 flex flex-col justify-center space-y-6 bg-base-100 text-base-content">
                             <div>
                                 <h1 className="text-3xl font-bold mb-3">
@@ -248,13 +243,12 @@ function Product() {
                     </div>
                 </section>
 
-                {/* OPINIONES */}
                 <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12">
                     <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
                 </section>
             </div>
 
-            {/* Modal de Pago */}
+
             <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl bg-base-100 text-base-content rounded-2xl shadow-2xl border border-base-300">
                     <form method="dialog">
@@ -337,7 +331,6 @@ function Product() {
                                     </div>
                                 </div>
 
-                                {/* Formulario Tarjeta */}
                                 <div className="space-y-4">
                                     <h4 className="font-semibold text-base-content/80 flex items-center gap-2">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -13,7 +13,6 @@ function Legales() {
             <Header />
 
             <main className='grow flex flex-col items-center p-6 md:p-12'>
-                {/* Título */}
                 <div className='w-full max-w-3xl text-center mb-10'>
                     <h1 className='text-3xl md:text-4xl font-semibold mb-4'>{t('legalInfoTitle')}</h1>
                     <p className='text-base-content/70 leading-relaxed'>
@@ -21,10 +20,8 @@ function Legales() {
                     </p>
                 </div>
 
-                {/* Contenedor principal */}
                 <div className='w-full max-w-3xl bg-base-100 border border-base-300 rounded-xl shadow-sm'>
 
-                    {/* Índice simple */}
                     <div className='border-b border-base-300 p-4 text-sm flex justify-center gap-6'>
                         <a href='#aviso-legal' className='hover:underline font-medium'>{t('legalNotice')}</a>
                         <a href='#privacidad' className='hover:underline font-medium'>{t('privacy')}</a>
@@ -33,7 +30,6 @@ function Legales() {
 
                     <div className='p-6 md:p-10 space-y-14 text-sm md:text-base leading-relaxed text-base-content'>
                         
-                        {/* Aviso legal */}
                         <section id='aviso-legal'>
                             <h2 className='text-2xl font-semibold mb-4 text-primary'>{t('legalNotice')}</h2>
                             <p>{t('legalNoticeText1')}</p>
@@ -47,7 +43,6 @@ function Legales() {
                             </ul>
                         </section>
 
-                        {/* Privacidad */}
                         <section id='privacidad'>
                             <h2 className='text-2xl font-semibold mb-4 text-primary'>{t('privacy')}</h2>
                             <div className="space-y-4">
@@ -58,7 +53,6 @@ function Legales() {
                             </div>
                         </section>
 
-                        {/* Términos */}
                         <section id='terminos'>
                             <h2 className='text-2xl font-semibold mb-6 text-primary'>{t('terms')}</h2>
 
@@ -86,7 +80,6 @@ function Legales() {
                         </section>
                     </div>
 
-                    {/* Pie legal */}
                     <div className='border-t border-base-300 p-6 text-center text-xs md:text-sm text-base-content/60 bg-base-200/50 rounded-b-xl'>
                         <p>{t('lastUpdate', { date: lang === 'es' ? 'junio de 2025' : 'June 2025' })}</p>
                         <p className='mt-1 font-semibold'>AKOTAN Workshop © 2025</p>

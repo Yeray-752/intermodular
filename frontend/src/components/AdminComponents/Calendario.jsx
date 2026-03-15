@@ -108,7 +108,6 @@ const CalendarioSemanalTailwind = ({ initialEvents }) => {
         />
       </div>
 
-      {/* --- POP-UP DE CONFIRMACIÓN --- */}
       {showConfirm && (
         <div className="fixed inset-0 z-10000 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 animate-in fade-in zoom-in duration-200">

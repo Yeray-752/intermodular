@@ -89,7 +89,6 @@ function Header() {
             
             {notificacion.mostrar && (
                 <div className="toast toast-top toast-center z-100">
-                    {/* Cambiado: text-success-content o similares para que el texto sea legible en el tema oscuro */}
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : notificacion.tipo === 'error' ? 'alert-error' : 'alert-info'} shadow-lg font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
@@ -97,7 +96,6 @@ function Header() {
             )}
 
             <div className="drawer-content flex flex-col">
-                {/* Cambiado: Eliminado dark:bg-base-200 para dejar que DaisyUI lo gestione con bg-base-100 */}
                 <header className="bg-base-200 text-base-content shadow-md border-b w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
@@ -187,7 +185,6 @@ function Header() {
                             ))
                         ) : (
                             <div className="text-center py-20">
-                                {/* Cambiado: text-base-content con opacidad para que se vea en cualquier tema */}
                                 <ShoppingCart size={48} className="mx-auto text-base-content opacity-20 mb-4" />
                                 <p className="text-base-content opacity-50 italic">{t('cart.vacio')}</p>
                             </div>
