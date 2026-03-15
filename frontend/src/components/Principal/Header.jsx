@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import logo from '/img/web/logo_no_background.webp';
-import { Menu, X, User, ShoppingCart, Trash2 } from 'lucide-react';
+import { Menu, X, User, ShoppingCart, Trash2,AlertTriangle } from 'lucide-react';
 import { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from "../../context/ThemeContext";
@@ -15,6 +15,7 @@ function Header() {
     
     const [datosCarrito, setdatosCarrito] = useState({ items: [], totalCarrito: "0.00" });
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
+        const noStock = datosCarrito.items?.some(item => item.cantidad > item.stock);
 
     // Cambiado: text-base-content asegura que el texto cambie según el tema
     const hoverLink = 'text-base-100 hover:text-primary transition-colors duration-300 font-medium';
@@ -163,26 +164,43 @@ function Header() {
                     
                     <div className="grow overflow-y-auto space-y-4">
                         {datosCarrito.items && datosCarrito.items.length > 0 ? (
-                            datosCarrito.items.map((item) => (
-                                <div key={item.id_producto} className="flex gap-4 bg-base-200 p-3 rounded-xl items-center group">
-                                    <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
-                                    <div className="flex-1">
-                                        <p className="font-bold text-sm leading-tight">{item.name}</p>
-                                        <p className="text-xs opacity-70 mt-1">
-                                            {item.cantidad} x ${item.precio_unitario}
-                                        </p>
+                            datosCarrito.items.map((item) => {
+                                // VALIDACIÓN DE STOCK
+                                const sinStock = item.cantidad > item.stock;
+
+                                return (
+                                    <div key={item.id_producto} className={`flex flex-col bg-base-200 p-3 rounded-xl border-2 transition-colors ${sinStock ? 'border-error/50 bg-error/5' : 'border-transparent'}`}>
+                                        <div className="flex gap-4 items-center">
+                                            <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                            <div className="flex-1">
+                                                <p className="font-bold text-sm leading-tight">{item.name}</p>
+                                                <p className="text-xs opacity-70 mt-1">
+                                                    {item.cantidad} x ${item.precio_unitario}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-primary">${item.subtotal}</p>
+                                                <button 
+                                                    onClick={() => handleRemoveItem(item.id_producto)}
+                                                    className="btn btn-ghost btn-xs btn-circle text-error hover:bg-error/20"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* MENSAJE DE ADVERTENCIA SI NO HAY STOCK */}
+                                        {sinStock && (
+                                            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-error/20 text-error">
+                                                <AlertTriangle size={14} />
+                                                <span className="text-[10px] font-black uppercase">
+                                                    Stock insuficiente (Disponibles: {item.stock})
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-bold text-primary">${item.subtotal}</p>
-                                        <button 
-                                            onClick={() => handleRemoveItem(item.id_producto)}
-                                            className="btn btn-ghost btn-xs btn-circle text-error hover:bg-error/20"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <div className="text-center py-20">
                                 <ShoppingCart size={48} className="mx-auto text-base-content opacity-20 mb-4" />
@@ -197,12 +215,24 @@ function Header() {
                                 <span>{t('cart.total')}</span>
                                 <span className="text-2xl text-primary">${datosCarrito.totalCarrito}</span>
                             </div>
+                            
+                            {/* BOTÓN DINÁMICO SEGÚN EL STOCK */}
                             <button 
-                                onClick={() => { navigate('/checkout'); document.getElementById('my-drawer-5').checked = false; }} 
-                                className="btn btn-primary w-full text-lg shadow-lg"
+                                disabled={noStock}
+                                onClick={() => { 
+                                    navigate('/checkout'); 
+                                    document.getElementById('my-drawer-5').checked = false; 
+                                }} 
+                                className={`btn w-full text-lg shadow-lg ${noStock ? 'btn-disabled opacity-50' : 'btn-primary'}`}
                             >
-                                {t('cart.finalizarCompra')}
+                                {noStock ? "Revisa las existencias" : t('cart.finalizarCompra')}
                             </button>
+                            
+                            {noStock && (
+                                <p className="text-[10px] text-error text-center font-bold uppercase tracking-tighter">
+                                    No puedes proceder hasta ajustar las cantidades
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>
