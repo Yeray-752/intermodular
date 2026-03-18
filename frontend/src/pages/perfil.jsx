@@ -20,8 +20,10 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
-
-    const [matricula, setMatricula] = useState()
+    const [cocheBuscado, setCocheBuscado] = useState('');
+    const [matricula, setMatricula] = useState('');
+    console.log(matricula)
+    console.log(cocheBuscado)
     // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
     useEffect(() => {
         const fetchUserData = async () => {
@@ -57,7 +59,7 @@ function Perfil() {
 
         /* Toca hacer scraping */
     // Construimos la URL con los parámetros necesarios
-    const url = `https://api.carsxe.com/v2/platedecoder?key=womfl322y_nalkb0dfo_b7gfy26kx&plate=${matricula}&format=json`;
+    const url = `http://localhost:3000/api/vehicle/${matricula}`;
 
     try {
         const response = await fetch(url);
@@ -67,7 +69,7 @@ function Perfil() {
         }
 
         const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
-        console.log(data);
+        setCocheBuscado(await data)
     } catch (e) {
         console.error('Error capturado:', e.message);
     }
@@ -271,6 +273,22 @@ function Perfil() {
                                     </div>
                                 </div>
                             </div>
+                            {cocheBuscado? (
+                                <div className="p-5 border border-base-300 bg-base-100 rounded-xl hover:shadow-md transition-all">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center">
+                                        <Car className="text-primary" size={24} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-base-content">{cocheBuscado.data?.brand}</p>
+                                        <p className="text-sm text-base-content/50 font-mono">1234-LMN</p>
+                                    </div>
+                                </div>
+                            </div>
+                            ) : (
+                                <p></p>
+                            )}
+                            
                             <button className="p-5 border-2 border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
                                 <Plus size={20} />
                                 {t('addCar')}
@@ -278,7 +296,7 @@ function Perfil() {
                         </div>
                         <div>
                             <h1>pruebas de matricula</h1>
-                            <input className='input' type="text" onChange={(e) => {setMatricula(e.value)}} />
+                            <input className='input' type="text" onChange={(e) => {setMatricula(e.target.value)}} />
                             <button className='btn ml-3 text-white' onClick={() => buscarCoche(matricula)}>trae</button>
                         </div>
                     </div>
