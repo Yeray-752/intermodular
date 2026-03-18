@@ -6,6 +6,8 @@ import hpp from 'hpp';
 import helmet from "helmet";
 import rateLimit  from "express-rate-limit";  
 
+/* import { chromium } from ('playwright'); */
+
 //Rutas
 import usersRoutes from "./routes/users.js";
 import productosRoutes from "./routes/products.js"
@@ -77,7 +79,11 @@ app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/rating', ratingRoutes);
 
+
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+

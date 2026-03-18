@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
+import CarFinder from '../components/prueba/carFinder';
 
 function Perfil() {
     const [activeTab, setActiveTab] = useState('informacion');
@@ -53,25 +54,7 @@ function Perfil() {
         fetchUserData();
     }, [navigate]);
 
-    const buscarCoche = async (matricula) => {
-
-        /* Toca hacer scraping */
-    // Construimos la URL con los parámetros necesarios
-    const url = `https://api.carsxe.com/v2/platedecoder?key=womfl322y_nalkb0dfo_b7gfy26kx&plate=${matricula}&format=json`;
-
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Error en la petición: ${response.status}`);
-        }
-
-        const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
-        console.log(data);
-    } catch (e) {
-        console.error('Error capturado:', e.message);
-    }
-}
+   
 
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
@@ -279,7 +262,7 @@ function Perfil() {
                         <div>
                             <h1>pruebas de matricula</h1>
                             <input className='input' type="text" onChange={(e) => {setMatricula(e.value)}} />
-                            <button className='btn ml-3 text-white' onClick={() => buscarCoche(matricula)}>trae</button>
+                            <CarFinder />
                         </div>
                     </div>
                 );
