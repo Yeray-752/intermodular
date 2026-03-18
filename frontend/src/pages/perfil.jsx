@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { data, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
@@ -13,6 +14,7 @@ function Perfil() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
     const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
@@ -29,6 +31,7 @@ function Perfil() {
         modelo: '',
         año: new Date().getFullYear()
     });
+    const [tabActiva, setTabActiva] = useState(location.state?.section === 'cars' ? 'vehiculos' : 'datos');
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
