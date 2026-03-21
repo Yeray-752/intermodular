@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,11 @@ function Perfil() {
     const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation('profile');
+    // Dentro de tu componente, antes del return del case 'notificaciones'
+    const { t, i18n } = useTranslation(['perfil', 'notificaciones']); // Cargas ambos
+
+    // Creamos un helper local para las notis
+    const tn = (key, params) => t(`notificaciones:${key}`, params);
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
@@ -32,6 +36,9 @@ function Perfil() {
         año: new Date().getFullYear()
     });
     const [tabActiva, setTabActiva] = useState(location.state?.section === 'cars' ? 'vehiculos' : 'datos');
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [loadingNotis, setLoadingNotis] = useState(false);
+
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
@@ -61,6 +68,51 @@ function Perfil() {
 
         fetchUserData();
     }, [navigate]);
+
+    const traerNotificaciones = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        setLoadingNotis(true);
+        try {
+            const response = await fetch("http://localhost:3000/api/notifications", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setNotificaciones(data);
+            }
+        } catch (error) {
+            console.error("Error al cargar notificaciones:", error);
+        } finally {
+            setLoadingNotis(false);
+        }
+    };
+
+    const marcarTodasComoLeidas = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/notifications/read-all`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // 1. Actualizamos todo el estado local a leída = 1
+                setNotificaciones(prev => prev.map(n => ({ ...n, leida: 1 })));
+
+                // 2. Avisamos al Header para que el contador pase a 0
+                window.dispatchEvent(new Event('notificationsUpdated'));
+            }
+        } catch (error) {
+            console.error("Error al marcar todas:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'notificaciones') {
+            traerNotificaciones();
+        }
+    }, [activeTab]);
 
     const formatText = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
@@ -141,6 +193,34 @@ function Perfil() {
             trearCitas();
         }
     }, [activeTab]);
+
+    const marcarLeida = async (id) => {
+        // 1. Actualización optimista: marcamos en el estado antes de la respuesta del servidor
+        // para que el usuario vea el checkbox activarse sin lag.
+        setNotificaciones(prev =>
+            prev.map(n => n.id === id ? { ...n, leida: 1 } : n)
+        );
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // 2. Avisamos al Header para que el circulito rojo disminuya o desaparezca
+                window.dispatchEvent(new Event('notificationsUpdated'));
+            } else {
+                // Si falla, revertimos el cambio (opcional)
+                // fetchNotificaciones(); 
+            }
+        } catch (error) {
+            console.error("Error al marcar como leída:", error);
+        }
+    };
 
     const eliminarCitas = async (id) => {
         const token = localStorage.getItem("token");
@@ -230,6 +310,7 @@ function Perfil() {
     const menuItems = useMemo(() => [
         { id: 'informacion', label: t('account'), icon: User },
         { id: 'vehiculos', label: t('myCars'), icon: Car },
+        { id: 'notificaciones', label: t('notifications_tab') || "Notificaciones", icon: Bell },
         { id: 'citas', label: t('myAppointments'), icon: Calendar },
         { id: 'historial', label: t('history'), icon: FileText },
         { id: 'seguridad', label: t('security'), icon: Lock }
@@ -461,7 +542,105 @@ function Perfil() {
                         </div>
                     </div>
                 );
+            case 'notificaciones':
+                // Helper para no ensuciar el código con "notificaciones:..."
+                const tn = (key, params) => t(`notificaciones:${key}`, params);
 
+                return (
+                    <div className="animate-in fade-in duration-500">
+                        <div className="mb-8 flex justify-between items-end">
+                            <div>
+                                <h2 className="text-3xl font-bold mb-2 text-base-content">
+                                    {t('notifications_title') || "Mis Notificaciones"}
+                                </h2>
+                                <p className="text-base-content/70 text-sm">
+                                    {t('manage_notifications_desc') || "Mantente al tanto de tus citas y pedidos."}
+                                </p>
+                            </div>
+                            {notificaciones.length > 0 && notificaciones.some(n => !n.leida) && (
+                                <button
+                                    onClick={marcarTodasComoLeidas}
+                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                                >
+                                    <CheckCheck size={14} /> Marcar todas como leídas
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="space-y-4">
+                            {loadingNotis ? (
+                                <div className="py-10 text-center flex flex-col items-center gap-3">
+                                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                                    <p className="font-bold">Cargando notificaciones...</p>
+                                </div>
+                            ) : notificaciones.length > 0 ? (
+                                notificaciones.map((noti) => {
+                                    const params = typeof noti.parametros === 'string'
+                                        ? JSON.parse(noti.parametros)
+                                        : noti.parametros;
+
+                                    // Helper para el path de traducción
+                                    const translationPath = `notifications.${noti.rol}`;
+
+                                    // IMPORTANTE: Usamos 'leido' que es el nombre real en tu DB
+                                    const estaLeida = !!noti.leido;
+
+                                    return (
+                                        <div
+                                            key={noti.id}
+                                            className={`p-6 border rounded-2xl shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 
+            ${estaLeida ? 'bg-base-200/50 opacity-75 border-transparent' : 'bg-base-100 border-primary/20 shadow-md'}`}
+                                        >
+                                            <div className="flex items-center gap-5">
+                                                {/* CHECKBOX IZQUIERDA */}
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="checkbox checkbox-primary checkbox-sm transition-all"
+                                                        checked={estaLeida}
+                                                        onChange={() => !estaLeida && marcarLeida(noti.id)}
+                                                        disabled={estaLeida}
+                                                    />
+                                                </div>
+
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0
+                                                    ${estaLeida ? 'bg-base-300 text-base-content/30' : 'bg-primary/10 text-primary'}`}>
+                                                    <Bell size={24} />
+                                                </div>
+
+                                                <div>
+                                                    <h4 className={`font-extrabold text-lg tracking-tight ${estaLeida ? 'text-base-content/50' : 'text-base-content'}`}>
+                                                        {tn(`${translationPath}.titles.${noti.tipo}`)}
+                                                    </h4>
+                                                    <p className="text-sm text-base-content/70 font-medium max-w-xl">
+                                                        {tn(`${translationPath}.messages.${noti.tipo}`, params)}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/40 uppercase">
+                                                        <Clock size={12} />
+                                                        <span>{new Date(noti.creado_en).toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* ESTADO DERECHA */}
+                                            <div className="hidden md:flex items-center">
+                                                {estaLeida ? (
+                                                    <span className="text-[10px] font-black uppercase opacity-30">Leída</span>
+                                                ) : (
+                                                    <span className="badge badge-primary badge-sm p-3 font-bold">Nueva</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                    <p className="text-base-content/50 text-lg font-medium">No tienes notificaciones por ahora.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
             case 'historial':
                 return (
                     <div>
@@ -523,6 +702,28 @@ function Perfil() {
         }
     }
 
+    function NotificationRow({ notification }) {
+        const { t } = useTranslation('notifications');
+
+        const params = typeof notification.parametros === 'string'
+            ? JSON.parse(notification.parametros)
+            : notification.parametros;
+
+        return (
+            <div className={`p-4 border-b ${notification.leido ? 'opacity-60' : 'bg-blue-50'}`}>
+                <h4 className="font-bold">
+                    {t(`titles.${notification.tipo}`)}
+                </h4>
+                <p>
+                    {t(`messages.${notification.tipo}`, params)}
+                </p>
+                <span className="text-xs text-gray-500">
+                    {new Date(notification.creado_en).toLocaleString()}
+                </span>
+            </div>
+        );
+    }
+
     return (
         <div className='bg-neutral min-h-screen flex flex-col'>
             <Header />
@@ -581,104 +782,104 @@ function Perfil() {
             </main>
             <Footer />
             {isModalOpen && (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in fade-in zoom-in duration-300">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in fade-in zoom-in duration-300">
 
-            <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 text-base-content/30 hover:text-base-content transition-colors"
-            >
-                <X size={28} />
-            </button>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-6 right-6 text-base-content/30 hover:text-base-content transition-colors"
+                        >
+                            <X size={28} />
+                        </button>
 
-            <div className="p-10">
-                <div className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                        <Car className="text-[#ff5a1f]" size={32} />
+                        <div className="p-10">
+                            <div className="flex flex-col items-center mb-8">
+                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                    <Car className="text-[#ff5a1f]" size={32} />
+                                </div>
+                                <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                    {t('registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
+                                </h2>
+                            </div>
+
+                            <form onSubmit={handleRegistrarVehiculo} className="space-y-5">
+                                {/* MATRÍCULA: Mayúsculas y máx 15 */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                    <input
+                                        required
+                                        maxLength={15}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest"
+                                        placeholder="0000-BBB"
+                                        value={formVehiculo.matricula}
+                                        onChange={(e) => setFormVehiculo({
+                                            ...formVehiculo,
+                                            matricula: e.target.value.toUpperCase()
+                                        })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* MARCA: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Toyota"
+                                            value={formVehiculo.marca}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    marca: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                    {/* MODELO: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Corolla"
+                                            value={formVehiculo.modelo}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    modelo: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* AÑO: Máximo año actual */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        max={new Date().getFullYear()}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                        value={formVehiculo.año}
+                                        onChange={(e) => setFormVehiculo({ ...formVehiculo, año: e.target.value })}
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
+                                >
+                                    {t('confirmAndAdd') || "Confirmar y Añadir"}
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <h2 className="text-2xl font-black text-center text-base-content leading-tight">
-                        {t('registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
-                    </h2>
                 </div>
-
-                <form onSubmit={handleRegistrarVehiculo} className="space-y-5">
-                    {/* MATRÍCULA: Mayúsculas y máx 15 */}
-                    <div>
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
-                        <input
-                            required
-                            maxLength={15}
-                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest"
-                            placeholder="0000-BBB"
-                            value={formVehiculo.matricula}
-                            onChange={(e) => setFormVehiculo({ 
-                                ...formVehiculo, 
-                                matricula: e.target.value.toUpperCase() 
-                            })}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* MARCA: Primera Mayúscula */}
-                        <div>
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
-                            <input
-                                required
-                                className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                                placeholder="Toyota"
-                                value={formVehiculo.marca}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setFormVehiculo({ 
-                                        ...formVehiculo, 
-                                        marca: val.charAt(0).toUpperCase() + val.slice(1) 
-                                    });
-                                }}
-                            />
-                        </div>
-                        {/* MODELO: Primera Mayúscula */}
-                        <div>
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
-                            <input
-                                required
-                                className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                                placeholder="Corolla"
-                                value={formVehiculo.modelo}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setFormVehiculo({ 
-                                        ...formVehiculo, 
-                                        modelo: val.charAt(0).toUpperCase() + val.slice(1) 
-                                    });
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* AÑO: Máximo año actual */}
-                    <div>
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
-                        <input
-                            type="number"
-                            required
-                            max={new Date().getFullYear()}
-                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                            value={formVehiculo.año}
-                            onChange={(e) => setFormVehiculo({ ...formVehiculo, año: e.target.value })}
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
-                    >
-                        {t('confirmAndAdd') || "Confirmar y Añadir"}
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-)}
+            )}
         </div>
     );
 }

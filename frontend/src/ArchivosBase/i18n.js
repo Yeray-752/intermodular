@@ -16,6 +16,7 @@ import loginData from '../assets/data/login.json';
 import aboutData from '../assets/data/about.json';
 import ratingData from '../assets/data/rating.json';
 import marketData from '../assets/data/market.json';
+import notificationsData from '../assets/data/notifications.json';
 
 // Configuración de los recursos de traducción
 
@@ -33,7 +34,9 @@ const resources = {
     login: loginData.en,
     about: aboutData.en,
     rating: ratingData.en,
-    market: marketData.en
+    market: marketData.en,
+    notifications: notificationsData.en
+
   },
   es: {
     profile: profileData.es,
@@ -48,7 +51,8 @@ const resources = {
     login: loginData.es,
     about: aboutData.es,
     rating: ratingData.es,
-    market: marketData.es
+    market: marketData.es,
+    notifications: notificationsData.es
   }
 };
 
@@ -66,7 +70,7 @@ i18n
     },
 
     // Namespaces (archivos virtuales de traducción)
-  ns: ['home','header', 'footer', 'profile', 'error', 'formulario', 'servicios','legales','signup','login','about', 'rating','market'],
+  ns: ['home','header', 'footer', 'profile', 'error', 'formulario', 'servicios','legales','signup','login','about', 'rating','market','notifications'],
     defaultNS: 'home',
 
     interpolation: {

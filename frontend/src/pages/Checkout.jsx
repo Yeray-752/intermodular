@@ -72,7 +72,7 @@ function Checkout() {
 
     const handleFinalizarCompra = async (e) => {
         e.preventDefault();
-        
+
         if (!tarjetaValida || !vencimientoValido || (tipoEntrega === "domicilio" && !ciudadValida)) {
             alert(t('formulario:checkout.errorValidation'));
             return;
@@ -93,8 +93,14 @@ function Checkout() {
             });
 
             if (response.ok) {
+                // 1. Avisamos al Header que el carrito se vació
                 window.dispatchEvent(new Event('cartUpdated'));
-                navigate('/perfil'); 
+
+                // 2. ¡NUEVO! Avisamos al Header que hay una nueva notificación
+                // Esto hará que el Header llame a /unread-count y pinte el círculo rojo
+                window.dispatchEvent(new Event('notificationsUpdated'));
+
+                navigate('/perfil');
             } else {
                 const err = await response.json();
                 alert(err.error);
@@ -121,7 +127,7 @@ function Checkout() {
                         <h2 className="text-4xl font-black flex items-center gap-4 mb-8">
                             <ShoppingBag className="text-primary" size={40} /> {t('market:cartTitle') || 'Tu Carrito'}
                         </h2>
-                        
+
                         {cart.items.length === 0 ? (
                             <div className="text-center py-20 bg-base-100 rounded-2xl shadow">
                                 <p className="text-xl opacity-50">El carrito está vacío</p>
@@ -138,7 +144,7 @@ function Checkout() {
                                             <p className="text-right font-bold text-2xl text-primary">${item.subtotal}</p>
                                         </div>
                                         <p className="text-base-content/60">{item.precio_unitario} € / ud</p>
-                                        
+
                                         <div className="card-actions justify-between items-center mt-4">
                                             <div className="badge badge-ghost badge-lg gap-2">
                                                 Cantidad: <span className="font-bold">{item.cantidad}</span>
@@ -164,8 +170,8 @@ function Checkout() {
                                     <span>Total</span>
                                     <span className="text-primary">{cart.totalCarrito}€</span>
                                 </div>
-                                
-                                <button 
+
+                                <button
                                     disabled={hayErroresStock || cart.items.length === 0}
                                     onClick={() => setShowModal(true)}
                                     className="btn btn-primary btn-block btn-lg shadow-lg text-white"
@@ -183,7 +189,7 @@ function Checkout() {
                 <div className="modal modal-open modal-bottom sm:modal-middle">
                     <div className="modal-box max-w-2xl bg-base-100 rounded-2xl border border-base-300">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => setShowModal(false)}>✕</button>
-                        
+
                         <form onSubmit={handleFinalizarCompra} className="space-y-6">
                             <div className="flex items-center gap-3 mb-6 border-b pb-4">
                                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -230,7 +236,7 @@ function Checkout() {
                             {tipoEntrega && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4">
                                     <div className="divider text-xs opacity-50 uppercase">Información de Pago</div>
-                                    
+
                                     <input
                                         required
                                         type="text"
@@ -239,7 +245,7 @@ function Checkout() {
                                         value={nombreTarjeta}
                                         onChange={(e) => setNombreTarjeta(e.target.value)}
                                     />
-                                    
+
                                     <input
                                         type="text"
                                         required

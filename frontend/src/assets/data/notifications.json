@@ -1,0 +1,102 @@
+{
+  "es": {
+    "notifications": {
+      "cliente": {
+        "titles": {
+          "compra": "Compra Realizada",
+          "cita": "Cita Programada",
+          "cita_cancelada": "Cita Cancelada",
+          "cita_estado": "Estado de Cita Actualizado",
+          "valoración": "Valoración Enviada",
+          "valoracion_borrada": "Valoración Eliminada"
+        },
+        "messages": {
+          "compra": "¡Gracias! Tu pedido #{{id_pedido}} con {{cantidad_articulos}} artículos por un total de {{total}}€ se ha procesado correctamente.",
+          "cita": "Cita programada para el día {{fecha}}.",
+          "cita_cancelada": "Tu cita del {{fecha}} ha sido cancelada con éxito.",
+          "cita_estado": "Tu cita del {{fecha}} ahora está: {{estado}}.",
+          "valoracion_borrada": "Tu reseña sobre el producto ha sido eliminada correctamente.",
+          "valoración": "¡Gracias! Tu opinión sobre \"{{producto}}\" se ha guardado correctamente."
+        }
+      },
+      "admin": {
+        "titles": {
+          "nueva_venta": "Nueva Venta Confirmada",
+          "producto_creado": "Nuevo Producto Agregado",
+          "producto_actualizado": "Producto Modificado",
+          "producto_eliminado": "Producto Eliminado",
+          "stock_nulo": "Stock Agotado",
+          "stock_actualizado": "Stock Actualizado",
+          "servicio_nuevo": "Nuevo Servicio Agregado",
+          "servicio_actualizado": "Datos de Servicio Actualizados",
+          "servicio_eliminado": "Servicio Eliminado del Sistema",
+          "cita_estado_admin": "Estado de Cita Actualizado",
+          "cita_cancelada_admin": "Cita Cancelada"
+        },
+        "messages": {
+          "nueva_venta": "Nueva venta recibida: Pedido #{{id_pedido}} por un total de {{total}}€.",
+          "producto_creado": "Se ha añadido el producto: {{nombre}}. Stock inicial: {{stock}}.",
+          "producto_actualizado": "Producto \"{{nombre_original}}\" actualizado. Cambios: {{cambios}}.",
+          "producto_eliminado": "Eliminado: {{nombre}}. (Precio: {{precio}}€, Stock al borrar: {{stock}}).",
+          "stock_nulo": "El stock de {{producto}} ha llegado a cero.",
+          "stock_actualizado": "El stock de {{producto}} ha sido actualizado a {{stock}}.",
+          "servicio_nuevo": "Se ha agregado un nuevo servicio: {{servicio}}.",
+          "servicio_actualizado": "Se ha modificado el servicio \"{{servicio_original}}\". Cambios realizados: {{cambios}}.",
+          "servicio_eliminado": "Se ha eliminado el servicio \"{{nombre}}\". Datos al momento del borrado - Precio: {{precio}}€, Duración: {{duracion}}min.",
+          "cita_estado_admin": "La cita del usuario {{usuario}} ha sido actualizada al estado \"{{estado}}\".",
+          "cita_cancelada_admin": "La cita del {{fecha}} con el usuario {{usuario}} ha sido cancelada."
+        }
+      }
+    }
+  },
+  "en": {
+    "notifications": {
+      "cliente": {
+        "titles": {
+          "compra": "Purchase Completed",
+          "cita": "Appointment Scheduled",
+          "cita_cancelada": "Appointment Cancelled",
+          "cita_estado": "Appointment Status Updated",
+          "valoración": "Review Sent",
+          "valoracion_borrada": "Review Deleted"
+        },
+        "messages": {
+          "compra": "Thank you! Your order #{{id_pedido}} with {{cantidad_articulos}} items for a total of {{total}}€ has been processed successfully.",
+          "cita": "Appointment scheduled for {{fecha}}.",
+          "cita_cancelada": "Your appointment on {{fecha}} has been successfully cancelled.",
+          "cita_estado": "Your appointment on {{fecha}} is now: {{estado}}.",
+          "valoracion_borrada": "Your product review has been successfully deleted.",
+          "valoración": "Thank you! Your feedback on \"{{producto}}\" has been saved correctly."
+        }
+      },
+      "admin": {
+        "titles": {
+          "nueva_venta": "New Sale Confirmed",
+          "producto_creado": "New Product Added",
+          "producto_actualizado": "Product Modified",
+          "producto_eliminado": "Product Deleted",
+          "stock_nulo": "Out of Stock",
+          "stock_actualizado": "Stock Updated",
+          "servicio_nuevo": "New Service Added",
+          "servicio_actualizado": "Service Data Updated",
+          "servicio_eliminado": "Service Removed from System",
+          "cita_estado_admin": "Appointment Status Updated",
+          "cita_cancelada_admin": "Appointment Cancelled"
+        },
+        "messages": {
+          "nueva_venta": "New sale received: Order #{{id_pedido}} for a total of {{total}}€.",
+          "producto_creado": "Product added: {{nombre}}. Initial stock: {{stock}}.",
+          "producto_actualizado": "Product \"{{nombre_original}}\" updated. Changes: {{cambios}}.",
+          "producto_eliminado": "Deleted: {{nombre}}. (Price: {{precio}}€, Stock when deleted: {{stock}}).",
+          "stock_nulo": "The stock for {{producto}} has reached zero.",
+          "stock_actualizado": "The stock for {{producto}} has been updated to {{stock}}.",
+          "servicio_nuevo": "A new service has been added: {{servicio}}.",
+          "servicio_actualizado": "Service \"{{servicio_original}}\" has been modified. Changes made: {{cambios}}.",
+          "servicio_eliminado": "Service \"{{nombre}}\" has been deleted. Data at time of deletion - Price: {{precio}}€, Duration: {{duracion}}min.",
+          "cita_estado_admin": "The appointment for user {{usuario}} has been updated to state \"{{estado}}\".",
+          "cita_cancelada_admin": "The appointment on {{fecha}} with user {{usuario}} has been cancelled."
+        }
+      }
+    }
+  }
+}
