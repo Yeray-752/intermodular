@@ -59,22 +59,22 @@ function Perfil() {
     const buscarCoche = async (matricula) => {
 
         /* Toca hacer scraping */
-    // Construimos la URL con los parámetros necesarios
-    const url = `http://localhost:3000/api/vehicle/${matricula}`;
+        // Construimos la URL con los parámetros necesarios
+        const url = `http://localhost:3000/api/vehicle/${matricula}`;
 
-    try {
-        const response = await fetch(url);
+        try {
+            const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error(`Error en la petición: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
+            setCocheBuscado(await data)
+        } catch (e) {
+            console.error('Error capturado:', e.message);
         }
-
-        const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
-        setCocheBuscado(await data)
-    } catch (e) {
-        console.error('Error capturado:', e.message);
     }
-}
 
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
@@ -274,22 +274,53 @@ function Perfil() {
                                     </div>
                                 </div>
                             </div>
-                            {cocheBuscado? (
-                                <div className="p-5 border border-base-300 bg-base-100 rounded-xl hover:shadow-md transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center">
-                                        <Car className="text-primary" size={24} />
+                            {cocheBuscado ? (
+                                <div className="p-6 bg-base-100 border border-base-300 rounded-2xl hover:shadow-lg transition-all">
+
+                                    {/* Header */}
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                                            <Car className="text-primary" size={22} />
+                                        </div>
+
+                                        <div>
+                                            <h2 className="text-lg font-semibold text-base-content leading-tight">
+                                                {cocheBuscado.data?.brand}{" "}
+                                                <span className="text-primary">{cocheBuscado.data?.model}</span>
+                                            </h2>
+                                            <p className="text-sm text-base-content/60 font-mono">
+                                                {cocheBuscado.data?.plate}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="font-bold text-base-content">{cocheBuscado.data?.brand}</p>
-                                        <p className="text-sm text-base-content/50 font-mono">1234-LMN</p>
+
+                                    {/* Divider */}
+                                    <div className="border-t border-base-300/40 my-3"></div>
+
+                                    {/* Specs */}
+                                    <div className="grid grid-cols-3 gap-3 text-sm text-base-content/70">
+
+                                        <div className="flex items-center gap-2">
+                                            <span>⚙</span>
+                                            <span>{cocheBuscado.data?.engine}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <span>⚡</span>
+                                            <span>{cocheBuscado.data?.power}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <span>📅</span>
+                                            <span>{cocheBuscado.data?.yearFrom}</span>
+                                        </div>
+
                                     </div>
                                 </div>
-                            </div>
                             ) : (
                                 <p></p>
                             )}
-                            
+
                             <button className="p-5 border-2 border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
                                 <Plus size={20} />
                                 {t('addCar')}
@@ -297,7 +328,7 @@ function Perfil() {
                         </div>
                         <div>
                             <h1>pruebas de matricula</h1>
-                            <input className='input' type="text" onChange={(e) => {setMatricula(e.target.value)}} />
+                            <input className='input' type="text" onChange={(e) => { setMatricula(e.target.value) }} />
                             <button className='btn ml-3 text-white' onClick={() => buscarCoche(matricula)}>trae</button>
                         </div>
                     </div>

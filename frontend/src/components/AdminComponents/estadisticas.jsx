@@ -32,7 +32,7 @@ export const VentasChart = () => (
           contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
         />
         <Line 
-          type="step" 
+          type="monotone" 
           dataKey="ventas" 
           stroke="#ff6900" 
           strokeWidth={2} 
