@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck,Check } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -19,10 +19,10 @@ function Perfil() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     // Dentro de tu componente, antes del return del case 'notificaciones'
-    const { t, i18n } = useTranslation(['perfil', 'notificaciones']); // Cargas ambos
+    const { t, i18n } = useTranslation(['perfil', 'notifications']); // Cargas ambos
 
     // Creamos un helper local para las notis
-    const tn = (key, params) => t(`notificaciones:${key}`, params);
+    const tn = (key, params) => t(`notifications:${key}`, params);
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
@@ -97,14 +97,35 @@ function Perfil() {
             });
 
             if (response.ok) {
-                // 1. Actualizamos todo el estado local a leída = 1
-                setNotificaciones(prev => prev.map(n => ({ ...n, leida: 1 })));
-
-                // 2. Avisamos al Header para que el contador pase a 0
+                // CAMBIO: leido con "o" para coincidir con el objeto de la DB
+                setNotificaciones(prev => prev.map(n => ({ ...n, leido: 1 })));
                 window.dispatchEvent(new Event('notificationsUpdated'));
             }
         } catch (error) {
             console.error("Error al marcar todas:", error);
+        }
+    };
+
+    const marcarLeida = async (id) => {
+        // CAMBIO: leido con "o"
+        setNotificaciones(prev =>
+            prev.map(n => n.id === id ? { ...n, leido: 1 } : n)
+        );
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                window.dispatchEvent(new Event('notificationsUpdated'));
+            }
+        } catch (error) {
+            console.error("Error al marcar como leída:", error);
         }
     };
 
@@ -194,34 +215,6 @@ function Perfil() {
         }
     }, [activeTab]);
 
-    const marcarLeida = async (id) => {
-        // 1. Actualización optimista: marcamos en el estado antes de la respuesta del servidor
-        // para que el usuario vea el checkbox activarse sin lag.
-        setNotificaciones(prev =>
-            prev.map(n => n.id === id ? { ...n, leida: 1 } : n)
-        );
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                // 2. Avisamos al Header para que el circulito rojo disminuya o desaparezca
-                window.dispatchEvent(new Event('notificationsUpdated'));
-            } else {
-                // Si falla, revertimos el cambio (opcional)
-                // fetchNotificaciones(); 
-            }
-        } catch (error) {
-            console.error("Error al marcar como leída:", error);
-        }
-    };
-
     const eliminarCitas = async (id) => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -230,7 +223,7 @@ function Perfil() {
         if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelada`, {
+            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -543,11 +536,13 @@ function Perfil() {
                     </div>
                 );
             case 'notificaciones':
-                // Helper para no ensuciar el código con "notificaciones:..."
-                const tn = (key, params) => t(`notificaciones:${key}`, params);
+                // Helper local: fuerza a i18next a buscar en el archivo notificaciones.json
+                // El prefijo 'notificaciones:' es vital para que no busque en el json por defecto
+                const tn = (key, params) => t(`notifications:${key}`, params);
 
                 return (
                     <div className="animate-in fade-in duration-500">
+                        {/* Cabecera de la sección */}
                         <div className="mb-8 flex justify-between items-end">
                             <div>
                                 <h2 className="text-3xl font-bold mb-2 text-base-content">
@@ -557,10 +552,12 @@ function Perfil() {
                                     {t('manage_notifications_desc') || "Mantente al tanto de tus citas y pedidos."}
                                 </p>
                             </div>
-                            {notificaciones.length > 0 && notificaciones.some(n => !n.leida) && (
+
+                            {/* Botón de marcar todas: Solo aparece si hay alguna sin leer (leido == 0) */}
+                            {notificaciones.length > 0 && notificaciones.some(n => !n.leido) && (
                                 <button
                                     onClick={marcarTodasComoLeidas}
-                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 transition-all"
                                 >
                                     <CheckCheck size={14} /> Marcar todas como leídas
                                 </button>
@@ -571,71 +568,85 @@ function Perfil() {
                             {loadingNotis ? (
                                 <div className="py-10 text-center flex flex-col items-center gap-3">
                                     <span className="loading loading-spinner loading-lg text-primary"></span>
-                                    <p className="font-bold">Cargando notificaciones...</p>
+                                    <p className="font-bold italic opacity-70 text-sm">Cargando historial...</p>
                                 </div>
                             ) : notificaciones.length > 0 ? (
                                 notificaciones.map((noti) => {
+                                    // Procesar parámetros para las traducciones variables
                                     const params = typeof noti.parametros === 'string'
                                         ? JSON.parse(noti.parametros)
                                         : noti.parametros;
 
-                                    // Helper para el path de traducción
                                     const translationPath = `notifications.${noti.rol}`;
-
-                                    // IMPORTANTE: Usamos 'leido' que es el nombre real en tu DB
                                     const estaLeida = !!noti.leido;
 
                                     return (
                                         <div
                                             key={noti.id}
-                                            className={`p-6 border rounded-2xl shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 
-            ${estaLeida ? 'bg-base-200/50 opacity-75 border-transparent' : 'bg-base-100 border-primary/20 shadow-md'}`}
+                                            // Mantenemos siempre bg-base-100 y eliminamos opacity-80
+                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 
+                ${estaLeida
+                                                    ? 'border-base-200 shadow-none'
+                                                    : 'border-primary/20 shadow-md ring-1 ring-primary/5'}`}
                                         >
                                             <div className="flex items-center gap-5">
-                                                {/* CHECKBOX IZQUIERDA */}
+                                                {/* CHECKBOX: Cambia de color según estado */}
                                                 <div className="flex items-center">
                                                     <input
                                                         type="checkbox"
-                                                        className="checkbox checkbox-primary checkbox-sm transition-all"
+                                                        className={`checkbox checkbox-sm transition-all ${estaLeida ? 'checkbox-success' : 'checkbox-primary'}`}
                                                         checked={estaLeida}
                                                         onChange={() => !estaLeida && marcarLeida(noti.id)}
                                                         disabled={estaLeida}
                                                     />
                                                 </div>
 
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0
-                                                    ${estaLeida ? 'bg-base-300 text-base-content/30' : 'bg-primary/10 text-primary'}`}>
+                                                {/* ICONO CAMPANA: Mantenemos el color aunque esté leída para que no se "apague" */}
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors
+                    ${estaLeida ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
                                                     <Bell size={24} />
                                                 </div>
 
+                                                {/* CONTENIDO DE TEXTO: Eliminamos las clases que bajaban la opacidad al 40% */}
                                                 <div>
-                                                    <h4 className={`font-extrabold text-lg tracking-tight ${estaLeida ? 'text-base-content/50' : 'text-base-content'}`}>
+                                                    <h4 className="font-extrabold text-lg tracking-tight text-base-content">
                                                         {tn(`${translationPath}.titles.${noti.tipo}`)}
                                                     </h4>
-                                                    <p className="text-sm text-base-content/70 font-medium max-w-xl">
+                                                    <p className="text-sm font-medium max-w-xl text-base-content/70">
                                                         {tn(`${translationPath}.messages.${noti.tipo}`, params)}
                                                     </p>
-                                                    <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/40 uppercase">
+                                                    <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/30 uppercase tracking-widest">
                                                         <Clock size={12} />
                                                         <span>{new Date(noti.creado_en).toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* ESTADO DERECHA */}
+                                            {/* BADGE DE ESTADO */}
                                             <div className="hidden md:flex items-center">
                                                 {estaLeida ? (
-                                                    <span className="text-[10px] font-black uppercase opacity-30">Leída</span>
+                                                    <div className="flex items-center gap-1 text-success opacity-80">
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Leída</span>
+                                                        <Check size={14} strokeWidth={3} />
+                                                    </div>
                                                 ) : (
-                                                    <span className="badge badge-primary badge-sm p-3 font-bold">Nueva</span>
+                                                    <span className="badge badge-primary badge-sm py-3 px-4 font-bold border-none shadow-sm animate-pulse">
+                                                        Nueva
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
-                                    <p className="text-base-content/50 text-lg font-medium">No tienes notificaciones por ahora.</p>
+                                // ESTADO VACÍO
+                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-16 text-center">
+                                    <div className="w-16 h-16 bg-base-300/50 rounded-full flex items-center justify-center mx-auto mb-4 opacity-40">
+                                        <Bell size={32} />
+                                    </div>
+                                    <p className="text-base-content/40 text-lg font-bold italic">
+                                        Tu bandeja de entrada está limpia.
+                                    </p>
                                 </div>
                             )}
                         </div>
@@ -700,28 +711,6 @@ function Perfil() {
             default:
                 return <p className="text-base-content/50">Selecciona una opción del menú.</p>;
         }
-    }
-
-    function NotificationRow({ notification }) {
-        const { t } = useTranslation('notifications');
-
-        const params = typeof notification.parametros === 'string'
-            ? JSON.parse(notification.parametros)
-            : notification.parametros;
-
-        return (
-            <div className={`p-4 border-b ${notification.leido ? 'opacity-60' : 'bg-blue-50'}`}>
-                <h4 className="font-bold">
-                    {t(`titles.${notification.tipo}`)}
-                </h4>
-                <p>
-                    {t(`messages.${notification.tipo}`, params)}
-                </p>
-                <span className="text-xs text-gray-500">
-                    {new Date(notification.creado_en).toLocaleString()}
-                </span>
-            </div>
-        );
     }
 
     return (

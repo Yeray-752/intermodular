@@ -38,7 +38,7 @@ app.use(languageMiddleware);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 500,
   message: 'La página se encuentra saturada en estos momentos, por favor, inténtelo más tarde.',
   standardHeaders: true,
   legacyHeaders: false,
