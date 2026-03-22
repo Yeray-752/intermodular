@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { data, useNavigate } from 'react-router';
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
 import Header from '../components/Principal/Header';
@@ -23,6 +23,12 @@ function Perfil() {
     const [error, setError] = useState(null);
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
+    const [open, setOpen] = useState(false)
+    const dialogRef = useRef(null)
+    const [modo, setModo] = useState(null);
+    const [datos, setDatos] = useState({
+        marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
+    });
     console.log(matricula)
     console.log(cocheBuscado)
     // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
@@ -55,6 +61,39 @@ function Perfil() {
 
         fetchUserData();
     }, [navigate]);
+
+    useEffect(() => {
+        const node = dialogRef.current; // Accedemos al elemento real del DOM
+        if (!node) return;
+
+        if (open) {
+            node.showModal(); // Método nativo de HTML5
+        } else {
+            node.close();     // Método nativo de HTML5
+        }
+    }, [open])
+
+    const manejarCambio = (e) => {
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const enviarFormulario = (e) => {
+        e.preventDefault();
+        console.log("Datos enviados:", datos);
+        if (modo === 'manual') {
+           // registrarManual(datos);
+        } else {
+            buscarCoche(matricula)
+        }
+
+        // Opcional: Cerrar el modal después de la acción
+        setOpen(false);
+        // Aquí iría tu llamada a la API
+    };
+
 
     const buscarCoche = async (matricula) => {
 
@@ -263,17 +302,7 @@ function Perfil() {
                             <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="p-5 border border-base-300 bg-base-100 rounded-xl hover:shadow-md transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center">
-                                        <Car className="text-primary" size={24} />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-bold text-base-content">Toyota Corolla</p>
-                                        <p className="text-sm text-base-content/50 font-mono">1234-LMN</p>
-                                    </div>
-                                </div>
-                            </div>
+
                             {cocheBuscado ? (
                                 <div className="p-6 bg-base-100 border border-base-300 rounded-2xl hover:shadow-lg transition-all">
 
@@ -321,16 +350,127 @@ function Perfil() {
                                 <p></p>
                             )}
 
-                            <button className="p-5 border-2 border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+                            <button onClick={() => { setOpen(true) }} className="p-5 border-2 cursor-pointer border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
                                 <Plus size={20} />
                                 {t('addCar')}
                             </button>
                         </div>
+                        <dialog ref={dialogRef} className="modal" onCancel={() => setOpen(false)}>
+                            <div className="modal-box max-w-lg scrollbar-hide">
+                                {/* Botón de cerrar (esquina superior derecha) */}
+                                <button
+                                    className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                                    onClick={() => setOpen(false)}
+                                >✕</button>
+
+                                {!modo ? (
+                                    /* PASO 1: Selección de modo */
+                                    <div className="py-4 text-center">
+                                        <h3 className="text-xl font-bold mb-6">¿Cómo quieres añadir tu vehículo?</h3>
+                                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                            <button
+                                                onClick={() => setModo('manual')}
+                                                className="btn btn-outline btn-primary h-32 flex-1 flex flex-col gap-2"
+                                            >
+                                                <span className="text-3xl">📝</span>
+                                                <span>Entrada Manual</span>
+                                            </button>
+
+                                            <button
+                                                onClick={() => setModo('automatico')}
+                                                className="btn btn-outline btn-secondary h-32 flex-1 flex flex-col gap-2"
+                                            >
+                                                <span className="text-3xl">🤖</span>
+                                                <span>Automático</span>
+                                                <span className="text-xs opacity-70">(Solo matrícula)</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* PASO 2: El formulario */
+                                    <form onSubmit={enviarFormulario} className="space-y-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <button
+                                                type="button"
+                                                className="btn btn-xs btn-ghost"
+                                                onClick={() => setModo(null)}
+                                            >
+                                                ← Volver
+                                            </button>
+                                            <h2 className="text-lg font-bold">
+                                                {modo === 'manual' ? 'Añadir Vehículo' : 'Búsqueda Rápida'}
+                                            </h2>
+                                        </div>
+
+                                        {/* Campo Matrícula: Principal */}
+                                        <div className="form-control w-full">
+                                            <label className="label">
+                                                <span className="label-text font-semibold">Matrícula</span>
+                                            </label>
+                                            <input
+                                                name="matricula"
+                                                type="text"
+                                                placeholder="Ej: 1234BBB"
+                                                className="input input-bordered input-primary w-full uppercase"
+                                                
+                                               onChange={(e) => { setMatricula(e.target.value) }}
+                                                required
+                                            />
+                                        </div>
+
+                                        {modo === 'manual' && (
+                                            <div className="grid grid-cols-2 gap-4 animate-fadeIn">
+                                                <div className="form-control w-full">
+                                                    <label className="label"><span className="label-text">Marca</span></label>
+                                                    <input name="marca" className="input input-bordered w-full" value={datos.marca} onChange={manejarCambio} />
+                                                </div>
+
+                                                <div className="form-control w-full">
+                                                    <label className="label"><span className="label-text">Modelo</span></label>
+                                                    <input name="modelo" className="input input-bordered w-full" value={datos.modelo} onChange={manejarCambio} />
+                                                </div>
+
+                                                <div className="form-control w-full">
+                                                    <label className="label"><span className="label-text">Año</span></label>
+                                                    <input type="number" name="anio" className="input input-bordered w-full" value={datos.anio} onChange={manejarCambio} />
+                                                </div>
+
+                                                <div className="form-control w-full">
+                                                    <label className="label"><span className="label-text">Combustible</span></label>
+                                                    <select name="combustible" className="select select-bordered w-full" value={datos.combustible} onChange={manejarCambio}>
+                                                        <option value="">Elegir...</option>
+                                                        <option value="gasolina">Gasolina</option>
+                                                        <option value="diesel">Diesel</option>
+                                                        <option value="electrico">Eléctrico</option>
+                                                    </select>
+                                                </div>
+
+                                                <div className="form-control w-full col-span-2">
+                                                    <label className="label"><span className="label-text">Motor</span></label>
+                                                    <input name="motor" placeholder="Ej: 2.0 TDI" className="input input-bordered w-full" value={datos.motor} onChange={manejarCambio} />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="modal-action mt-6">
+                                            <button type="submit" className="btn btn-primary w-full text-white">
+                                                {modo === 'manual' ? 'Registrar Vehículo' : 'Consultar Matrícula'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
+                            </div>
+
+                            {/* Este div permite cerrar el modal haciendo click fuera de la caja */}
+                            <form method="dialog" className="modal-backdrop">
+                                <button onClick={() => setOpen(false)}>close</button>
+                            </form>
+                        </dialog>
                         <div>
                             <h1>pruebas de matricula</h1>
                             <input className='input' type="text" onChange={(e) => { setMatricula(e.target.value) }} />
-                            <button className='btn ml-3 text-white' onClick={() => buscarCoche(matricula)}>trae</button>
-                        </div>
+                            <button className='btn ml-3 text-white' onClick={() =>buscarCoche(matricula)}>trae</button>
+                        </div> 
                     </div>
                 );
             case 'citas':

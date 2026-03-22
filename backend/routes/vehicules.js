@@ -35,7 +35,7 @@ async function scrapeAutodoc(plate) {
     console.log("[Vehicle] Cargando autodoc.es...");
     await page.goto("https://www.autodoc.es", {
       waitUntil: "networkidle2",
-      timeout: 30000,
+      timeout: 90000,
     });
 
     // ── Paso 2: Aceptar cookies ───────────────────────────────
@@ -74,8 +74,9 @@ async function scrapeAutodoc(plate) {
     // ── Paso 4: Escribir matrícula ────────────────────────────
     await page.waitForSelector("#kba1", { timeout: 10000 });
     await page.click("#kba1", { clickCount: 3 });
-    await page.type("#kba1", plate.toUpperCase(), { delay: 80 });
+    await page.type("#kba1", plate.toUpperCase(), { delay: 100 });
     console.log("[Vehicle] Matrícula escrita:", plate);
+    
 
     // ── Paso 5: Pulsar botón Buscar ───────────────────────────
     await page.evaluate(() => {
