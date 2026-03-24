@@ -65,7 +65,7 @@ function TableReservations({ search, categoriaId, servicios }) {
             });
             if (response.ok) cerrarModal();
         } catch (error) {
-            console.error('Error en la petición de cita');
+            console.error(`Error: ${error}`);
         }
     };
 

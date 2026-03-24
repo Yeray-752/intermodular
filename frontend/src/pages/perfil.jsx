@@ -35,7 +35,6 @@ function Perfil() {
         modelo: '',
         año: new Date().getFullYear()
     });
-    const [tabActiva, setTabActiva] = useState(location.state?.section === 'cars' ? 'vehiculos' : 'datos');
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 

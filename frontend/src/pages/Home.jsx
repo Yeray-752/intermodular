@@ -3,15 +3,13 @@ import Footer from "../components/Principal/Footer";
 import Header from "../components/Principal/Header";
 import { useState } from 'react';
 import ImagenPrincipal from "/img/web/taller.jpg";
-import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const { t } = useTranslation("home");
-  const [theme, setTheme] = useState(
+  const [theme] = useState(
     localStorage.getItem("theme") || "light"
   );
   document.documentElement.setAttribute("data-theme", theme);
-  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex flex-col bg-neutral text-base-200">
       <Header />
