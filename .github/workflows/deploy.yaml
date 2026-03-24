@@ -29,5 +29,6 @@ jobs:
            cd ..;
            cd frontend;
            npm i;
+           sleep 30;
            npm run build;
            "
