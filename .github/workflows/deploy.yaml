@@ -26,5 +26,7 @@ jobs:
            npm i;
            npm run build;
            cd ..;
+           cd backend;
+           npm i;
            pm2 restart api-intermodular;  
            "
