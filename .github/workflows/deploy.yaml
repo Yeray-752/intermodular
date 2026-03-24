@@ -19,6 +19,7 @@ jobs:
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
+          command_timeout: 20m
           script: "cd /var/www/html/intermodular;
            git reset --hard HEAD;
            git clean -df; git pull;
