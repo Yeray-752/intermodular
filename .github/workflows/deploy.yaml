@@ -6,31 +6,43 @@ on:
       - master
 
 jobs:
-  deploy:
-    name: Deploy to VPS
-    runs-on: ubuntu-22.04
-    
+  build-and-deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: Deploy
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.IP }}
+          port: 2222
+          username: negro
+          key: ${{ secrets.PRIVATE_KEY }}
+          source: "frontend/dist,backend"
+          target: "/var/www/html/intermodular"
+          strip_components: 0
+
+      - name: Finalize Deployment
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.IP }}
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
-          command_timeout: 20m
-          script: "cd /var/www/html/intermodular;
-            git fetch origin master;
-            git reset --hard origin/master;
-            git clean -df;
-            pm2 stop api-intermodular || true;
-            cd backend;
-            npm i;
-            sleep 10;
-            cd ../frontend;
-            npm i;
-            export NODE_OPTIONS='--max-old-space-size=450';
-            npm run build;
-            cd ..;
-            pm2 restart api-intermodular;
-            "
+          script: |
+            cd /var/www/html/intermodular/backend
+            echo "${{ secrets.BACKEND_ENV }}" > .env
+            npm install --production
+            pm2 restart api-intermodular || pm2 start server.js --name api-intermodular
