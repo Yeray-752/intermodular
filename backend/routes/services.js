@@ -22,6 +22,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Aplicar Multer a la creación (campo 'image')
-router.post('/', [verifyToken, isAdmin, upload.single('image')], createService);
+router.post('/', [isAdmin, upload.single('image')], createService);
 
 export default router;
