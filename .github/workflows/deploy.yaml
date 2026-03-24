@@ -1,36 +1,51 @@
 name: deploy
-# --- INICIO DE LA MODIFICACIÓN ---
+
 on:
   push:
     branches:
       - master
-# --- FIN DE LA MODIFICACIÓN ---
 
 jobs:
   deploy:
     name: Deploy to VPS
-    runs-on: ubuntu-22.04 # Se recomienda usar 'ubuntu-latest'
+    runs-on: ubuntu-latest
     
     steps:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.IP}}
+          host: ${{ secrets.IP }}
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
           command_timeout: 20m
-          script: "cd /var/www/html/intermodular;
-           git reset --hard HEAD;
-           git clean -df; git pull;
-           cd backend;
-           npm i;
-           sleep 10;
-           cd ..;
-           cd frontend;
-           npm i;
-           sleep 30;
-           npm run build;
-           cd ..;
-           pm2 restart api-intermodular;
-           "
+          script: |
+            sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
+            
+            if [ ! -f /swapfile ]; then
+              sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+            fi
+
+            cd /var/www/html/intermodular
+            git reset --hard HEAD
+            git clean -df
+            git pull origin master
+
+            cd backend
+            echo "${{ secrets.BACKEND_ENV }}" > .env
+            npm install --production --no-audit --no-fund
+            pm2 restart api-intermodular --update-env || pm2 start server.js --name api-intermodular
+            
+            sleep 10
+
+            cd ../frontend
+            npm ci --no-audit --no-fund
+            
+            export NODE_OPTIONS="--max-old-space-size=512"
+            npm run build
+            
+            sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches
