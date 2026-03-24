@@ -18,7 +18,7 @@ jobs:
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
-          command_timeout: 30m
+          command_timeout: 20m
           script: "cd /var/www/html/intermodular;
             git fetch origin master;
             git reset --hard origin/master;
@@ -32,4 +32,5 @@ jobs:
             export NODE_OPTIONS='--max-old-space-size=450';
             npm run build;
             cd ..;
-            pm2 restart api-intermodular;"
+            pm2 restart api-intermodular;
+            "
