@@ -42,7 +42,7 @@ function Footer() {
                         <div className="flex items-center justify-center space-x-4">
                             {[Facebook, Instagram, Phone].map((Icon, i) => (
                                 <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-100 dark:bg-base-400 flex items-center justify-center hover:bg-primary-content transition-colors duration-300">
-                                    <Icon size={18} className="text-base-content" />
+                                    <Icon size={18} className="text-warning" />
                                 </a>
                             ))}
                         </div>
@@ -74,14 +74,13 @@ function Footer() {
                             <div className="w-2 h-6 bg-primary-content rounded-full"></div>
                             {t('footer:linksTitle')}
                         </h3>
-                        <ul className="space-y-3">
+                        <ul className="space-y-3 list-none pl-4">
                             {quickLinks.map((link, index) => (
                                 <li key={index}>
                                     <button 
                                         onClick={() => navigate(link.href)} 
                                         className="hover:text-primary-content transition-colors flex items-center gap-2 text-left cursor-pointer"
                                     >
-                                        <div className="w-1.5 h-1.5 bg-base-content/50 rounded-full"></div>
                                         {link.label}
                                     </button>
                                 </li>

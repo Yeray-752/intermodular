@@ -128,7 +128,7 @@ useEffect(() => {
             )}
 
             <div className="drawer-content flex flex-col">
-                <header className="bg-base-200 text-base-content shadow-md border-b w-full">
+                <header className="bg-base-200 text-base-content shadow-md w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
                             <div onClick={() => navigate('/')} className="flex items-center space-x-4 cursor-pointer group">

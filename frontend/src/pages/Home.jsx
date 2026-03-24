@@ -17,7 +17,7 @@ export default function Home() {
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
         <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mb-20 md:mb-28">
           <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl text-base-content md:text-5xl lg:text-6xl font-bold leading-tight">
               <Trans
                 i18nKey="heroTitle"
                 components={{
@@ -60,13 +60,13 @@ export default function Home() {
                   }}
                 />
               </h2>
-              <p className="text-base-content-content font-semibold text-2xl mx-auto">
+              <p className="text-base-content font-semibold text-2xl mx-auto">
                 {t("offersDescription")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-primary relative">
+              <div className="bg-info p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300  border-primary relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-base-100 px-4 py-1 rounded-full text-sm font-bold">
                     {t("offerMostPopular")}
@@ -89,7 +89,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
+              <div className="bg-info p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border-base-300">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer2Title")}
                 </h3>
@@ -98,7 +98,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     49,99€
                   </span>
-                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral text-base-content px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -107,7 +107,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="bg-base-100 p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-base-300">
+              <div className="bg-info p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border-base-300">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-3">
                   {t("offer3Title")}
                 </h3>
@@ -116,7 +116,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     39,99€
                   </span>
-                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
+                  <span className="text-sm bg-neutral text-base-content px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -142,7 +142,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+              <h2 className="text-3xl text-base-content md:text-4xl font-bold leading-tight">
                 <Trans
                   i18nKey="aboutUsTitle"
                   components={{
