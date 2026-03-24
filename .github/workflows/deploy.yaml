@@ -28,6 +28,5 @@ jobs:
            cd ..;
            cd backend;
            npm i;
-           cd ..;
            pm2 restart api-intermodular;  
            "
