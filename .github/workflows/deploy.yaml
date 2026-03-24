@@ -15,12 +15,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Build Frontend
         run: |
           cd frontend
-          npm ci
+          rm -rf node_modules package-lock.json
+          npm install
           npm run build
 
       - name: Deploy to VPS via SSH
