@@ -22,11 +22,12 @@ jobs:
           script: "cd /var/www/html/intermodular;
            git reset --hard HEAD;
            git clean -df; git pull;
+           cd backend;
+           npm i;
+           pm2 restart api-intermodular;
+           sleep 10;
+           cd ..;
            cd frontend;
            npm i;
            npm run build;
-           cd ..;
-           cd backend;
-           npm i;
-           pm2 restart api-intermodular;  
            "
