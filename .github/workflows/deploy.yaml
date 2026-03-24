@@ -1,35 +1,35 @@
 name: deploy
-# --- INICIO DE LA MODIFICACIÓN ---
+
 on:
   push:
     branches:
       - master
-# --- FIN DE LA MODIFICACIÓN ---
 
 jobs:
   deploy:
     name: Deploy to VPS
-    runs-on: ubuntu-22.04 # Se recomienda usar 'ubuntu-latest'
+    runs-on: ubuntu-22.04
     
     steps:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.IP}}
+          host: ${{ secrets.IP }}
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
+          command_timeout: 30m
           script: "cd /var/www/html/intermodular;
-           git reset --hard HEAD;
-           git clean -df; git pull;
-           cd backend;
-           npm i;
-           sleep 10;
-           cd ..;
-           cd frontend;
-           npm i;
-           sleep 5;
-           npm run build;
-           cd ..;
-           pm2 restart api-intermodular;
-           "
+            git fetch origin master;
+            git reset --hard origin/master;
+            git clean -df;
+            pm2 stop api-intermodular || true;
+            cd backend;
+            npm i;
+            sleep 10;
+            cd ../frontend;
+            npm i;
+            export NODE_OPTIONS='--max-old-space-size=450';
+            npm run build;
+            cd ..;
+            pm2 restart api-intermodular;"
