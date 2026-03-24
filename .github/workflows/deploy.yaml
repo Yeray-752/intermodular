@@ -24,11 +24,12 @@ jobs:
            git clean -df; git pull;
            cd backend;
            npm i;
-           pm2 restart api-intermodular;
            sleep 10;
            cd ..;
            cd frontend;
            npm i;
            sleep 30;
            npm run build;
+           cd ..;
+           pm2 restart api-intermodular;
            "
