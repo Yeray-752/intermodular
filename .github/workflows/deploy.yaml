@@ -15,16 +15,17 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.IP}}
+          host: ${{ secrets.IP }}
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
-          script: "cd /var/www/html/intermodular;
-           git reset --hard HEAD;
-           git clean -df; git pull;
-           cd frontend;
-           npm i;
-           npm run build;
-           cd ..;
-           pm2 restart api-intermodular;  
-           "
+          script: |
+            cd /var/www/html/intermodular;
+            git fetch --all;
+            git reset --hard origin/master;
+            git clean -df -e .env;
+            cd frontend;
+            npm install;
+            npm run build;
+            cd ..;
+            pm2 restart api-intermodular;
