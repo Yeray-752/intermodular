@@ -1,9 +1,9 @@
 import db from "../db.js";
-import {createNotification} from "./notificationsController.js";
+import { createNotification } from "./notificationsController.js";
 
 export const saveRating = async (req, res) => {
     const { id_producto, rating, comment } = req.body;
-    const id_usuario = req.user?.id; 
+    const id_usuario = req.user?.id;
 
     if (!id_usuario) {
         return res.status(401).json({ error: "Usuario no autenticado" });
@@ -13,7 +13,7 @@ export const saveRating = async (req, res) => {
 
     try {
         await connection.beginTransaction();
-      
+
         // 1. Guardar o actualizar valoración
         await connection.query(`
             INSERT INTO valoraciones (id_usuario, id_producto, rating, comment)
@@ -26,18 +26,22 @@ export const saveRating = async (req, res) => {
 
         // 2. CORREGIDO: Obtener nombre desde product_translations
         // Buscamos la traducción en español o la primera que encuentre
-        const [prodInfo] = await connection.query(`
-            SELECT name FROM product_translations 
-            WHERE product_id = ? AND (language_code = 'es' OR 1=1) 
-            LIMIT 1
-        `, [id_producto]);
-        
-        const nombreProducto = prodInfo[0]?.name || "el producto";
+        const lang = req.language || 'es';
 
-        // 3. Notificar al CLIENTE
-        /* await createNotification(id_usuario, 'valoración', 'cliente', { 
-            producto: nombreProducto 
-        }); */
+        const [prodRows] = await connection.query(`
+            SELECT name FROM product_translations 
+            WHERE product_id = ? AND language_code = ?
+            LIMIT 1
+            `, [id_producto, lang]);
+
+        const nombreProducto = prodRows[0]?.name || "el producto";
+
+        await createNotification(
+            id_usuario,
+            'valoración',
+            'cliente',
+            { producto: nombreProducto }
+        );
 
         // 4. Actualizar promedio en la tabla products
         const [rows] = await connection.query(
@@ -76,7 +80,7 @@ export const getProductRatings = async (req, res) => {
             WHERE v.id_producto = ?
             ORDER BY v.created_at DESC
         `, [id_producto]);
-        
+
         res.json(rows);
     } catch (error) {
         console.error("Error SQL Detallado:", error.message);
@@ -85,8 +89,8 @@ export const getProductRatings = async (req, res) => {
 };
 
 export const deleteRating = async (req, res) => {
-    const { id } = req.params; 
-    const id_usuario = req.user.id; 
+    const { id } = req.params;
+    const id_usuario = req.user.id;
 
     try {
         const [result] = await db.query(

@@ -28,7 +28,6 @@ function Footer() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
-                    {/* Columna 1: Logo y descripción */}
                     <div className="space-y-6 content-center">
                         <div className="flex items-center justify-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
                             
@@ -43,13 +42,12 @@ function Footer() {
                         <div className="flex items-center justify-center space-x-4">
                             {[Facebook, Instagram, Phone].map((Icon, i) => (
                                 <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-100 dark:bg-base-400 flex items-center justify-center hover:bg-primary-content transition-colors duration-300">
-                                    <Icon size={18} className="text-base-content" />
+                                    <Icon size={18} className="text-warning" />
                                 </a>
                             ))}
                         </div>
                     </div>
 
-                    {/* Columna 2: Contacto */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-primary-content rounded-full"></div>
@@ -71,20 +69,18 @@ function Footer() {
                         </div>
                     </div>
 
-                    {/* Columna 3: Enlaces rápidos */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-primary-content rounded-full"></div>
                             {t('footer:linksTitle')}
                         </h3>
-                        <ul className="space-y-3">
+                        <ul className="space-y-3 list-none pl-4">
                             {quickLinks.map((link, index) => (
                                 <li key={index}>
                                     <button 
                                         onClick={() => navigate(link.href)} 
                                         className="hover:text-primary-content transition-colors flex items-center gap-2 text-left cursor-pointer"
                                     >
-                                        <div className="w-1.5 h-1.5 bg-base-content/50 rounded-full"></div>
                                         {link.label}
                                     </button>
                                 </li>
@@ -92,7 +88,6 @@ function Footer() {
                         </ul>
                     </div>
 
-                    {/* Columna 4: Horario */}
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                             <div className="w-2 h-6 bg-primary-content rounded-full"></div>
@@ -109,7 +104,6 @@ function Footer() {
                     </div>
                 </div>
 
-                {/* Footer Bottom: Copyright y Legales */}
                 <div className="border-t border-base-300 pt-8 mt-5 text-base-100 text-sm">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-center md:text-left">
@@ -121,7 +115,6 @@ function Footer() {
                             <span className="text-primary-content font-medium ml-1"><a target='_blank' href='https://github.com/zhor19'>Óscar Gordillo</a></span>
                         </p>
                         <div className="flex items-center gap-6">
-                            {/* Enlaces al namespace 'legales' */}
                             <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
                                 {t('legales:privacy')}
                             </button>

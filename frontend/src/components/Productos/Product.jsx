@@ -2,7 +2,6 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RatingSystem from './ValorationsAndComments';
-import { CirclePlus, CircleMinus } from "lucide-react"
 
 function Product() {
     const { id } = useParams();
@@ -16,19 +15,9 @@ function Product() {
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [cantidad, setCantidad] = useState(1);
 
-    // Estados de notificación (Alerta arriba)
+    // Estados de notificación
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
-
-    // Estados del formulario
-    const [tipoEntrega, setTipoEntrega] = useState("");
-    const [ciudad, setCiudad] = useState("");
-    const [ciudadValida, setCiudadValida] = useState(true);
-    const [tarjeta, setTarjeta] = useState("");
-    const [tarjetaValida, setTarjetaValida] = useState(true);
-    const [vencimiento, setVencimiento] = useState("");
-    const [vencimientoValido, setVencimientoValido] = useState(true);
 
     useEffect(() => {
         setLoading(true);
@@ -49,46 +38,14 @@ function Product() {
             });
     }, [id, i18n.language]);
 
-    // Función para mostrar la alerta arriba y que desaparezca a los 3 seg
     const mostrarAlerta = (mensaje, tipo = "success") => {
         setNotificacion({ mostrar: true, mensaje, tipo });
         setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
     };
 
-    const esTarjetaValida = (numero) => {
-        const limpio = numero.replace(/\s+/g, "");
-        if (!/^\d{13,19}$/.test(limpio)) return false;
-        let suma = 0; let alternar = false;
-        for (let i = limpio.length - 1; i >= 0; i--) {
-            let n = parseInt(limpio[i], 10);
-            if (alternar) { n *= 2; if (n > 9) n -= 9; }
-            suma += n; alternar = !alternar;
-        }
-        return suma % 10 === 0;
-    };
-
-    const esFechaValida = (fecha) => {
-        const limpio = fecha.replace(/\s+/g, "");
-        if (!/^\d{2}\/\d{2}$/.test(limpio)) return false;
-        const [mesStr, anioStr] = limpio.split("/");
-        const mes = parseInt(mesStr, 10);
-        const year = parseInt(anioStr, 10) + 2000;
-        if (mes < 1 || mes > 12) return false;
-        const hoy = new Date();
-        const ultimaFechaMes = new Date(year, mes, 0);
-        return ultimaFechaMes >= hoy;
-    };
-
-    const cerrarModal = () => {
-        const modal = document.getElementById('my_modal_2');
-        if (modal) modal.close();
-    };
-
-    const finalizarCompra = async (e) => {
-        e.preventDefault();
-
-        if (!tarjetaValida || !vencimientoValido || (tipoEntrega === "domicilio" && !ciudadValida)) {
-            mostrarAlerta(t('formulario:checkout.errorValidation'), "error");
+    const añadirAlCarrito = async () => {
+        if (!token) {
+            navigate('/Login', { state: { from: location } });
             return;
         }
 
@@ -101,7 +58,7 @@ function Product() {
                 },
                 body: JSON.stringify({
                     id_producto: parseInt(id),
-                    cantidad: cantidad
+                    cantidad: 1 // Por defecto añadimos 1 al carrito
                 })
             });
 
@@ -109,8 +66,7 @@ function Product() {
 
             if (response.ok) {
                 mostrarAlerta(t('formulario:checkout.success'), "success");
-                window.dispatchEvent(new Event('cartUpdated')); // Actualiza el Header
-                cerrarModal();
+                window.dispatchEvent(new Event('cartUpdated')); // Actualiza el contador del Header
             } else {
                 mostrarAlerta(json.error || "Error al añadir", "error");
             }
@@ -139,13 +95,8 @@ function Product() {
         );
     }
 
-    const ciudades = ["Puerto del Rosario", "El Cotillo", "Corralejo", "Betancuria", "La Oliva", "Morro Jable"];
-    const subtotal = parseFloat(producto.price) * cantidad;
-    const precioFinal = tipoEntrega === "domicilio" ? (subtotal * 1.05).toFixed(2) : subtotal.toFixed(2);
-
     const renderStars = (rating) => {
         const numericRating = Math.round(Number(rating));
-
         return (
             <>
                 <span className="ml-2 text-sm font-bold opacity-60 text-base-content">{rating || 0}/5</span>
@@ -167,10 +118,9 @@ function Product() {
 
     return (
         <div className="min-h-screen bg-neutral">
-
-            {/* --- ALERTA EN LA PARTE SUPERIOR --- */}
+            {/* Notificaciones */}
             {notificacion.mostrar && (
-                <div className="toast toast-top toast-center z-[100] animate-bounce">
+                <div className="toast toast-top toast-center z-50">
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : 'alert-error'} shadow-lg border-none text-white font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
@@ -178,7 +128,7 @@ function Product() {
             )}
 
             <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-                {/* VOLVER */}
+                {/* Botón Volver */}
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 group"
@@ -189,45 +139,34 @@ function Product() {
                     {t('formulario:back')}
                 </button>
 
-                {/* PRODUCTO */}
+                {/* Tarjeta de Producto */}
                 <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-
                         {/* Imagen */}
                         <div className="bg-base-100 p-12 flex items-center justify-center">
-                            <div className="relative">
-                                <div className="absolute inset-0 rounded-full blur-3xl"></div>
-                                <img
-                                    src={producto.image_url}
-                                    alt={producto.name}
-                                    className="relative max-h-80 w-full object-contain drop-shadow-2xl"
-                                />
-                            </div>
+                            <img
+                                src={producto.image_url}
+                                alt={producto.name}
+                                className="relative max-h-80 w-full object-contain drop-shadow-2xl"
+                            />
                         </div>
 
-                        {/* Info */}
+                        {/* Detalles */}
                         <div className="p-8 md:p-12 flex flex-col justify-center space-y-6 bg-base-100 text-base-content">
                             <div>
-                                <h1 className="text-3xl font-bold mb-3">
-                                    {producto.name}
-                                </h1>
+                                <h1 className="text-3xl font-bold mb-3">{producto.name}</h1>
+                                <p className="text-sm text-base-content/70 leading-relaxed">
+                                    {producto.description}
+                                </p>
                             </div>
-
-                            <p className="text-sm text-base-content/70 leading-relaxed">
-                                {producto.description}
-                            </p>
 
                             <div className="flex items-center gap-8 pt-4">
                                 <div>
                                     <p className="text-xs text-base-content/60 mb-1">{t('market:price')}</p>
-                                    <span className="text-3xl font-bold text-primary">
-                                        {producto.price} €
-                                    </span>
+                                    <span className="text-3xl font-bold text-primary">{producto.price} €</span>
                                 </div>
                                 <div className="h-12 w-px bg-base-content/10"></div>
-                                <div>
-                                    {renderStars(producto.rating)}
-                                </div>
+                                <div>{renderStars(producto.rating)}</div>
                                 <div className="h-12 w-px bg-base-content/10"></div>
                                 <div>
                                     <p className="text-xs text-base-content/60 mb-1">{t('market:stock')}</p>
@@ -237,170 +176,23 @@ function Product() {
                                 </div>
                             </div>
 
+                            {/* Botón de Acción Principal */}
                             <button
-                                className="btn border-0 bg-primary-content text-base-100 btn-lg w-full md:w-auto "
-                                onClick={() => token ? document.getElementById('my_modal_2').showModal() : navigate('/Login', { state: { from: location } })}
+                                className="btn border-0 bg-primary text-primary-content btn-lg w-full md:w-auto"
+                                onClick={añadirAlCarrito}
                                 disabled={producto.stock === 0}
                             >
-                                {token ? (producto.stock > 0 ? t('formulario:productButton') : t('formulario:outOfStock')) : t('formulario:noToken')}
+                                {!token ? t('formulario:noToken') : (producto.stock > 0 ? "Añadir al carrito" : t('formulario:outOfStock'))}
                             </button>
                         </div>
                     </div>
                 </section>
 
-                {/* OPINIONES */}
+                {/* Valoraciones */}
                 <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12">
                     <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
                 </section>
             </div>
-
-            {/* Modal de Pago */}
-            <dialog id="my_modal_2" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box max-w-2xl bg-base-100 text-base-content rounded-2xl shadow-2xl border border-base-300">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-
-                    <form onSubmit={finalizarCompra} className="space-y-6">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-bold">{producto.name}</h3>
-                        </div>
-
-                        <section>
-                            <label className="label">
-                                <span className="label-text mb-4 font-semibold">{t('formulario:checkout.deliveryType')}</span>
-                            </label>
-                            <select
-                                className="select select-bordered w-full focus:select-primary transition-all duration-200"
-                                value={tipoEntrega}
-                                onChange={(e) => setTipoEntrega(e.target.value)}
-                                required
-                            >
-                                <option value="" disabled>{t('formulario:checkout.deliverySelect')}</option>
-                                <option value="recogida">{t('formulario:checkout.pickup')}</option>
-                                <option value="domicilio">{t('formulario:checkout.homeDelivery')}</option>
-                            </select>
-                        </section>
-
-                        {tipoEntrega === "domicilio" && (
-                            <section className="animate-in fade-in slide-in-from-top-4 duration-300">
-                                <label className="label">
-                                    <span className="label-text font-semibold">Ciudad de entrega</span>
-                                </label>
-                                <select
-                                    className={`select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
-                                    value={ciudad}
-                                    onChange={(e) => {
-                                        setCiudad(e.target.value);
-                                        setCiudadValida(ciudades.includes(e.target.value));
-                                    }}
-                                    required
-                                >
-                                    <option value="" disabled>Selecciona tu ciudad</option>
-                                    {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </section>
-                        )}
-
-                        {tipoEntrega && (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-6">
-                                <div className="flex justify-between items-center bg-base-200 rounded-xl p-6">
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            type="button"
-                                            className="btn btn-circle btn-sm btn-ghost"
-                                            onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                                        >
-                                            <CircleMinus />
-                                        </button>
-                                        <input
-                                            type="number"
-                                            className="input input-bordered w-20 text-center font-bold bg-base-100"
-                                            value={cantidad}
-                                            readOnly
-                                        />
-                                        <button
-                                            type="button"
-                                            className="btn btn-circle btn-sm btn-ghost"
-                                            onClick={() => setCantidad(Math.min(producto.stock, cantidad + 1))}
-                                        >
-                                            <CirclePlus />
-                                        </button>
-                                    </div>
-                                    <div className="text-primary text-right">
-                                        <span className="text-3xl font-black">{precioFinal}€</span>
-                                    </div>
-                                </div>
-
-                                {/* Formulario Tarjeta */}
-                                <div className="space-y-4">
-                                    <h4 className="font-semibold text-base-content/80 flex items-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                        </svg>
-                                        {t('formulario:checkout.cardHolder')}
-                                    </h4>
-                                    <input
-                                        required
-                                        type="text"
-                                        placeholder={t('formulario:checkout.cardHolder')}
-                                        className="input input-bordered w-full focus:input-primary transition-all duration-200"
-                                    />
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="Nº Tarjeta"
-                                        className={`input input-bordered w-full focus:input-primary transition-all duration-200 ${!tarjetaValida && "input-error"}`}
-                                        value={tarjeta}
-                                        onChange={(e) => {
-                                            const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
-                                            setTarjeta(v);
-                                            setTarjetaValida(esTarjetaValida(v));
-                                        }}
-                                        maxLength={19}
-                                    />
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder="MM/AA"
-                                            required
-                                            className={`input input-bordered w-full focus:input-primary transition-all duration-200 ${!vencimientoValido && "input-error"}`}
-                                            value={vencimiento}
-                                            onChange={(e) => {
-                                                let v = e.target.value.replace(/\D/g, "");
-                                                if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2, 4);
-                                                setVencimiento(v);
-                                                setVencimientoValido(v.length === 5 ? esFechaValida(v) : true);
-                                            }}
-                                        />
-                                        <input
-                                            required
-                                            type="password"
-                                            placeholder="CVV"
-                                            className="input input-bordered w-full focus:input-primary transition-all duration-200"
-                                            maxLength={4}
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary btn-block btn-lg shadow-lg hover:shadow-xl transition-all duration-200 mt-6"
-                                    >
-                                        {t('confirmar')}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </form>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
         </div>
     );
 }

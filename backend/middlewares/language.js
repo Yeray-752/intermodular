@@ -14,7 +14,6 @@ export const languageMiddleware = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error("Error en el middleware de idioma:", error);
     req.lang = 'es'; // Fallback en caso de que falle la DB
     next();
   }

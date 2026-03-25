@@ -15,7 +15,6 @@ export const VentasChart = () => (
     <h3 className="font-bold mb-4">Flujo de Ventas</h3>
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
-        {/* Añadimos una cuadrícula sutil para mejorar la lectura */}
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
         <XAxis 
           dataKey="name" 

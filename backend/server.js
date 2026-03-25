@@ -19,10 +19,8 @@ import cartRoutes from "./routes/carts.js"
 import ratingRoutes from "./routes/rating.js"
 import notificationRoutes from "./routes/notifications.js";
 
-//Middlewares
 import { languageMiddleware } from './middlewares/language.js';
 import {autoSanitize} from "./middlewares/sanitizer.js"
-import { getSafePath } from './middlewares/path.js';
 
 dotenv.config();
 
@@ -38,7 +36,7 @@ app.use(languageMiddleware);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 500,
   message: 'La página se encuentra saturada en estos momentos, por favor, inténtelo más tarde.',
   standardHeaders: true,
   legacyHeaders: false,

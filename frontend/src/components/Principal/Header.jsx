@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import logo from '/img/web/logo_no_background.webp';
-import { Menu, X, User, ShoppingCart, Trash2 } from 'lucide-react';
+import { Menu, X, User, ShoppingCart, Trash2, AlertTriangle, Bell } from 'lucide-react';
 import { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from "../../context/ThemeContext";
@@ -12,9 +12,11 @@ function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const { user } = useContext(AuthContext);
-    
+    const [notificacionesPendientes, setNotificacionesPendientes] = useState(0);
+
     const [datosCarrito, setdatosCarrito] = useState({ items: [], totalCarrito: "0.00" });
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
+    const noStock = datosCarrito.items?.some(item => item.cantidad > item.stock);
 
     // Cambiado: text-base-content asegura que el texto cambie según el tema
     const hoverLink = 'text-base-100 hover:text-primary transition-colors duration-300 font-medium';
@@ -31,7 +33,7 @@ function Header() {
     };
 
     const fetchCarrito = async () => {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         if (!user || !token) return;
 
         try {
@@ -77,6 +79,36 @@ function Header() {
         }
     };
 
+    const fetchNotificaciones = async () => {
+    const token = localStorage.getItem('token');
+    if (!user || !token) return;
+
+    try {
+        const response = await fetch('https://yeray.informaticamajada.es/api/notifications/unread-count', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setNotificacionesPendientes(data.count); // Ajusta según tu API (data.count o data)
+        }
+    } catch (error) {
+        console.error("Error al obtener conteo de notificaciones:", error);
+    }
+};
+
+useEffect(() => {
+    fetchNotificaciones();
+
+    // Escuchar eventos globales para actualizar el número
+    window.addEventListener('notificationsUpdated', fetchNotificaciones);
+    window.addEventListener('cartUpdated', fetchNotificaciones); // A veces la compra genera notif.
+
+    return () => {
+        window.removeEventListener('notificationsUpdated', fetchNotificaciones);
+        window.removeEventListener('cartUpdated', fetchNotificaciones);
+    };
+}, [user]);
+
     useEffect(() => {
         fetchCarrito();
         window.addEventListener('cartUpdated', fetchCarrito);
@@ -86,10 +118,9 @@ function Header() {
     return (
         <div className="drawer drawer-end sticky top-0 z-60">
             <input id="my-drawer-5" type="checkbox" className="drawer-toggle" />
-            
+
             {notificacion.mostrar && (
                 <div className="toast toast-top toast-center z-100">
-                    {/* Cambiado: text-success-content o similares para que el texto sea legible en el tema oscuro */}
                     <div className={`alert ${notificacion.tipo === 'success' ? 'alert-success' : notificacion.tipo === 'error' ? 'alert-error' : 'alert-info'} shadow-lg font-bold`}>
                         <span>{notificacion.mensaje}</span>
                     </div>
@@ -97,8 +128,7 @@ function Header() {
             )}
 
             <div className="drawer-content flex flex-col">
-                {/* Cambiado: Eliminado dark:bg-base-200 para dejar que DaisyUI lo gestione con bg-base-100 */}
-                <header className="bg-base-200 text-base-content shadow-md border-b w-full">
+                <header className="bg-base-200 text-base-content shadow-md w-full">
                     <div className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-20">
                             <div onClick={() => navigate('/')} className="flex items-center space-x-4 cursor-pointer group">
@@ -115,7 +145,7 @@ function Header() {
                                         {item.label}
                                     </button>
                                 ))}
-                                
+
                                 <label className="swap swap-rotate mx-2">
                                     <input type="checkbox" checked={theme === "dark"} onChange={(e) => setTheme(e.target.checked ? "dark" : "light")} />
                                     <svg className=" text-base-100 swap-off h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,1.41-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" /></svg>
@@ -126,16 +156,29 @@ function Header() {
 
                                 {user ? (
                                     <div className="flex items-center space-x-4">
+                                        {/* BOTÓN DE CARRITO (Se mantiene igual) */}
                                         <label htmlFor="my-drawer-5" className="btn btn-ghost btn-circle drawer-button indicator">
                                             <ShoppingCart size={24} className="text-base-100" />
                                             {datosCarrito.items?.length > 0 && (
-                                                <span className="badge badge-sm indicator-item">
+                                                <span className="badge badge-sm indicator-item bg-primary text-primary-content border-none">
                                                     {datosCarrito.items.length}
                                                 </span>
                                             )}
                                         </label>
-                                        <button onClick={() => navigate('/perfil')} className="btn btn-ghost btn-circle">
+
+                                        {/* BOTÓN DE PERFIL CON BADGE DE NOTIFICACIONES */}
+                                        <button
+                                            onClick={() => navigate('/perfil')}
+                                            className="btn btn-ghost btn-circle indicator"
+                                        >
                                             <User size={24} className="text-base-100" />
+
+                                            {/* Si hay notificaciones, mostramos el círculo rojo */}
+                                            {notificacionesPendientes > 0 && (
+                                                <span className="indicator-item badge badge-error badge-xs sm:badge-sm">
+                                                    {notificacionesPendientes}
+                                                </span>
+                                            )}
                                         </button>
                                     </div>
                                 ) : (
@@ -162,32 +205,48 @@ function Header() {
                         </h2>
                         <label htmlFor="my-drawer-5" className="btn btn-sm btn-circle btn-ghost">✕</label>
                     </div>
-                    
+
                     <div className="grow overflow-y-auto space-y-4">
                         {datosCarrito.items && datosCarrito.items.length > 0 ? (
-                            datosCarrito.items.map((item) => (
-                                <div key={item.id_producto} className="flex gap-4 bg-base-200 p-3 rounded-xl items-center group">
-                                    <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
-                                    <div className="flex-1">
-                                        <p className="font-bold text-sm leading-tight">{item.name}</p>
-                                        <p className="text-xs opacity-70 mt-1">
-                                            {item.cantidad} x ${item.precio_unitario}
-                                        </p>
+                            datosCarrito.items.map((item) => {
+                                // VALIDACIÓN DE STOCK
+                                const sinStock = item.cantidad > item.stock;
+
+                                return (
+                                    <div key={item.id_producto} className={`flex flex-col bg-base-200 p-3 rounded-xl border-2 transition-colors ${sinStock ? 'border-error/50 bg-error/5' : 'border-transparent'}`}>
+                                        <div className="flex gap-4 items-center">
+                                            <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                            <div className="flex-1">
+                                                <p className="font-bold text-sm leading-tight">{item.name}</p>
+                                                <p className="text-xs opacity-70 mt-1">
+                                                    {item.cantidad} x ${item.precio_unitario}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-primary">${item.subtotal}</p>
+                                                <button
+                                                    onClick={() => handleRemoveItem(item.id_producto)}
+                                                    className="btn btn-ghost btn-xs btn-circle text-error hover:bg-error/20"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* MENSAJE DE ADVERTENCIA SI NO HAY STOCK */}
+                                        {sinStock && (
+                                            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-error/20 text-error">
+                                                <AlertTriangle size={14} />
+                                                <span className="text-[10px] font-black uppercase">
+                                                    Stock insuficiente (Disponibles: {item.stock})
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-bold text-primary">${item.subtotal}</p>
-                                        <button 
-                                            onClick={() => handleRemoveItem(item.id_producto)}
-                                            className="btn btn-ghost btn-xs btn-circle text-error hover:bg-error/20"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <div className="text-center py-20">
-                                {/* Cambiado: text-base-content con opacidad para que se vea en cualquier tema */}
                                 <ShoppingCart size={48} className="mx-auto text-base-content opacity-20 mb-4" />
                                 <p className="text-base-content opacity-50 italic">{t('cart.vacio')}</p>
                             </div>
@@ -200,12 +259,24 @@ function Header() {
                                 <span>{t('cart.total')}</span>
                                 <span className="text-2xl text-primary">${datosCarrito.totalCarrito}</span>
                             </div>
-                            <button 
-                                onClick={() => { navigate('/checkout'); document.getElementById('my-drawer-5').checked = false; }} 
-                                className="btn btn-primary w-full text-lg shadow-lg"
+
+                            {/* BOTÓN DINÁMICO SEGÚN EL STOCK */}
+                            <button
+                                disabled={noStock}
+                                onClick={() => {
+                                    navigate('/checkout');
+                                    document.getElementById('my-drawer-5').checked = false;
+                                }}
+                                className={`btn w-full text-lg shadow-lg ${noStock ? 'btn-disabled opacity-50' : 'btn-primary'}`}
                             >
-                                {t('cart.finalizarCompra')}
+                                {noStock ? "Revisa las existencias" : t('cart.finalizarCompra')}
                             </button>
+
+                            {noStock && (
+                                <p className="text-[10px] text-error text-center font-bold uppercase tracking-tighter">
+                                    No puedes proceder hasta ajustar las cantidades
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>

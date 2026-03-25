@@ -1,5 +1,6 @@
 {
   "en": {
+    "lastName": "Last Name",
     "account": "Account",
     "myCars": "My Cars",
     "myAppointments": "My Appointments",
@@ -24,9 +25,12 @@
     "logout": "Log Out",
     "menu": "Menu",
     "close": "Close",
-    "changeLanguage": "Change Language"
+    "changeLanguage": "Change Language",
+    "loadingProfileData": "Loading profile data...",
+    "name": "Name"  
   },
   "es": {
+    "lastName": "Apellido",
     "account": "Cuenta",
     "myCars": "Mis Vehículos",
     "myAppointments": "Mis Citas",
@@ -51,6 +55,8 @@
     "logout": "Cerrar Sesión",
     "menu": "Menú",
     "close": "Cerrar",
-    "changeLanguage": "Cambiar idioma"
+    "changeLanguage": "Cambiar idioma",
+    "loadingProfileData": "Cargando datos de perfil...",
+    "name": "Nombre"
   }
 }

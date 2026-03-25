@@ -7,8 +7,6 @@ import ProductoInfo from '../components/Productos/Product'
 
 function Producto() {
   //Producto es cuando le doy adentro de una carta de producto
-  const [count, setCount] = useState(0)
-  const navigate = useNavigate()
 
   return (
     <>

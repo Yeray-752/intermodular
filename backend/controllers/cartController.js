@@ -1,11 +1,19 @@
 import db from "../db.js";
 import {createNotification} from "./notificationsController.js";
 
+// ... otros imports
+
 export const addToCart = async (req, res) => {
     const { id_producto, cantidad } = req.body;
     const id_usuario = req.user.id;
 
     try {
+        // Validación preventiva: ¿Hay stock antes de meterlo al carrito?
+        const [prod] = await db.query("SELECT stock FROM products WHERE id = ?", [id_producto]);
+        if (prod.length > 0 && prod[0].stock < cantidad) {
+            return res.status(400).json({ error: "No hay suficiente stock disponible" });
+        }
+
         await db.query(`
             INSERT INTO carrito (id_usuario, id_producto, cantidad) VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)
@@ -13,14 +21,14 @@ export const addToCart = async (req, res) => {
 
         res.json({ message: "Producto añadido al carrito" });
     } catch (error) {
-    console.error("ERROR REAL SQL:", error); // Esto aparecerá en tu terminal de VS Code / Node
-    res.status(500).json({ error: "Error técnico: " + error.message });
-}
+        console.error("ERROR REAL SQL:", error);
+        res.status(500).json({ error: "Error técnico: " + error.message });
+    }
 };
 
 export const getCart = async (req, res) => {
     const id_usuario = req.user.id;
-    const lang = req.query.lang || 'es'; // Puedes pasar ?lang=en en la URL o usar 'es' por defecto
+    const lang = req.query.lang || 'es';
 
     try {
         const query = `
@@ -29,6 +37,7 @@ export const getCart = async (req, res) => {
                 pt.name, 
                 p.image_url, 
                 p.price AS precio_unitario, 
+                p.stock, -- AÑADIDO: Para que el frontend sepa el límite
                 c.cantidad,
                 (p.price * c.cantidad) AS subtotal
             FROM carrito c
@@ -50,6 +59,8 @@ export const getCart = async (req, res) => {
         res.status(500).json({ error: "No se pudo cargar el carrito" });
     }
 };
+
+// ... el resto de funciones (removeFromCart, clearCart, checkout) se mantienen igual
 export const removeFromCart = async (req, res) => {
     try {
         await db.query("DELETE FROM carrito WHERE id_usuario = ? AND id_producto = ?", 

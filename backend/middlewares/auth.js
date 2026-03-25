@@ -7,7 +7,7 @@ export const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Ahora req.user.id y req.user.rol están disponibles en la ruta
+    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json({ error: "Token inválido o expirado" });

@@ -22,7 +22,6 @@ const StockTable = ({ productos, categorias }) => {
     const numericRating = Math.round(Number(rating));
     return (
       <div className="flex items-center gap-1">
-        {/*    */}
         {[1, 2, 3, 4, 5].map((star) => (
           <svg
             key={star}
@@ -110,7 +109,6 @@ const StockTable = ({ productos, categorias }) => {
         </tbody>
       </table>
 
-      {/* Controles de Paginación */}
       <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200">
         <div className="flex flex-1 justify-between sm:hidden">
           <button
@@ -143,15 +141,13 @@ const StockTable = ({ productos, categorias }) => {
               >
                 <ChevronLeft size={20} />
               </button>
-              
-              {/* Generar botones de números dinámicamente */}
               {[...Array(totalPages)].map((_, index) => (
                 <button
                   key={index + 1}
                   onClick={() => paginate(index + 1)}
                   className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                     currentPage === index + 1
-                      ? 'z-10 bg-slate-900 text-white focus-visible:outline focus-visible:outline-2'
+                      ? 'z-10 bg-slate-900 text-white focus-visible:outline-slate-900 focus-visible:outline-offset-0'
                       : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50'
                   }`}
                 >

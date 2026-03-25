@@ -250,7 +250,6 @@ function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-800">
-                {/* Servicio */}
                 <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex gap-5 items-center">
                     <div className="w-16 h-16 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
                         <Wrench className="text-slate-300" size={24} />
@@ -263,7 +262,6 @@ function AdminPage() {
                     <button className="text-slate-300 hover:text-slate-600"><MoreHorizontal /></button>
                 </div>
 
-                {/* Producto */}
                 <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex gap-5 items-center">
                     <div className="w-16 h-16 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
                         <Package className="text-slate-300" size={24} />
@@ -305,7 +303,6 @@ function AdminPage() {
             <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    {/* Columna Izquierda: Imagen */}
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
                         <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">
@@ -325,7 +322,6 @@ function AdminPage() {
                         </div>
                     </div>
 
-                    {/* Columna Derecha: Datos principales */}
                     <div className="space-y-4">
                         <div className="form-control">
                             <label className="label text-[10px] font-boldx uppercase text-base-content/60 tracking-widest">Título del Servicio</label>
@@ -363,7 +359,6 @@ function AdminPage() {
                     </div>
                 </div>
 
-                {/* Descripción (Ancho completo) */}
                 <div className="form-control">
                     <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Descripción Detallada</label>
                     <div className="relative">
@@ -372,7 +367,6 @@ function AdminPage() {
                     </div>
                 </div>
 
-                {/* Botones de acción */}
                 <div className="flex justify-end gap-3 pt-4 border-t border-base-200">
                     <button type="button" className="btn btn-ghost">Cancelar</button>
                     <button type="submit" className="btn btn-primary px-8 shadow-lg shadow-primary/20 gap-2">
@@ -413,7 +407,6 @@ function AdminPage() {
             <main className="flex-1 p-4 md:p-8 lg:p-7">
                 <div className="flex flex-col lg:flex-row max-w-7xl mx-auto gap-4">
 
-                    {/* Sidebar Refinado */}
                     <aside className="lg:flex flex-col bg-white w-full lg:w-80 flex-none p-8 rounded-3xl border border-slate-200 shadow-sm">
 
                         <nav className="space-y-3 flex-1">
@@ -436,8 +429,6 @@ function AdminPage() {
                             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Panel de Control General</p>
                         </div>
                     </aside>
-
-                    {/* Contenido Principal */}
                     <section className="bg-white p-8 border border-slate-200 shadow-sm flex-1 rounded-3xl min-h-150">
                         {renderContent()}
                     </section>

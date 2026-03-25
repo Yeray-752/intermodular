@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { data, useNavigate } from 'react-router';
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { useLocation } from "react-router-dom";
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck,Check } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -13,14 +14,30 @@ function Perfil() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
     const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation('profile');
+    // Dentro de tu componente, antes del return del case 'notificaciones'
+    const { t, i18n } = useTranslation(['perfil', 'notifications']); // Cargas ambos
+
+    // Creamos un helper local para las notis
+    const tn = (key, params) => t(`notifications:${key}`, params);
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
-    // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [vehiculos, setVehiculos] = useState([]);
+    const [loadingVehiculos, setLoadingVehiculos] = useState(false);
+    const [formVehiculo, setFormVehiculo] = useState({
+        matricula: '',
+        marca: '',
+        modelo: '',
+        año: new Date().getFullYear()
+    });
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [loadingNotis, setLoadingNotis] = useState(false);
+
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
@@ -50,6 +67,123 @@ function Perfil() {
 
         fetchUserData();
     }, [navigate]);
+
+    const traerNotificaciones = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        setLoadingNotis(true);
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setNotificaciones(data);
+            }
+        } catch (error) {
+            console.error("Error al cargar notificaciones:", error);
+        } finally {
+            setLoadingNotis(false);
+        }
+    };
+
+    const marcarTodasComoLeidas = async () => {
+        try {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // CAMBIO: leido con "o" para coincidir con el objeto de la DB
+                setNotificaciones(prev => prev.map(n => ({ ...n, leido: 1 })));
+                window.dispatchEvent(new Event('notificationsUpdated'));
+            }
+        } catch (error) {
+            console.error("Error al marcar todas:", error);
+        }
+    };
+
+    const marcarLeida = async (id) => {
+        // CAMBIO: leido con "o"
+        setNotificaciones(prev =>
+            prev.map(n => n.id === id ? { ...n, leido: 1 } : n)
+        );
+
+        try {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/${id}/read`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                window.dispatchEvent(new Event('notificationsUpdated'));
+            }
+        } catch (error) {
+            console.error("Error al marcar como leída:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'notificaciones') {
+            traerNotificaciones();
+        }
+    }, [activeTab]);
+
+    const formatText = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
+    const handleRegistrarVehiculo = async (e) => {
+        e.preventDefault();
+
+        // Validar año antes de enviar
+        const currentYear = new Date().getFullYear();
+        if (formVehiculo.año > currentYear) {
+            alert("El año no puede ser mayor al actual");
+            return;
+        }
+
+        // Formateamos antes de enviar al backend
+        const vehiculoFormateado = {
+            matricula: formVehiculo.matricula.toUpperCase().trim(),
+            marca: formatText(formVehiculo.marca.trim()),
+            modelo: formatText(formVehiculo.modelo.trim()),
+            año: formVehiculo.año
+        };
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    matricula: formVehiculo.matricula,
+                    marca: formVehiculo.marca,
+                    modelo: formVehiculo.modelo,
+                    año: formVehiculo.año
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Vehículo guardado");
+                setIsModalOpen(false);
+                traerVehiculos();
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert("Error de conexión");
+        }
+    };
 
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
@@ -88,7 +222,7 @@ function Perfil() {
         if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelada`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -122,7 +256,6 @@ function Perfil() {
         location.reload()
     };
 
-    // 2. ENVIAR ACTUALIZACIÓN AL BACKEND
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -160,16 +293,16 @@ function Perfil() {
         }
     };
 
-    // Mapeo dinámico de campos con los datos de la DB
     const campos = useMemo(() => [
         { name: "nombre", label: t('name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
-        { name: "apellidos", label: t('apellidos') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
+        { name: "apellidos", label: t('lastName') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
         { name: "direccion", label: t('location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
     ], [userProfile, t]);
 
     const menuItems = useMemo(() => [
         { id: 'informacion', label: t('account'), icon: User },
         { id: 'vehiculos', label: t('myCars'), icon: Car },
+        { id: 'notificaciones', label: t('notifications_tab') || "Notificaciones", icon: Bell },
         { id: 'citas', label: t('myAppointments'), icon: Calendar },
         { id: 'historial', label: t('history'), icon: FileText },
         { id: 'seguridad', label: t('security'), icon: Lock }
@@ -181,11 +314,34 @@ function Perfil() {
             ? 'bg-base-100 text-primary font-semibold shadow-md'
             : 'text-base-content/70 hover:shadow-lg'}
     `;
+    const traerVehiculos = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
 
+        setLoadingVehiculos(true);
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setVehiculos(data);
+            }
+        } catch (error) {
+            console.error("Error al cargar vehículos:", error);
+        } finally {
+            setLoadingVehiculos(false);
+        }
+    };
+    useEffect(() => {
+        if (activeTab === 'vehiculos') {
+            traerVehiculos();
+        }
+    }, [activeTab]);
 
 
     const renderContent = () => {
-        if (loading) return <div className="py-20 text-center font-bold">Cargando datos de perfil...</div>;
+        if (loading) return <div className="py-20 text-center font-bold">{t('loadingProfileData')}</div>;
         switch (activeTab) {
             case 'informacion':
                 return (
@@ -218,7 +374,6 @@ function Perfil() {
                                 ))}
                             </div>
 
-                            {/* Selector de Islas y Municipios */}
                             <div className="mb-6">
                                 <SelectorCanarias />
                             </div>
@@ -232,27 +387,104 @@ function Perfil() {
                 );
             case 'vehiculos':
                 return (
-                    <div>
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('myCars')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="p-5 border border-base-300 bg-base-100 rounded-xl hover:shadow-md transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center">
-                                        <Car className="text-primary" size={24} />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-bold text-base-content">Toyota Corolla</p>
-                                        <p className="text-sm text-base-content/50 font-mono">1234-LMN</p>
-                                    </div>
-                                </div>
+                    <div className="space-y-6 animate-in fade-in duration-500">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                            <div>
+                                <h2 className="text-3xl font-bold text-base-content flex items-center gap-3">
+                                    <Car className="text-primary" size={32} />
+                                    {t('myCars') || "Mis Vehículos"}
+                                </h2>
+                                <p className="text-base-content/60 mt-1">
+                                    {t('manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
+                                </p>
                             </div>
-                            <button className="p-5 border-2 border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl"
+                            >
                                 <Plus size={20} />
-                                {t('addCar')}
+                                {t('addVehicle') || "Añadir Vehículo"}
                             </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {loadingVehiculos ? (
+                                <div className="col-span-full flex flex-col items-center py-12">
+                                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                                    <p className="mt-4 text-base-content/50">Cargando tu garaje...</p>
+                                </div>
+                            ) : vehiculos.length > 0 ? (
+                                <>
+                                    {vehiculos.map((v) => (
+                                        <div
+                                            key={v.matricula}
+                                            className="group bg-base-100 border border-base-300 rounded-3xl p-5 hover:shadow-xl hover:border-primary/30 transition-all duration-300 relative overflow-hidden"
+                                        >
+                                            <div className="absolute -right-4 -bottom-4 text-base-content/5 opacity-0 group-hover:opacity-100 transition-opacity rotate-12">
+                                                <Car size={100} />
+                                            </div>
+
+                                            <div className="flex items-start justify-between relative z-10">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                                        <Car size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold text-lg text-base-content capitalize">
+                                                            {v.marca} <span className="text-primary/80">{v.modelo}</span>
+                                                        </h3>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="bg-base-200 text-base-content/70 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
+                                                                {v.matricula}
+                                                            </span>
+                                                            <span className="text-xs text-base-content/40 italic">Año {v.año}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        if (window.confirm(`¿Estás seguro de que deseas eliminar el vehículo ${v.matricula}?`)) {
+                                                            eliminarVehiculo(v.matricula);
+                                                        }
+                                                    }}
+                                                    className="btn btn-circle btn-ghost btn-sm text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="border-2 border-dashed border-base-300 rounded-3xl p-5 flex flex-col items-center justify-center gap-2 text-base-content/40 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <Plus size={24} />
+                                        </div>
+                                        <span className="font-medium text-sm">Registrar nuevo</span>
+                                    </button>
+                                </>
+                            ) : (
+                                /* Estado Vacío */
+                                <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                    <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                        <Car size={32} className="text-base-content/20" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
+                                    <p className="text-base-content/50 max-w-xs mx-auto mt-2">
+                                        Añade tu primer vehículo para poder solicitar servicios y reparaciones.
+                                    </p>
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="btn btn-primary mt-6 rounded-xl"
+                                    >
+                                        Registrar mi primer coche
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
@@ -265,7 +497,6 @@ function Perfil() {
                         </div>
 
                         <div className="space-y-4">
-                            {/* Ejemplo de una cita activa */}
                             {loadingCitas ? (
                                 <div className="py-10 text-center flex flex-col items-center gap-3">
                                     <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -303,7 +534,123 @@ function Perfil() {
                         </div>
                     </div>
                 );
+            case 'notificaciones':
+                // Helper local: fuerza a i18next a buscar en el archivo notificaciones.json
+                // El prefijo 'notificaciones:' es vital para que no busque en el json por defecto
+                const tn = (key, params) => t(`notifications:${key}`, params);
 
+                return (
+                    <div className="animate-in fade-in duration-500">
+                        {/* Cabecera de la sección */}
+                        <div className="mb-8 flex justify-between items-end">
+                            <div>
+                                <h2 className="text-3xl font-bold mb-2 text-base-content">
+                                    {t('notifications_title') || "Mis Notificaciones"}
+                                </h2>
+                                <p className="text-base-content/70 text-sm">
+                                    {t('manage_notifications_desc') || "Mantente al tanto de tus citas y pedidos."}
+                                </p>
+                            </div>
+
+                            {/* Botón de marcar todas: Solo aparece si hay alguna sin leer (leido == 0) */}
+                            {notificaciones.length > 0 && notificaciones.some(n => !n.leido) && (
+                                <button
+                                    onClick={marcarTodasComoLeidas}
+                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 transition-all"
+                                >
+                                    <CheckCheck size={14} /> Marcar todas como leídas
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="space-y-4">
+                            {loadingNotis ? (
+                                <div className="py-10 text-center flex flex-col items-center gap-3">
+                                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                                    <p className="font-bold italic opacity-70 text-sm">Cargando historial...</p>
+                                </div>
+                            ) : notificaciones.length > 0 ? (
+                                notificaciones.map((noti) => {
+                                    // Procesar parámetros para las traducciones variables
+                                    const params = typeof noti.parametros === 'string'
+                                        ? JSON.parse(noti.parametros)
+                                        : noti.parametros;
+
+                                    const translationPath = `notifications.${noti.rol}`;
+                                    const estaLeida = !!noti.leido;
+
+                                    return (
+                                        <div
+                                            key={noti.id}
+                                            // Mantenemos siempre bg-base-100 y eliminamos opacity-80
+                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 
+                ${estaLeida
+                                                    ? 'border-base-200 shadow-none'
+                                                    : 'border-primary/20 shadow-md ring-1 ring-primary/5'}`}
+                                        >
+                                            <div className="flex items-center gap-5">
+                                                {/* CHECKBOX: Cambia de color según estado */}
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        className={`checkbox checkbox-sm transition-all ${estaLeida ? 'checkbox-success' : 'checkbox-primary'}`}
+                                                        checked={estaLeida}
+                                                        onChange={() => !estaLeida && marcarLeida(noti.id)}
+                                                        disabled={estaLeida}
+                                                    />
+                                                </div>
+
+                                                {/* ICONO CAMPANA: Mantenemos el color aunque esté leída para que no se "apague" */}
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors
+                    ${estaLeida ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
+                                                    <Bell size={24} />
+                                                </div>
+
+                                                {/* CONTENIDO DE TEXTO: Eliminamos las clases que bajaban la opacidad al 40% */}
+                                                <div>
+                                                    <h4 className="font-extrabold text-lg tracking-tight text-base-content">
+                                                        {tn(`${translationPath}.titles.${noti.tipo}`)}
+                                                    </h4>
+                                                    <p className="text-sm font-medium max-w-xl text-base-content/70">
+                                                        {tn(`${translationPath}.messages.${noti.tipo}`, params)}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/30 uppercase tracking-widest">
+                                                        <Clock size={12} />
+                                                        <span>{new Date(noti.creado_en).toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* BADGE DE ESTADO */}
+                                            <div className="hidden md:flex items-center">
+                                                {estaLeida ? (
+                                                    <div className="flex items-center gap-1 text-success opacity-80">
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Leída</span>
+                                                        <Check size={14} strokeWidth={3} />
+                                                    </div>
+                                                ) : (
+                                                    <span className="badge badge-primary badge-sm py-3 px-4 font-bold border-none shadow-sm animate-pulse">
+                                                        Nueva
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                // ESTADO VACÍO
+                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-16 text-center">
+                                    <div className="w-16 h-16 bg-base-300/50 rounded-full flex items-center justify-center mx-auto mb-4 opacity-40">
+                                        <Bell size={32} />
+                                    </div>
+                                    <p className="text-base-content/40 text-lg font-bold italic">
+                                        Tu bandeja de entrada está limpia.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
             case 'historial':
                 return (
                     <div>
@@ -319,7 +666,6 @@ function Perfil() {
                                         <th>{t('service')}</th>
                                         <th>{t('date')}</th>
                                         <th>{t('status')}</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -370,7 +716,6 @@ function Perfil() {
         <div className='bg-neutral min-h-screen flex flex-col'>
             <Header />
 
-            {/* Mobile menu - visible solo en móviles */}
             <div className="lg:hidden bg-base-100 border-b border-base-300 p-4">
                 <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -383,7 +728,6 @@ function Perfil() {
 
             <main className='flex-1 p-4 md:p-6 lg:p-8'>
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
-                    {/* Sidebar Desktop */}
                     <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-base-100 w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
                         <div className="mb-10 hidden lg:block">
                             <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
@@ -419,13 +763,111 @@ function Perfil() {
                         </div>
                     </aside>
 
-                    {/* Contenido principal */}
                     <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
                         {renderContent()}
                     </section>
                 </div>
             </main>
             <Footer />
+            {isModalOpen && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in fade-in zoom-in duration-300">
+
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-6 right-6 text-base-content/30 hover:text-base-content transition-colors"
+                        >
+                            <X size={28} />
+                        </button>
+
+                        <div className="p-10">
+                            <div className="flex flex-col items-center mb-8">
+                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                    <Car className="text-[#ff5a1f]" size={32} />
+                                </div>
+                                <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                    {t('registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
+                                </h2>
+                            </div>
+
+                            <form onSubmit={handleRegistrarVehiculo} className="space-y-5">
+                                {/* MATRÍCULA: Mayúsculas y máx 15 */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                    <input
+                                        required
+                                        maxLength={15}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest"
+                                        placeholder="0000-BBB"
+                                        value={formVehiculo.matricula}
+                                        onChange={(e) => setFormVehiculo({
+                                            ...formVehiculo,
+                                            matricula: e.target.value.toUpperCase()
+                                        })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* MARCA: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Toyota"
+                                            value={formVehiculo.marca}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    marca: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                    {/* MODELO: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Corolla"
+                                            value={formVehiculo.modelo}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    modelo: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* AÑO: Máximo año actual */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        max={new Date().getFullYear()}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                        value={formVehiculo.año}
+                                        onChange={(e) => setFormVehiculo({ ...formVehiculo, año: e.target.value })}
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
+                                >
+                                    {t('confirmAndAdd') || "Confirmar y Añadir"}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

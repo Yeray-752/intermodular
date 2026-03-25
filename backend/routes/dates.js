@@ -5,19 +5,16 @@ import { validateCita, validateUpdateEstadoCita, validateIdParam } from '../vali
 
 const router = Router();
 
-// 1. Ver citas
-// Ahora protegido: el controlador decidirá si mostrar todas (admin) o solo las del usuario.
 router.get('/', verifyToken, obtenerCitasTerminadas);
 router.get('/admin/pendientes', verifyToken, isAdmin, obtenerCitasAdmin);
 router.get('/admin/procesando', verifyToken, isAdmin, obtenerCitasEnProceso);
-// 2. Crear cita
-// Validamos el token y luego el esquema de Zod antes de entrar al controlador.
+
 router.post('/', verifyToken, (req, res, next) => {
     const result = validateCita(req.body);
     if (!result.success) {
         return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
-    // Pasamos los datos limpios al siguiente paso
+
     req.body = result.data;
     next();
 }, crearCita);
@@ -29,8 +26,6 @@ router.patch('/:id/update', verifyToken, (req, res, next) => {
     next();
 }, actualizarCita);
 
-// 3. Actualizar estado
-// Solo el admin puede cambiar estados, y validamos que el nuevo estado sea correcto.
 router.patch('/:id/:estado', [verifyToken, isAdmin], (req, res, next) => {
     const result = validateUpdateEstadoCita({
         id: req.params.id,
@@ -44,7 +39,6 @@ router.patch('/:id/:estado', [verifyToken, isAdmin], (req, res, next) => {
     next();
 }, actualizarEstadoCita);
 
-// Ruta para que el usuario cancele su propia cita
 router.patch('/:id/cancelar', verifyToken, (req, res, next) => {
     const result = validateIdParam({ id: req.params.id });
     if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });

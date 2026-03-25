@@ -15,18 +15,10 @@ router.post("/login", loginLimiter, validateSchema(loginSchema), login);
 router.get("/profile/me", verifyToken, getClientProfile);
 
 // Actualizar datos básicos
-router.patch("/profile/me",
-    verifyToken,
-    validateSchema(updateProfileSchema),
-    updateClientProfile
-);
+router.patch("/profile/me",verifyToken,validateSchema(updateProfileSchema),updateClientProfile);
 
 // Cambiar contraseña
-router.patch("/profile/password",
-    verifyToken,
-    validateSchema(changePasswordSchema),
-    changePassword
-);
+router.patch("/profile/password",verifyToken,validateSchema(changePasswordSchema),changePassword);
 
 router.post("/google-login", googleLogin);
 

@@ -1,22 +1,36 @@
 import db from '../db.js';
 
-export const registrarVehiculo = async (req, res) => {
-    const { matricula, id_usuario, marca, modelo, año } = req.body;
+// vehiculeController.js
 
-    if (!matricula || !id_usuario) {
-        return res.status(400).json({ message: "Matrícula e ID de usuario son obligatorios" });
+export const registrarVehiculo = async (req, res) => {
+    // EL ID VIENE DEL TOKEN (req.user), NO DEL BODY
+    const { matricula, marca, modelo, año } = req.body;
+    const id_usuario = req.user.id; 
+
+    if (!matricula) {
+        return res.status(400).json({ message: "La matrícula es obligatoria" });
     }
 
     try {
         const query = 'INSERT INTO Vehiculo (matricula, id_usuario, marca, modelo, año) VALUES (?, ?, ?, ?, ?)';
         await db.execute(query, [matricula, id_usuario, marca, modelo, año]);
-        
-        res.status(201).json({ message: "Vehículo registrado con éxito", matricula });
+        res.status(201).json({ message: "Vehículo registrado con éxito" });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ message: "La matrícula ya está registrada" });
         }
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const getVehiculos = async (req, res) => {
+    const id_usuario = req.user.id; // Extraído del token
+
+    try {
+        const [rows] = await db.query("SELECT * FROM Vehiculo WHERE id_usuario = ?", [id_usuario]);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener vehículos" });
     }
 };
 export const eliminarVehiculo = async (req, res) => {
