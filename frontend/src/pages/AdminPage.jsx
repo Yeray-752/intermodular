@@ -43,7 +43,7 @@ function AdminPage() {
         if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/${estado}`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/${estado}`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -75,7 +75,7 @@ function AdminPage() {
 
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/api/dates/admin/pendientes", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates/admin/pendientes", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -108,7 +108,7 @@ function AdminPage() {
     };
     const cargarEventosCalendario = async () => {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/dates/admin/procesando", {
+        const res = await fetch("https://yeray.informaticamajada.es/api/dates/admin/procesando", {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
@@ -145,7 +145,7 @@ function AdminPage() {
         try {
             
             const [resProd, resCat] = await Promise.all([
-                fetch('http://localhost:3000/api/products')
+                fetch('https://yeray.informaticamajada.es/api/products')
             ]);
             const dataProd = await resProd.json();
             setListaProductos(dataProd);
