@@ -7,7 +7,7 @@ import ImagenPrincipal from "/img/web/taller.jpg";
 export default function Home() {
   const { t } = useTranslation("home");
   const [theme] = useState(
-    localStorage.getItem("theme") || "light"
+    localStorage.getItem("theme") || "blanco"
   );
   document.documentElement.setAttribute("data-theme", theme);
   return (

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../style/CalendarioCustom.css';
-import '../style/App.css';
+import '../style/index.css';
 
 function TableReservations({ search, categoriaId, servicios }) {
     const { t, i18n } = useTranslation('servicios');

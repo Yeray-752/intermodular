@@ -1,5 +1,5 @@
 
-import '../style/App.css'
+import '../style/index.css'
 import Footer from '../components/Principal/Footer'
 import Header from '../components/Principal/Header'
 import WhoWeAre from '../components/Principal/WhoWeAre'

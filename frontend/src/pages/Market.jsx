@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import '../style/App.css';
+import '../style/index.css';
 import Footer from '../components/Principal/Footer';
 import Header from '../components/Principal/Header';
 import TableProducts from '../components/Productos/TableProducts';

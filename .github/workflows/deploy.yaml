@@ -8,24 +8,42 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.IP }}
-          port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
+          port: 2222
           script: |
-            cd /var/www/html/intermodular;
-            git fetch --all;
-            git reset --hard origin/master;
-            git clean -df -e .env;
-            cd frontend;
-            npm install;
-            npm run build;
-            cd ..;
-            pm2 restart api-intermodular;
+            cd /var/www/html/intermodular
+
+            git fetch --all
+            git reset --hard origin/master
+            git clean -df -e .env
+
+            cat > backend/.env <<EOF
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DBPORT=${{ secrets.DBPORT }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            RECAPTCHA_SECRET_KEY=${{ secrets.RECAPTCHA_SECRET_KEY }}
+            PORT=${{ secrets.PORT }}
+            EOF
+
+            # Frontend
+            cd frontend
+            npm install
+            npm run build
+
+            # Backend
+            cd ../backend
+            npm install
+
+            pm2 start server.js --name api-intermodular || pm2 restart api-intermodular
+

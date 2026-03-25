@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../style/App.css'
+import '../style/index.css'
 import { useNavigate } from 'react-router'
 import Login from '../components/Sesion/Login'
 import Header from '../components/Principal/Header'

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../style/App.css'
+import '../style/index.css'
 import { useNavigate } from 'react-router'
 import Footer from '../components/Principal/Footer'
 import Header from '../components/Principal/Header'
