@@ -10,6 +10,7 @@ import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
+    const [productos, setProductos] = useState([]);
     const [notificacionesPendientes, setNotificacionesPendientes] = useState(0);
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -617,8 +618,7 @@ function Perfil() {
                                     let extraParams = { ...params };
 
                                     if (params.producto_id) {
-                                        const producto = productos.find(p => p.id === params.producto_id);
-
+                                        const producto = productos?.find(p => p.id === params.producto_id);
                                         extraParams.producto = producto?.name || 'producto';
                                     }
 
