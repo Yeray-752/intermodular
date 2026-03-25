@@ -67,43 +67,30 @@ export const updateService = async (req, res) => {
 
     const connection = await db.getConnection();
     try {
-        const [oldData] = await connection.query(
-            `SELECT s.base_price, s.duration, st.name 
-             FROM services s
-             JOIN service_translations st ON s.id = st.service_id
-             WHERE s.id = ? AND st.language_code = ?`, 
-            [id, lang || 'es']
-        );
-
-        if (oldData.length === 0) return res.status(404).json({ message: "Servicio no encontrado" });
-        const serviceBefore = oldData[0];
-
         await connection.beginTransaction();
 
-        // Actualizaciones en DB...
+        // UPDATE con COALESCE (solo actualiza si viene valor, si no mantiene el actual)
         await connection.query(
-            "UPDATE services SET category_id = ?, image_url = ?, base_price = ?, duration = ?, difficulty = ? WHERE id = ?",
+            `UPDATE services 
+             SET 
+                category_id = COALESCE(?, category_id),
+                image_url = COALESCE(?, image_url),
+                base_price = COALESCE(?, base_price),
+                duration = COALESCE(?, duration),
+                difficulty = COALESCE(?, difficulty)
+             WHERE id = ?`,
             [category_id, image_url, base_price, duration, difficulty, id]
         );
+
+        // Traducción (también con COALESCE en el UPDATE implícito)
         await connection.query(
             `INSERT INTO service_translations (service_id, language_code, name, description) 
-             VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)`,
+             VALUES (?, ?, ?, ?) 
+             ON DUPLICATE KEY UPDATE 
+                name = COALESCE(VALUES(name), name),
+                description = COALESCE(VALUES(description), description)`,
             [id, lang || 'es', name, description]
         );
-
-        // --- DETECCIÓN DE CAMBIOS ---
-        const cambios = [];
-        if (serviceBefore.name !== name) cambios.push(`nombre: ${name}`);
-        if (parseFloat(serviceBefore.base_price) !== parseFloat(base_price)) cambios.push(`precio: ${base_price}€`);
-        if (parseInt(serviceBefore.duration) !== parseInt(duration)) cambios.push(`duración: ${duration}min`);
-
-        // Solo notificamos si hubo cambios en estos 3 campos clave
-        if (cambios.length > 0) {
-            await createNotification(req.user.id, 'servicio_actualizado', 'admin', { 
-                servicio_original: serviceBefore.name,
-                cambios: cambios 
-            });
-        }
 
         await connection.commit();
         res.json({ message: "Servicio actualizado correctamente" });

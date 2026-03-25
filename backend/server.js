@@ -22,7 +22,6 @@ import notificationRoutes from "./routes/notifications.js";
 //Middlewares
 import { languageMiddleware } from './middlewares/language.js';
 import {autoSanitize} from "./middlewares/sanitizer.js"
-import { getSafePath } from './middlewares/path.js';
 
 dotenv.config();
 

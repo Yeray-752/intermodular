@@ -1,27 +1,15 @@
 import { Router } from 'express';
-import { createService } from '../controllers/serviceController.js';
+import { getServices,createService,updateService,deleteService} from '../controllers/serviceController.js';
 import { verifyToken, isAdmin } from '../middlewares/auth.js';
-import { getSafePath } from '../middlewares/path.js';
-import multer from 'multer';
 
 const router = Router();
 
-// Configuración de Multer usando tu middleware de ruta segura
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Usamos tu middleware para obtener la ruta física real
-        cb(null, getSafePath('public/uploads/services')); 
-    },
-    filename: (req, file, cb) => {
-        // Guardamos: timestamp-nombreoriginal.jpg
-        const uniqueSuffix = Date.now() + '-' + file.originalname;
-        cb(null, uniqueSuffix);
-    }
-});
+router.post('/', [verifyToken, isAdmin], createService);
 
-const upload = multer({ storage });
+router.get('/',getServices);
 
-// Aplicar Multer a la creación (campo 'image')
-router.post('/', [verifyToken, isAdmin, upload.single('image')], createService);
+router.put('/:id/update',verifyToken,isAdmin,updateService);
+
+router.delete('/:id/delete',verifyToken,isAdmin,deleteService);
 
 export default router;
