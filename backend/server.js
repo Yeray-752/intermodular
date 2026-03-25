@@ -19,7 +19,6 @@ import cartRoutes from "./routes/carts.js"
 import ratingRoutes from "./routes/rating.js"
 import notificationRoutes from "./routes/notifications.js";
 
-//Middlewares
 import { languageMiddleware } from './middlewares/language.js';
 import {autoSanitize} from "./middlewares/sanitizer.js"
 
