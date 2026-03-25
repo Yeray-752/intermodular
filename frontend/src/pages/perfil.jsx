@@ -67,6 +67,18 @@ function Perfil() {
         fetchUserData();
     }, [navigate]);
 
+    const traerProductos = async () => {
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/products");
+            if (response.ok) {
+                const data = await response.json();
+                setProductos(data);
+            }
+        } catch (error) {
+            console.error("Error al cargar productos:", error);
+        }
+    };
+
     const traerNotificaciones = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -130,6 +142,7 @@ function Perfil() {
     useEffect(() => {
         if (activeTab === 'notificaciones') {
             traerNotificaciones();
+            traerProductos();
         }
     }, [activeTab]);
 
@@ -568,13 +581,21 @@ function Perfil() {
                                 </div>
                             ) : notificaciones.length > 0 ? (
                                 notificaciones.map((noti) => {
-                                    // Procesar parámetros para las traducciones variables
                                     const params = typeof noti.parametros === 'string'
                                         ? JSON.parse(noti.parametros)
                                         : noti.parametros;
 
+                                    let extraParams = { ...params };
+
+                                    if (params.producto_id) {
+                                        const producto = productos.find(p => p.id === params.producto_id);
+
+                                        extraParams.producto = producto?.name || 'producto';
+                                    }
+
                                     const translationPath = `notifications.${noti.rol}`;
                                     const estaLeida = !!noti.leido;
+
 
                                     return (
                                         <div
