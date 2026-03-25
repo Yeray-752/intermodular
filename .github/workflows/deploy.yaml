@@ -45,4 +45,5 @@ jobs:
             cd ../backend
             npm install
 
-            pm2 restart api-intermodular
+            pm2 start app.js --name api-intermodular || pm2 restart api-intermodular
+
