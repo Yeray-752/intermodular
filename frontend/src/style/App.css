@@ -44,7 +44,7 @@ html, body, #root {
 
 
 @plugin "daisyui/theme" {
-  name: "light";
+  name: "blanco";
   default: false;
   prefersdark: false;
   color-scheme: "light";
@@ -97,7 +97,7 @@ html, body, #root {
 
 
 @plugin "daisyui/theme" {
-  name: "dark";
+  name: "negro";
   default: false;
   prefersdark: false;
   color-scheme: "dark";

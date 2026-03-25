@@ -28,4 +28,6 @@ jobs:
             npm install;
             npm run build;
             cd ..;
+            cd backend;
+            npm install;
             pm2 restart api-intermodular;
