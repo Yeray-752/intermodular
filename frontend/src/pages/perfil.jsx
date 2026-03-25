@@ -10,6 +10,7 @@ import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
+    const [notificacionesPendientes, setNotificacionesPendientes] = useState(0);
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -79,6 +80,34 @@ function Perfil() {
         }
     };
 
+    const fetchNotificacionesCount = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications/unread-count", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setNotificacionesPendientes(data.count);
+            }
+        } catch (error) {
+            console.error("Error al obtener contador:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotificacionesCount();
+
+        window.addEventListener('notificationsUpdated', fetchNotificacionesCount);
+
+        return () => {
+            window.removeEventListener('notificationsUpdated', fetchNotificacionesCount);
+        };
+    }, []);
+
     const traerNotificaciones = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -109,7 +138,7 @@ function Perfil() {
             if (response.ok) {
                 // CAMBIO: leido con "o" para coincidir con el objeto de la DB
                 setNotificaciones(prev => prev.map(n => ({ ...n, leido: 1 })));
-                window.dispatchEvent(new Event('profile:notificationsUpdated'));
+                window.dispatchEvent(new Event('notificationsUpdated'));
             }
         } catch (error) {
             console.error("Error al marcar todas:", error);
@@ -132,7 +161,7 @@ function Perfil() {
             });
 
             if (response.ok) {
-                window.dispatchEvent(new Event('profile:notificationsUpdated'));
+                window.dispatchEvent(new Event('notificationsUpdated'));
             }
         } catch (error) {
             console.error("Error al marcar como leída:", error);
@@ -764,6 +793,13 @@ function Perfil() {
                                     >
                                         <Icon size={20} />
                                         <span>{item.label}</span>
+
+                                        {/* 👇 AÑADE ESTO */}
+                                        {item.id === 'notificaciones' && notificacionesPendientes > 0 && (
+                                            <span className="ml-auto badge badge-error badge-sm">
+                                                {notificacionesPendientes}
+                                            </span>
+                                        )}
                                     </button>
                                 );
                             })}

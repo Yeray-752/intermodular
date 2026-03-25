@@ -99,6 +99,14 @@ function Header() {
 useEffect(() => {
     fetchNotificaciones();
 
+    const interval = setInterval(fetchNotificaciones, 10000); // cada 10s
+
+    return () => clearInterval(interval);
+}, [user]);
+
+useEffect(() => {
+    fetchNotificaciones();
+
     // Escuchar eventos globales para actualizar el número
     window.addEventListener('notificationsUpdated', fetchNotificaciones);
     window.addEventListener('cartUpdated', fetchNotificaciones); // A veces la compra genera notif.
