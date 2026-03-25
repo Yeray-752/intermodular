@@ -1,0 +1,20 @@
+{
+  "en": {
+    "location": "location in Canary Islands",
+    "island":"Island",
+    "selectIsland":"Select an island",
+    "municipality":"Municipality",
+    "selectMunicipality":"Select a municipality",
+    "ubication":"Ubicated in"
+
+  },
+  "es": {
+    "location": "Zona de Canarias",
+    "island":"Isla",
+    "selectIsland":"Seleccione una isla",
+    "municipality":"Municipio",
+    "selectMunicipality":"Seleccione un municipio",
+    "ubication":"Situado en"
+
+  }
+}

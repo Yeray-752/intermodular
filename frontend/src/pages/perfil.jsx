@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck,Check } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -400,7 +400,7 @@ function Perfil() {
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl"
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
                             >
                                 <Plus size={20} />
                                 {t('profile:addVehicle') || "Añadir Vehículo"}
@@ -431,10 +431,10 @@ function Perfil() {
                                                     </div>
                                                     <div>
                                                         <h3 className="font-bold text-lg text-base-content capitalize">
-                                                            {v.marca} <span className="text-primary/80">{v.modelo}</span>
+                                                            {v.marca} <span className="text-primary">{v.modelo}</span>
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className="bg-base-200 text-base-content/70 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
+                                                            <span className="bg-neutral text-base-content text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
                                                                 {v.matricula}
                                                             </span>
                                                             <span className="text-xs text-base-content/40 italic">Año {v.año}</span>
