@@ -25,7 +25,7 @@ function TableReservations({ search, categoriaId, servicios }) {
     // 1. Cargar los vehículos del usuario al montar el componente
     useEffect(() => {
         if (token) {
-            fetch("http://localhost:3000/api/vehicules", { // Ajusta a tu endpoint real
+            fetch("https://yeray.informaticamajada.es/api/vehicules", { // Ajusta a tu endpoint real
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(res => res.json())
@@ -55,7 +55,7 @@ function TableReservations({ search, categoriaId, servicios }) {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/api/dates", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

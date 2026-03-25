@@ -47,7 +47,7 @@ function Perfil() {
             }
 
             try {
-                const response = await fetch("http://localhost:3000/api/users/profile/me", {
+                const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/me", {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
@@ -74,7 +74,7 @@ function Perfil() {
 
         setLoadingNotis(true);
         try {
-            const response = await fetch("http://localhost:3000/api/notifications", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -90,7 +90,7 @@ function Perfil() {
 
     const marcarTodasComoLeidas = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/notifications/read-all`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -112,7 +112,7 @@ function Perfil() {
         );
 
         try {
-            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -158,7 +158,7 @@ function Perfil() {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch("http://localhost:3000/api/vehicules", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -191,7 +191,7 @@ function Perfil() {
 
         setLoadingCitas(true); // Cambiado aquí
         try {
-            const response = await fetch("http://localhost:3000/api/dates", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -222,7 +222,7 @@ function Perfil() {
         if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -274,7 +274,7 @@ function Perfil() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:3000/api/users/profile/update", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/update", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -320,7 +320,7 @@ function Perfil() {
 
         setLoadingVehiculos(true);
         try {
-            const response = await fetch("http://localhost:3000/api/vehicules", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {

@@ -31,7 +31,7 @@ function Checkout() {
 
     const fetchCart = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/cart`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/cart`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -79,7 +79,7 @@ function Checkout() {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/cart/checkout", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/cart/checkout", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

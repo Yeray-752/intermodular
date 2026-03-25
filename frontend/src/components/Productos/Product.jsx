@@ -21,7 +21,7 @@ function Product() {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`http://localhost:3000/api/products/${id}`, {
+        fetch(`https://yeray.informaticamajada.es/api/products/${id}`, {
             headers: { 'accept-language': i18n.language }
         })
             .then(response => {
@@ -50,7 +50,7 @@ function Product() {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/cart/add", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/cart/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
