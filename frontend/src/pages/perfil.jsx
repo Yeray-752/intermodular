@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck,Check } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 
 function Perfil() {
+    const [notificacionesPendientes, setNotificacionesPendientes] = useState(0);
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -19,8 +20,7 @@ function Perfil() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     // Dentro de tu componente, antes del return del case 'notificaciones'
-    const { t, i18n } = useTranslation(['perfil', 'notifications']); // Cargas ambos
-
+    const { t, i18n } = useTranslation(['profile', 'notifications']); // Cargas ambos
     // Creamos un helper local para las notis
     const tn = (key, params) => t(`notifications:${key}`, params);
     const [citas, setCitas] = useState([])
@@ -67,6 +67,46 @@ function Perfil() {
 
         fetchUserData();
     }, [navigate]);
+
+    const traerProductos = async () => {
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/products");
+            if (response.ok) {
+                const data = await response.json();
+                setProductos(data);
+            }
+        } catch (error) {
+            console.error("Error al cargar productos:", error);
+        }
+    };
+
+    const fetchNotificacionesCount = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications/unread-count", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setNotificacionesPendientes(data.count);
+            }
+        } catch (error) {
+            console.error("Error al obtener contador:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotificacionesCount();
+
+        window.addEventListener('notificationsUpdated', fetchNotificacionesCount);
+
+        return () => {
+            window.removeEventListener('notificationsUpdated', fetchNotificacionesCount);
+        };
+    }, []);
 
     const traerNotificaciones = async () => {
         const token = localStorage.getItem("token");
@@ -131,6 +171,7 @@ function Perfil() {
     useEffect(() => {
         if (activeTab === 'notificaciones') {
             traerNotificaciones();
+            traerProductos();
         }
     }, [activeTab]);
 
@@ -219,7 +260,7 @@ function Perfil() {
         if (!token) return;
 
         // Confirmación amistosa antes de borrar
-        if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
+        if (!confirm(t('profile:confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
             const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
@@ -233,7 +274,7 @@ function Perfil() {
             if (response.ok) {
                 // Optimistic UI: Filtramos la cita de la lista actual para que desaparezca al instante
                 setCitas(prevCitas => prevCitas.filter(cita => cita.id !== id));
-                alert(t('cancel_success') || "Cita cancelada correctamente");
+                alert(t('profile:cancel_success') || "Cita cancelada correctamente");
             } else {
                 const errorData = await response.json();
                 alert(errorData.error || "Error al cancelar la cita");
@@ -284,7 +325,7 @@ function Perfil() {
             });
 
             if (response.ok) {
-                alert(t('update_success') || "Perfil actualizado correctamente");
+                alert(t('profile:update_success') || "Perfil actualizado correctamente");
             } else {
                 alert("Error al actualizar los datos");
             }
@@ -294,18 +335,18 @@ function Perfil() {
     };
 
     const campos = useMemo(() => [
-        { name: "nombre", label: t('name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
-        { name: "apellidos", label: t('lastName') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
-        { name: "direccion", label: t('location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
+        { name: "nombre", label: t('profile:name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
+        { name: "apellidos", label: t('profile:lastName') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
+        { name: "direccion", label: t('profile:location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
     ], [userProfile, t]);
 
     const menuItems = useMemo(() => [
-        { id: 'informacion', label: t('account'), icon: User },
-        { id: 'vehiculos', label: t('myCars'), icon: Car },
-        { id: 'notificaciones', label: t('notifications_tab') || "Notificaciones", icon: Bell },
-        { id: 'citas', label: t('myAppointments'), icon: Calendar },
-        { id: 'historial', label: t('history'), icon: FileText },
-        { id: 'seguridad', label: t('security'), icon: Lock }
+        { id: 'informacion', label: t('profile:account'), icon: User },
+        { id: 'vehiculos', label: t('profile:myCars'), icon: Car },
+        { id: 'notificaciones', label: t('profile:notifications_tab') || "Notificaciones", icon: Bell },
+        { id: 'citas', label: t('profile:myAppointments'), icon: Calendar },
+        { id: 'historial', label: t('profile:history'), icon: FileText },
+        { id: 'seguridad', label: t('profile:security'), icon: Lock }
     ], [t]);
 
     const menuBtnStyle = (tab) => `
@@ -341,14 +382,14 @@ function Perfil() {
 
 
     const renderContent = () => {
-        if (loading) return <div className="py-20 text-center font-bold">{t('loadingProfileData')}</div>;
+        if (loading) return <div className="py-20 text-center font-bold">{t('profile:loadingProfileData')}</div>;
         switch (activeTab) {
             case 'informacion':
                 return (
                     <div>
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profileInfo')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
+                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:profileInfo')}</h2>
+                            <p className="text-base-content/70 text-sm">{t('profile:updateProfileData')}</p>
                         </div>
 
                         <form onSubmit={handleSubmit}>
@@ -380,7 +421,7 @@ function Perfil() {
 
                             <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary-content flex items-center gap-2">
                                 <Save size={18} />
-                                {t('saveChanges')}
+                                {t('profile:saveChanges')}
                             </button>
                         </form>
                     </div>
@@ -392,19 +433,19 @@ function Perfil() {
                             <div>
                                 <h2 className="text-3xl font-bold text-base-content flex items-center gap-3">
                                     <Car className="text-primary" size={32} />
-                                    {t('myCars') || "Mis Vehículos"}
+                                    {t('profile:myCars') || "Mis Vehículos"}
                                 </h2>
                                 <p className="text-base-content/60 mt-1">
-                                    {t('manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
+                                    {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
                             </div>
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl"
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
                             >
                                 <Plus size={20} />
-                                {t('addVehicle') || "Añadir Vehículo"}
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
                             </button>
                         </div>
 
@@ -432,10 +473,10 @@ function Perfil() {
                                                     </div>
                                                     <div>
                                                         <h3 className="font-bold text-lg text-base-content capitalize">
-                                                            {v.marca} <span className="text-primary/80">{v.modelo}</span>
+                                                            {v.marca} <span className="text-primary">{v.modelo}</span>
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className="bg-base-200 text-base-content/70 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
+                                                            <span className="bg-neutral text-base-content text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
                                                                 {v.matricula}
                                                             </span>
                                                             <span className="text-xs text-base-content/40 italic">Año {v.año}</span>
@@ -492,8 +533,8 @@ function Perfil() {
                 return (
                     <div>
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('myAppointments')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('manageActiveAppointments')}</p>
+                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:myAppointments')}</h2>
+                            <p className="text-base-content/70 text-sm">{t('profile:manageActiveAppointments')}</p>
                         </div>
 
                         <div className="space-y-4">
@@ -520,7 +561,7 @@ function Perfil() {
                                         </div>
                                         <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
                                             <span className="badge badge-warning badge-md font-bold py-3 px-4 uppercase text-[10px]">{citas.estado}</span>
-                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => eliminarCitas(citas.id)}>{t('cancel')}</button>
+                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => eliminarCitas(citas.id)}>{t('profile:cancel')}</button>
                                         </div>
                                     </div>
                                 ))
@@ -535,20 +576,18 @@ function Perfil() {
                     </div>
                 );
             case 'notificaciones':
-                // Helper local: fuerza a i18next a buscar en el archivo notificaciones.json
-                // El prefijo 'notificaciones:' es vital para que no busque en el json por defecto
+
                 const tn = (key, params) => t(`notifications:${key}`, params);
 
                 return (
                     <div className="animate-in fade-in duration-500">
-                        {/* Cabecera de la sección */}
                         <div className="mb-8 flex justify-between items-end">
                             <div>
                                 <h2 className="text-3xl font-bold mb-2 text-base-content">
-                                    {t('notifications_title') || "Mis Notificaciones"}
+                                    {t('profile:notifications_title') || "Mis Notificaciones"}
                                 </h2>
                                 <p className="text-base-content/70 text-sm">
-                                    {t('manage_notifications_desc') || "Mantente al tanto de tus citas y pedidos."}
+                                    {t('profile:manage_notifications_desc') || "Mantente al tanto de tus citas y pedidos."}
                                 </p>
                             </div>
 
@@ -571,13 +610,21 @@ function Perfil() {
                                 </div>
                             ) : notificaciones.length > 0 ? (
                                 notificaciones.map((noti) => {
-                                    // Procesar parámetros para las traducciones variables
                                     const params = typeof noti.parametros === 'string'
                                         ? JSON.parse(noti.parametros)
                                         : noti.parametros;
 
+                                    let extraParams = { ...params };
+
+                                    if (params.producto_id) {
+                                        const producto = productos.find(p => p.id === params.producto_id);
+
+                                        extraParams.producto = producto?.name || 'producto';
+                                    }
+
                                     const translationPath = `notifications.${noti.rol}`;
                                     const estaLeida = !!noti.leido;
+
 
                                     return (
                                         <div
@@ -655,17 +702,17 @@ function Perfil() {
                 return (
                     <div>
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('history')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('pastServicesHistory')}</p>
+                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:history')}</h2>
+                            <p className="text-base-content/70 text-sm">{t('profile:pastServicesHistory')}</p>
                         </div>
 
                         <div className="overflow-x-auto">
                             <table className="table w-full border-separate border-spacing-y-2">
                                 <thead>
                                     <tr className="text-base-content/50 uppercase text-[10px] tracking-widest border-none">
-                                        <th>{t('service')}</th>
-                                        <th>{t('date')}</th>
-                                        <th>{t('status')}</th>
+                                        <th>{t('profile:service')}</th>
+                                        <th>{t('profile:date')}</th>
+                                        <th>{t('profile:status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -686,22 +733,22 @@ function Perfil() {
                 return (
                     <div className='justify-self-center-safe'>
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('security')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('updatePasswordInfo')}</p>
+                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:security')}</h2>
+                            <p className="text-base-content/70 text-sm">{t('profile:updatePasswordInfo')}</p>
                         </div>
 
                         <div className="max-w-md space-y-6">
                             <div className="form-control w-full">
-                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('currentPassword')}</label>
+                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:currentPassword')}</label>
                                 <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
                             </div>
                             <div className="form-control w-full">
-                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('newPassword')}</label>
+                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:newPassword')}</label>
                                 <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
                             </div>
                             <button className="btn bg-primary-content text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
                                 <Lock size={18} />
-                                {t('updatePassword')}
+                                {t('profile:updatePassword')}
                             </button>
                         </div>
                     </div>
@@ -722,7 +769,7 @@ function Perfil() {
                     className="flex items-center gap-2 text-base-content font-semibold"
                 >
                     {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    <span>{t('menu')}</span>
+                    <span>{t('profile:menu')}</span>
                 </button>
             </div>
 
@@ -746,6 +793,13 @@ function Perfil() {
                                     >
                                         <Icon size={20} />
                                         <span>{item.label}</span>
+
+                                        {/* 👇 AÑADE ESTO */}
+                                        {item.id === 'notificaciones' && notificacionesPendientes > 0 && (
+                                            <span className="ml-auto badge badge-error badge-sm">
+                                                {notificacionesPendientes}
+                                            </span>
+                                        )}
                                     </button>
                                 );
                             })}
@@ -758,7 +812,7 @@ function Perfil() {
                             </button>
                             <button onClick={handleLogout} className='w-full text-left px-4 py-3 text-error/70 hover:bg-error/10 rounded-xl flex items-center gap-3 transition-all'>
                                 <LogOut size={20} />
-                                <span>{t('logout')}</span>
+                                <span>{t('profile:logout')}</span>
                             </button>
                         </div>
                     </aside>
@@ -786,7 +840,7 @@ function Perfil() {
                                     <Car className="text-[#ff5a1f]" size={32} />
                                 </div>
                                 <h2 className="text-2xl font-black text-center text-base-content leading-tight">
-                                    {t('registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
+                                    {t('profile:registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
                                 </h2>
                             </div>
 
@@ -861,7 +915,7 @@ function Perfil() {
                                     type="submit"
                                     className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
                                 >
-                                    {t('confirmAndAdd') || "Confirmar y Añadir"}
+                                    {t('profile:confirmAndAdd') || "Confirmar y Añadir"}
                                 </button>
                             </form>
                         </div>

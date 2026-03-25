@@ -20,7 +20,7 @@ function WhoWeAre() {
               <img
                 src={coche}
                 alt="Taller Akotan"
-                className="w-full h-[300px] md:h-[400px] object-cover"
+                className="w-full h-75 md:h-100 object-cover"
               />
             </div>
             <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-orange-600 rounded-full opacity-10 -z-10"></div>

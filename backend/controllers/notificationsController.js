@@ -2,24 +2,43 @@ import db from "../db.js";
 
 export const getNotificationsByID = async (req, res) => {
     try {
-        // Obtenemos notificaciones del usuario logueado, las más recientes primero
-        const [rows] = await db.execute(
-            'SELECT * FROM Notificaciones WHERE id_usuario = ? ORDER BY creado_en DESC',
-            [req.user.id]
-        );
+        const lang = req.headers['accept-language']?.split(',')[0] || 'es';
+
+        const [rows] = await db.execute(`
+            SELECT 
+                n.*,
+                pt.name AS producto_nombre
+            FROM Notificaciones n
+            LEFT JOIN product_translations pt 
+                ON pt.product_id = JSON_UNQUOTE(JSON_EXTRACT(n.parametros, '$.producto_id'))
+                AND pt.language_code = ?
+            WHERE n.id_usuario = ?
+            ORDER BY n.creado_en DESC
+        `, [lang, req.user.id]);
+
         res.json(rows);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Error al obtener notificaciones" });
     }
 };
 
 export const getNotificationsAdmin = async (req, res) => {
     try {
-        // Usado para obtener las notificaciones que les sirven a los admins
-        const [rows] = await db.execute(
-            'SELECT * FROM Notificaciones WHERE rol = admin ORDER BY creado_en DESC',
-            [req.user.id]
-        );
+        const lang = req.headers['accept-language']?.split(',')[0] || 'es';
+
+        const [rows] = await db.execute(`
+            SELECT 
+                n.*,
+                pt.name AS producto_nombre
+            FROM Notificaciones n
+            LEFT JOIN product_translations pt 
+                ON pt.product_id = JSON_UNQUOTE(JSON_EXTRACT(n.parametros, '$.producto_id'))
+                AND pt.language_code = ?
+            WHERE n.rol = 'admin'
+            ORDER BY n.creado_en DESC
+        `, [lang]);
+
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener notificaciones de admin" });

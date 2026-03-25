@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
     
 const datosCanarias = {
@@ -15,7 +15,7 @@ const SelectorCanarias = () => {
   const [isla, setIsla] = useState("");
   const [municipio, setMunicipio] = useState("");
 
-  const { t, i18n } = useTranslation('SelectorCanarias');
+  const {t} = useTranslation(['island']);
 
   const handleIslaChange = (e) => {
     setIsla(e.target.value);
@@ -24,31 +24,29 @@ const SelectorCanarias = () => {
 
   return (
     <div className="w-full max-w-4xl p-6 bg-white rounded-xl shadow-md border border-gray-100 mt-5 mb-5">
-      <h2 className="text-xl font-bold text-gray-800 mb-6">Ubicación en Canarias</h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-6"> {t('location')}</h2>
       
       <div className="flex flex-col md:flex-row gap-6 items-end">
         
-        {/* Selector de Isla */}
         <div className="w-full md:w-1/2 group">
           <label className="block text-sm font-medium text-gray-700 mb-2 transition-colors group-focus-within:text-blue-600">
-            Isla
+            {t('island')}
           </label>
           <select 
             value={isla} 
             onChange={handleIslaChange}
             className="w-full h-11 px-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all cursor-pointer hover:bg-white"
           >
-            <option value="">Selecciona isla...</option>
+            <option value="">{t('selectIsland')}</option>
             {Object.keys(datosCanarias).sort().map(i => (
               <option key={i} value={i}>{i}</option>
             ))}
           </select>
         </div>
 
-        {/* Selector de Municipio */}
         <div className="w-full md:w-1/2 group">
           <label className="block text-sm font-medium text-gray-700 mb-2 transition-colors group-focus-within:text-blue-600">
-            Municipio
+            {t('municipality')}
           </label>
           <select 
             value={municipio} 
@@ -60,7 +58,7 @@ const SelectorCanarias = () => {
                 : 'bg-gray-50 border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-white'
               }`}
           >
-            <option value="">Selecciona municipio...</option>
+            <option value="">{t('selectMunicipality')}</option>
             {isla && datosCanarias[isla].sort().map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
@@ -75,7 +73,7 @@ const SelectorCanarias = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           <span className="text-sm">
-            Localizado en <strong>{municipio}</strong>, {isla}.
+            {t('ubication')} <strong>{municipio}</strong>, {isla}.
           </span>
         </div>
       )}
