@@ -1,7 +1,7 @@
 /* =================================================
    VARIABLES DE TEMA (Basadas en data-theme)
    ================================================= */
-:root, [data-theme="light"] {
+:root, [data-theme="blanco"] {
   --cal-bg: #f5f3f3;
   --cal-text: #374151;
   --cal-text-muted: #9ca3af;
@@ -14,7 +14,7 @@
   --cal-nav-btn-bg: #f3f4f6; /* Fondo suave para el botón central en light */
 }
 
-[data-theme="dark"] {
+[data-theme="negro"] {
   --cal-bg: #1f2937;          
   --cal-text: #f9fafb;        
   --cal-text-muted: #9ca3af;  

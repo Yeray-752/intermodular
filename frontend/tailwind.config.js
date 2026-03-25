@@ -4,25 +4,69 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        // MODIFICAR EL TEMA LIGHT
-        light: {
-          ...require("daisyui/src/theming/themes")["light"],
-          "primary": "#4f46e5",          // Cambia el azul por uno específico
-          "primary-content": "#ffffff",   // Color del texto sobre el primary
-          "base-100": "#ffffff",          // Tu "blanco" de fondo
-          "base-200": "#f3f4f6",          // Gris muy claro para secciones
-          "base-300": "#e5e7eb",          // Gris para bordes
-          "--rounded-box": "1rem",        // Puedes cambiar hasta la redondez
+        blanco: {
+          "color-scheme": "light",
+          "primary": "#F54900",
+          "primary-content": "#ff6900",
+          "secondary": "#1447E6",
+          "secondary-content": "#e7e6e5",
+          "accent": "oklch(75% 0.20 150)",
+          "accent-content": "oklch(20% 0.05 150)",
+          "neutral": "#ebebeb",
+          "neutral-content": "#e9e7e7",
+          "base-100": "#F9FAFB",
+          "base-200": "#141C2C",
+          "base-300": "#F54A00",
+          "base-content": "oklch(25% 0.02 250)",
+          "info": "#F9FAFB",
+          "info-content": "oklch(30% 0.05 220)",
+          "success": "oklch(70% 0.20 145)",
+          "success-content": "oklch(25% 0.05 145)",
+          "warning": "#000000",
+          "warning-content": "oklch(35% 0.10 70)",
+          "error": "oklch(65% 0.25 25)",
+          "error-content": "oklch(98% 0.02 25)",
+          "--radius-selector": "0.75rem",
+          "--radius-field": "0.5rem",
+          "--radius-box": "1rem",
+          "--size-selector": "0.25rem",
+          "--size-field": "0.25rem",
+          "--border": "1px",
+          "--depth": "1",
+          "--noise": "0"
         },
-        // MODIFICAR EL TEMA DIM
-        dim: {
-          ...require("daisyui/src/theming/themes")["dim"],
-          "primary": "#6366f1",          // Un primary más brillante para el fondo oscuro
-          "base-100": "#15191e",          // El fondo oscuro del tema Dim
-          "base-content": "#ced4da",      // El color del texto
-        },
-      },
-    ],
-  },
-
-}
+        negro: {
+          "color-scheme": "dark",
+          "primary": "#F54900",
+          "primary-content": "#ff6900",
+          "secondary": "#1447E6",
+          "secondary-content": "oklch(29% 0.066 243.157)",
+          "accent": "oklch(75% 0.183 55.934)",
+          "accent-content": "oklch(26% 0.079 36.259)",
+          "neutral": "#111111",
+          "neutral-content": "#141C2C",
+          "base-100": "#F9FAFB",
+          "base-200": "#141C2C",
+          "base-300": "#F54A00",
+          "base-content": "#F9FAFB",
+          "info": "#232322",
+          "info-content": "oklch(29% 0.066 243.157)",
+          "success": "oklch(77% 0.152 181.912)",
+          "success-content": "oklch(27% 0.046 192.524)",
+          "warning": "#000000",
+          "warning-content": "oklch(42% 0.095 57.708)",
+          "error": "oklch(73.7% 0.121 32.639)",
+          "error-content": "oklch(23.501% 0.096 290.329)",
+          "--radius-selector": "1rem",
+          "--radius-field": "0.5rem",
+          "--radius-box": "1rem",
+          "--size-selector": "0.25rem",
+          "--size-field": "0.25rem",
+          "--border": "1px",
+          "--depth": "0",
+          "--noise": "0"
+        }
+      }
+    ]
+  }
+};
