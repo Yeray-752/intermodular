@@ -659,7 +659,7 @@ function Perfil() {
                                                         {tn(`${translationPath}.titles.${noti.tipo}`)}
                                                     </h4>
                                                     <p className="text-sm font-medium max-w-xl text-base-content/70">
-                                                        {tn(`${translationPath}.messages.${noti.tipo}`, params)}
+                                                        {tn(`${translationPath}.messages.${noti.tipo}`, extraParams)}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/30 uppercase tracking-widest">
                                                         <Clock size={12} />
