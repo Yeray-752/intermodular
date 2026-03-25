@@ -27,7 +27,8 @@
     "close": "Close",
     "changeLanguage": "Change Language",
     "loadingProfileData": "Loading profile data...",
-    "name": "Name"  
+    "name": "Name",
+    "manageVehiclesDesc":"Register all your vehicles"
   },
   "es": {
     "lastName": "Apellido",
@@ -57,6 +58,7 @@
     "close": "Cerrar",
     "changeLanguage": "Cambiar idioma",
     "loadingProfileData": "Cargando datos de perfil...",
-    "name": "Nombre"
+    "name": "Nombre",
+    "manageVehiclesDesc":"Registra todos tus vehículos"
   }
 }
