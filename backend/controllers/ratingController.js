@@ -1,8 +1,14 @@
 import db from "../db.js";
+import {createNotification} from "./notificationsController.js";
 
 export const saveRating = async (req, res) => {
     const { id_producto, rating, comment } = req.body;
-    const id_usuario = req.user.id; 
+    const id_usuario = req.user?.id; 
+
+    if (!id_usuario) {
+        return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+
     const connection = await db.getConnection();
 
     try {
@@ -18,10 +24,14 @@ export const saveRating = async (req, res) => {
                 created_at = CURRENT_TIMESTAMP
         `, [id_usuario, id_producto, rating, comment]);
 
-        // 2. Obtener nombre del producto para la notificación
-        const [prodInfo] = await connection.query("SELECT name FROM products WHERE id = ?", [id_producto]);
-        console.log(prodInfo)
-        console.log('hola 2')
+        // 2. CORREGIDO: Obtener nombre desde product_translations
+        // Buscamos la traducción en español o la primera que encuentre
+        const [prodInfo] = await connection.query(`
+            SELECT name FROM product_translations 
+            WHERE product_id = ? AND (language_code = 'es' OR 1=1) 
+            LIMIT 1
+        `, [id_producto]);
+        
         const nombreProducto = prodInfo[0]?.name || "el producto";
 
         // 3. Notificar al CLIENTE
@@ -29,7 +39,7 @@ export const saveRating = async (req, res) => {
             producto: nombreProducto 
         }); */
 
-        // 4. Actualizar promedio (tu lógica actual...)
+        // 4. Actualizar promedio en la tabla products
         const [rows] = await connection.query(
             "SELECT AVG(rating) as promedio FROM valoraciones WHERE id_producto = ?",
             [id_producto]
@@ -42,13 +52,14 @@ export const saveRating = async (req, res) => {
         );
 
         await connection.commit();
-        res.json({ message: "Valoración guardada y notificación enviada", nuevoPromedio });
+        res.json({ message: "Valoración guardada", nuevoPromedio });
 
     } catch (error) {
-        await connection.rollback();
-        res.status(500).json({ error: "Error al procesar la valoración" });
+        if (connection) await connection.rollback();
+        console.error("ERROR EN SAVE_RATING:", error.message); // Ahora sí debería salir en consola
+        res.status(500).json({ error: error.message });
     } finally {
-        connection.release();
+        if (connection) connection.release();
     }
 };
 

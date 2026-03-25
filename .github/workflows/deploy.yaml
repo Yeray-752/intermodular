@@ -15,35 +15,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
-
-      - name: Build Frontend
-        run: |
-          cd frontend
-          rm -rf node_modules package-lock.json
-          npm install
-          npm run build
-
-      - name: Deploy to VPS via SSH
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.IP }}
-          port: 2222
-          username: negro
-          key: ${{ secrets.PRIVATE_KEY }}
-          source: "frontend/dist,backend"
-          target: "/var/www/html/intermodular"
-          strip_components: 0
-
-      - name: Finalize Deployment
-        uses: appleboy/ssh-action@v0.1.8
-        with:
           host: ${{ secrets.IP }}
           port: 2222
           username: negro
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            cd /var/www/html/intermodular/backend
-            echo "${{ secrets.BACKEND_ENV }}" > .env
-            npm install --production
-            pm2 restart api-intermodular || pm2 start server.js --name api-intermodular
+            cd /var/www/html/intermodular;
+            git fetch --all;
+            git reset --hard origin/master;
+            git clean -df -e .env;
+            cd frontend;
+            npm install;
+            npm run build;
+            cd ..;
+            pm2 restart api-intermodular;

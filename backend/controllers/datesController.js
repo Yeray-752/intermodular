@@ -1,6 +1,6 @@
 import db from "../db.js";
 import { validateCita } from "../validators/dateValidator.js";
-
+import {createNotification} from "./notificationsController.js";
 export const actualizarCita = async (req, res) => {
     const { id } = req.params;
     const { fechaCita } = req.body; // Solo extraemos lo que cambia
@@ -96,7 +96,7 @@ export const obtenerCitasActivas = async (req, res) => {
 export const crearCita = async (req, res) => {
     const result = validateCita(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-     const estado_inicial = 'pendiente';
+    const estado_inicial = 'pendiente';
     console.log('parte 2')
 
     const id_user = req.user.id;
@@ -106,16 +106,20 @@ export const crearCita = async (req, res) => {
         fechaCita } = req.body;
 
     try {
-        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?)`;
-        const [dbResult] = await db.execute(query, [id_user,  servicio, comentarios, vehiculoSeleccionado, fechaCita, estado_inicial]);
+    const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?)`;
+    const [dbResult] = await db.execute(query, [id_user, servicio, comentarios, vehiculoSeleccionado, fechaCita, estado_inicial]);
 
+    console.log('Cita insertada, creando notificación...');
 
-        await createNotification(id_user, 'cita', 'cliente', { fecha: fechaCita }); 
+    // OJO AQUÍ: Asegúrate que la propiedad se llame 'fecha' (como espera tu plantilla)
+    // y usa la variable 'fechaCita' que desestructuraste arriba
+    await createNotification(id_user, 'cita', 'cliente', { fecha: fechaCita });
 
-        res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    res.status(201).json({ message: "Cita creada", id_cita: dbResult.insertId });
+} catch (error) {
+    console.error("Error en el proceso de cita:", error); // Esto te dirá el error real en la consola
+    res.status(500).json({ error: error.message });
+}
 };
 
 export const actualizarEstadoCita = async (req, res) => {
