@@ -23,7 +23,6 @@ function Perfil() {
     // Dentro de tu componente, antes del return del case 'notificaciones'
     const { t, i18n } = useTranslation(['profile', 'notifications']); // Cargas ambos
     // Creamos un helper local para las notis
-    const tn = (key, params) => t(`notifications:${key}`, params);
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
@@ -121,6 +120,7 @@ function Perfil() {
             if (response.ok) {
                 const data = await response.json();
                 setNotificaciones(data);
+                console.log(data)
             }
         } catch (error) {
             console.error("Error al cargar notificaciones:", error);
@@ -133,7 +133,11 @@ function Perfil() {
         try {
             const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
                 method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'accept-language': i18n.language
+                }
+
             });
 
             if (response.ok) {
