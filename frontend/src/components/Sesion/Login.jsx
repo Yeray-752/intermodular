@@ -60,11 +60,7 @@ function Login() {
 
             console.log("Login exitoso, actualizando contexto...");
 
-<<<<<<< HEAD
             login(json.token);
-=======
-             login(json.token);
->>>>>>> origin/Yeray-tercera
 
             //si quieres comprar pero no tienes sesión, te manda al login, esta línea te manda de vuelta, y si no vienes
             // de ningun sitio, te manda a home

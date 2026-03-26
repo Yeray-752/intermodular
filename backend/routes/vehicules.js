@@ -1,12 +1,7 @@
 import { Router } from 'express';
-<<<<<<< HEAD
-import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo, getVehiculos} from '../controllers/vehiculeController.js';
-import { verifyToken } from '../middlewares/auth.js'; // Asumo que tienes este middleware
-=======
-import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo } from '../controllers/vehiculeController.js';
+import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo, getVehiculos } from '../controllers/vehiculeController.js';
 import puppeteer from 'puppeteer';
-
->>>>>>> origin/Yeray-tercera
+import { verifyToken } from '../middlewares/auth.js';
 
 const router = Router();
 

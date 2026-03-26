@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router';
-import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
-=======
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { data, useNavigate } from 'react-router';
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
->>>>>>> origin/Yeray-tercera
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -33,20 +26,6 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
-<<<<<<< HEAD
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [vehiculos, setVehiculos] = useState([]);
-    const [loadingVehiculos, setLoadingVehiculos] = useState(false);
-    const [formVehiculo, setFormVehiculo] = useState({
-        matricula: '',
-        marca: '',
-        modelo: '',
-        año: new Date().getFullYear()
-    });
-    const [notificaciones, setNotificaciones] = useState([]);
-    const [loadingNotis, setLoadingNotis] = useState(false);
-
-=======
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
@@ -58,7 +37,6 @@ function Perfil() {
     console.log(matricula)
     console.log(cocheBuscado)
     // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
->>>>>>> origin/Yeray-tercera
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
@@ -89,7 +67,6 @@ function Perfil() {
         fetchUserData();
     }, [navigate]);
 
-<<<<<<< HEAD
     const traerProductos = async () => {
         try {
             const response = await fetch("https://yeray.informaticamajada.es/api/products");
@@ -253,61 +230,6 @@ function Perfil() {
         }
     };
 
-=======
-    useEffect(() => {
-        const node = dialogRef.current; // Accedemos al elemento real del DOM
-        if (!node) return;
-
-        if (open) {
-            node.showModal(); // Método nativo de HTML5
-        } else {
-            node.close();     // Método nativo de HTML5
-        }
-    }, [open])
-
-    const manejarCambio = (e) => {
-        setDatos({
-            ...datos,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const enviarFormulario = (e) => {
-        e.preventDefault();
-        console.log("Datos enviados:", datos);
-        if (modo === 'manual') {
-            // registrarManual(datos);
-        } else {
-            buscarCoche(matricula)
-        }
-
-        // Opcional: Cerrar el modal después de la acción
-        setOpen(false);
-        // Aquí iría tu llamada a la API
-    };
-
-
-    const buscarCoche = async (matricula) => {
-
-        /* Toca hacer scraping */
-        // Construimos la URL con los parámetros necesarios
-        const url = `https://yeray.informaticamajada.es/api/vehicle/${matricula}`;
-
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`Error en la petición: ${response.status}`);
-            }
-
-            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
-            setCocheBuscado(await data)
-        } catch (e) {
-            console.error('Error capturado:', e.message);
-        }
-    }
-
->>>>>>> origin/Yeray-tercera
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -345,11 +267,7 @@ function Perfil() {
         if (!confirm(t('profile:confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-<<<<<<< HEAD
             const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
-=======
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelada`, {
->>>>>>> origin/Yeray-tercera
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -524,97 +442,6 @@ function Perfil() {
                                 <p className="text-base-content/60 mt-1">
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
-<<<<<<< HEAD
-                            </div>
-
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
-                            >
-                                <Plus size={20} />
-                                {t('profile:addVehicle') || "Añadir Vehículo"}
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {loadingVehiculos ? (
-                                <div className="col-span-full flex flex-col items-center py-12">
-                                    <span className="loading loading-spinner loading-lg text-primary"></span>
-                                    <p className="mt-4 text-base-content/50">Cargando tu garaje...</p>
-                                </div>
-                            ) : vehiculos.length > 0 ? (
-                                <>
-                                    {vehiculos.map((v) => (
-                                        <div
-                                            key={v.matricula}
-                                            className="group bg-base-100 border border-base-300 rounded-3xl p-5 hover:shadow-xl hover:border-primary/30 transition-all duration-300 relative overflow-hidden"
-                                        >
-                                            <div className="absolute -right-4 -bottom-4 text-base-content/5 opacity-0 group-hover:opacity-100 transition-opacity rotate-12">
-                                                <Car size={100} />
-                                            </div>
-
-                                            <div className="flex items-start justify-between relative z-10">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                                        <Car size={24} />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-lg text-base-content capitalize">
-                                                            {v.marca} <span className="text-primary">{v.modelo}</span>
-                                                        </h3>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <span className="bg-neutral text-base-content text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
-                                                                {v.matricula}
-                                                            </span>
-                                                            <span className="text-xs text-base-content/40 italic">Año {v.año}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <button
-                                                    onClick={() => {
-                                                        if (window.confirm(`¿Estás seguro de que deseas eliminar el vehículo ${v.matricula}?`)) {
-                                                            eliminarVehiculo(v.matricula);
-                                                        }
-                                                    }}
-                                                    className="btn btn-circle btn-ghost btn-sm text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                    <X size={18} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="border-2 border-dashed border-base-300 rounded-3xl p-5 flex flex-col items-center justify-center gap-2 text-base-content/40 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group"
-                                    >
-                                        <div className="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <Plus size={24} />
-                                        </div>
-                                        <span className="font-medium text-sm">Registrar nuevo</span>
-                                    </button>
-                                </>
-                            ) : (
-                                /* Estado Vacío */
-                                <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
-                                    <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                        <Car size={32} className="text-base-content/20" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
-                                    <p className="text-base-content/50 max-w-xs mx-auto mt-2">
-                                        Añade tu primer vehículo para poder solicitar servicios y reparaciones.
-                                    </p>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="btn btn-primary mt-6 rounded-xl"
-                                    >
-                                        Registrar mi primer coche
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-=======
                             </div>
 
                             <button
@@ -842,7 +669,6 @@ function Perfil() {
                                 </div>
                             </div>
                         )}
->>>>>>> origin/Yeray-tercera
                     </div>
                 );
             case 'citas':
