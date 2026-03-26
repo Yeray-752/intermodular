@@ -15,7 +15,6 @@ function TableReservations({ search, categoriaId, servicios }) {
 
 
 
-    // ESTADOS NUEVOS
     const [misVehiculos, setMisVehiculos] = useState([]);
     const [vehiculoMatricula, setVehiculoMatricula] = useState(""); // Guardaremos la matrícula
     const [motivo, setMotivo] = useState("");
@@ -37,35 +36,36 @@ function TableReservations({ search, categoriaId, servicios }) {
     }, [token]);
 
     const enviarConsulta = async () => {
-        if (!token || !vehiculoMatricula) {
-            console.error("Faltan datos o autorización");
-            return;
-        }
-
-        const año = fecha.getFullYear();
-        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-        const dia = String(fecha.getDate()).padStart(2, '0');
-        const fechaFormateada = `${año}-${mes}-${dia}T12:00:00`;
-
-        const datosReserva = {
-            servicio: servicioSeleccionado.name,
-            matricula: vehiculoMatricula, // Mandamos la PK directamente
-            comentarios: motivo,
-            fechaCita: fechaFormateada
-        };
-
         try {
+            const año = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dia = String(fecha.getDate()).padStart(2, '0');
+
+            // Formato SQL estándar: YYYY-MM-DD HH:mm:ss
+            // Quitamos la 'Z' y preferiblemente usamos un espacio en lugar de la 'T'
+            const fechaSQL = `${año}-${mes}-${dia} 12:00:00`;
+
+            const datosReserva = {
+                servicio: String(servicioSeleccionado.name),
+                vehiculoSeleccionado: String(vehiculoMatricula),
+                comentarios: motivo || "",
+                fechaCita: fechaSQL // Enviamos el formato limpio
+            };
+
             const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(datosReserva),
+                body: JSON.stringify(datosReserva)
             });
-            if (response.ok) cerrarModal();
+
+            if (response.ok) {
+                cerrarModal();
+            }
         } catch (error) {
-            console.error(`Error: ${error}`);
+            console.error("Error:", error);
         }
     };
 

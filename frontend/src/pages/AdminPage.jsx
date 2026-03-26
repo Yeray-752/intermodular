@@ -305,12 +305,7 @@ function AdminPage() {
 
             <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-<<<<<<< HEAD
-
-                    {/* Columna Izquierda: Imagen */}
-=======
                     
->>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
                         <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">

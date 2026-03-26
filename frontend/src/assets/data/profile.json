@@ -28,12 +28,15 @@
     "changeLanguage": "Change Language",
     "loadingProfileData": "Loading profile data...",
     "name": "Name",
-    "manageVehiclesDesc":"Register all your vehicles",
-    "notifications_tab":"Notifications",
-    "notifications_title":"Notifications",
-    "manage_notifications_desc":"Look data of your purchases.",
-    "pastServicesHistory":"Look at your history of purchases and appointments",
-        "manageActiveAppointments":"Organize and view the status of your pending appointments."
+    "manageVehiclesDesc": "Register all your vehicles",
+    "notifications_tab": "Notifications",
+    "notifications_title": "Notifications",
+    "manage_notifications_desc": "Look data of your purchases.",
+    "pastServicesHistory": "Look at your history of purchases and appointments",
+    "manageActiveAppointments": "Organize and view the status of your pending appointments.",
+    "service":"Service",
+    "date":"Date",
+    "status":"Status"
   },
   "es": {
     "lastName": "Apellido",
@@ -64,11 +67,14 @@
     "changeLanguage": "Cambiar idioma",
     "loadingProfileData": "Cargando datos de perfil...",
     "name": "Nombre",
-    "manageVehiclesDesc":"Registra todos tus vehículos",
-    "notifications_tab":"Notificaciones",
-    "notifications_title":"Notificaciones",
-    "manage_notifications_desc":"Mira datos de tus compras o citas pedidas.",
-    "pastServicesHistory":"Mire su historial de compras y citas.",
-    "manageActiveAppointments":"Organize y vea el estado de sus citas pendientes."
+    "manageVehiclesDesc": "Registra todos tus vehículos",
+    "notifications_tab": "Notificaciones",
+    "notifications_title": "Notificaciones",
+    "manage_notifications_desc": "Mira datos de tus compras o citas pedidas.",
+    "pastServicesHistory": "Mire su historial de compras y citas.",
+    "manageActiveAppointments": "Organize y vea el estado de sus citas pendientes.",
+    "service":"Servicio",
+    "date":"Fecha",
+    "status":"Estado"
   }
 }
