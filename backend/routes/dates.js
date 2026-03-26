@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { actualizarEstadoCita, actualizarCita, crearCita, obtenerCitasAdmin, obtenerCitasTerminadas, obtenerCitasEnProceso, cancelarCita } from '../controllers/datesController.js';
+import { obtenerCitasID,actualizarEstadoCita, actualizarCita, crearCita, obtenerCitasAdmin, obtenerCitasTerminadas, obtenerCitasEnProceso, cancelarCita } from '../controllers/datesController.js';
 import { verifyToken, isAdmin } from '../middlewares/auth.js';
 import { validateCita, validateUpdateEstadoCita, validateIdParam } from '../validators/dateValidator.js';
 
 const router = Router();
 
-router.get('/', verifyToken, obtenerCitasTerminadas);
+router.get('/', verifyToken, obtenerCitasID);
+router.get('/terminada', verifyToken, obtenerCitasTerminadas);
 router.get('/admin/pendientes', verifyToken, isAdmin, obtenerCitasAdmin);
 router.get('/admin/procesando', verifyToken, isAdmin, obtenerCitasEnProceso);
 

@@ -12,7 +12,7 @@
         },
         "messages": {
           "compra": "¡Gracias! Tu pedido #{{id_pedido}} con {{cantidad_articulos}} artículos por un total de {{total}}€ se ha procesado correctamente.",
-          "cita": "Cita programada para el día {{fecha}}.",
+          "cita": "Cita programada para el día {{fecha}}, la hora y dia pueden variar, si tiene alguna duda, no dude en contactarnos.",
           "cita_cancelada": "Tu cita del {{fecha}} ha sido cancelada con éxito.",
           "cita_estado": "Tu cita del {{fecha}} ahora está: {{estado}}.",
           "valoracion_borrada": "Tu reseña sobre el producto ha sido eliminada correctamente.",
@@ -62,7 +62,7 @@
         },
         "messages": {
           "compra": "Thank you! Your order #{{id_pedido}} with {{cantidad_articulos}} items for a total of {{total}}€ has been processed successfully.",
-          "cita": "Appointment scheduled for {{fecha}}.",
+          "cita": "Appointment scheduled for {{fecha}}, date can be change, please contact us if you have any doubts.",
           "cita_cancelada": "Your appointment on {{fecha}} has been successfully cancelled.",
           "cita_estado": "Your appointment on {{fecha}} is now: {{estado}}.",
           "valoracion_borrada": "Your product review has been successfully deleted.",
