@@ -72,7 +72,7 @@ app.use("/api/dates", datesRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use('/api/product_categories', product_categoryRoutes);
 app.use('/api/service_categories', service_categoryRoutes);
-app.use('/api/vehicle', vehiculesRoutes);
+app.use('/api/vehicule', vehiculesRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/rating', ratingRoutes);
