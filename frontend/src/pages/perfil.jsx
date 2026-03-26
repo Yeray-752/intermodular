@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useContext } from 'react';
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { data, useNavigate } from 'react-router';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
