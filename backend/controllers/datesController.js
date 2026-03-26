@@ -30,6 +30,7 @@ export const actualizarCita = async (req, res) => {
 };
 
 export const obtenerCitasTerminadas = async (req, res) => {
+    console.log('prueba de backend local')
     try {
         // Ajustamos el JOIN para usar la tabla 'Cliente'
         let query = `
@@ -121,11 +122,64 @@ export const crearCita = async (req, res) => {
     res.status(500).json({ error: error.message });
 }
 };
+export const cancelarCita = async (req, res) => {
+    const { id } = req.params;
+    const id_usuario_token = req.user.id;
+    const esAdmin = req.user.rol === 'admin';
+
+    try {
+        const [cita] = await db.execute(
+            'SELECT id_usuario, estado FROM cita WHERE id = ?',
+            [id]
+        );
+
+        if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
+
+        if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
+            return res.status(403).json({ message: "No autorizado" });
+        }
+         if (cita[0].estado !== 'pendiente') {
+            return res.status(400).json({ message: "Solo se pueden cancelar citas en estado pendiente" });
+        }
+
+        await db.execute('UPDATE cita SET estado = ? WHERE id = ?', ['cancelada', id]);
+
+        // LÓGICA DE NOTIFICACIONES REFINADA
+        if (esAdmin) {
+            // El admin cancela -> Notificamos al cliente
+            await createNotification(
+                cita[0].id_usuario,
+                'cita_cancelada',
+                'cliente',
+                { fecha: cita[0].fecha }
+            );
+        } else {
+            // El cliente cancela -> Notificamos al admin (ID 1 por ahora)
+            await createNotification(
+                1,
+                'cita_cancelada_admin',
+                'admin',
+                {
+                    fecha: cita[0].fecha,
+                    usuario: id_usuario_token
+                }
+            );
+        }
+
+       
+       
+        res.json({ message: "Cita cancelada correctamente por el usuario" });
+    } catch (error) {
+        res.status(500).json({message: "problemitas con cancelar cita" });
+    }
+};
 
 export const actualizarEstadoCita = async (req, res) => {
     const { id } = req.params;
     const { estado } = req.params;
-    console.log(id, estado)
+  
+
+        console.log(id, estado)
     try {
         const query = 'UPDATE cita SET estado = ? WHERE id = ?';
         const [result] = await db.execute(query, [estado, id]);
@@ -151,65 +205,11 @@ export const actualizarEstadoCita = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+    
+    
 };
 
-export const cancelarCita = async (req, res) => {
-    const { id } = req.params;
-    const id_usuario_token = req.user.id;
-    const esAdmin = req.user.rol === 'admin';
 
-    try {
-        const [cita] = await db.execute(
-            'SELECT id_usuario, estado FROM cita WHERE id = ?',
-            [id]
-        );
-
-        if (cita.length === 0) return res.status(404).json({ message: "Cita no encontrada" });
-
-        if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
-            return res.status(403).json({ message: "No autorizado" });
-        }
-
-        await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', ['cancelada', id]);
-
-        // LÓGICA DE NOTIFICACIONES REFINADA
-        if (esAdmin) {
-            // El admin cancela -> Notificamos al cliente
-            await createNotification(
-                cita[0].id_usuario,
-                'cita_cancelada',
-                'cliente',
-                { fecha: cita[0].fecha }
-            );
-        } else {
-            // El cliente cancela -> Notificamos al admin (ID 1 por ahora)
-            await createNotification(
-                1,
-                'cita_cancelada_admin',
-                'admin',
-                {
-                    fecha: cita[0].fecha,
-                    usuario: id_usuario_token
-                }
-            );
-        }
-
-        // 3. (Opcional) Evitar cancelar citas que ya pasaron o ya están completadas
-        if (cita[0].estado !== 'pendiente') {
-            return res.status(400).json({ message: "Solo se pueden cancelar citas en estado pendiente" });
-        }
-
-        // 4. Procedemos a la cancelación
-        await db.execute(
-            'UPDATE cita SET estado = ? WHERE id = ?',
-            ['cancelada', id]
-        );
-
-        res.json({ message: "Cita cancelada correctamente por el usuario" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
 export const obtenerCitasEnProceso = async (req, res) => {
     try {

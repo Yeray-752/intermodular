@@ -14,15 +14,16 @@ import {
     BarChart,
     Clock,
     FileText,
-    Save,   
+    Save,
     MoreHorizontal
 } from 'lucide-react';
 import Header from "../components/Principal/Header";
 import Footer from "../components/Principal/Footer";
 import Calendario from "../components/AdminComponents/Calendario";
 import StockTable from '../components/AdminComponents/StockTable';
-import {VentasChart} from "../components/AdminComponents/estadisticas"
+import { VentasChart } from "../components/AdminComponents/estadisticas"
 import { useEffect } from 'react';
+
 
 function AdminPage() {
     const [activeTab, setActiveTab] = useState('reservas');
@@ -43,7 +44,7 @@ function AdminPage() {
         if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/${estado}`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/actualizar/${id}/${estado}`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -59,6 +60,7 @@ function AdminPage() {
                 if (estado === 'procesando') {
                     cargarEventosCalendario();
                 }
+               
             } else {
                 const errorData = await response.json();
                 alert(errorData.error || "Error al cancelar la cita");
@@ -118,8 +120,8 @@ function AdminPage() {
             const format = data.map(c => {
                 // Si la fecha viene como "2026-02-16T23:00:00.000Z"
                 // Al hacer el split por 'T', nos quedamos con "2026-02-16"
-              /*   const fechaLimpia = c.fecha_cita.split('T')[0]; */
-             
+                /*   const fechaLimpia = c.fecha_cita.split('T')[0]; */
+
 
                 return {
                     id: c.id.toString(),
@@ -143,13 +145,13 @@ function AdminPage() {
 
     const fetchDatos = async () => {
         try {
-            
+
             const [resProd, resCat] = await Promise.all([
                 fetch('https://yeray.informaticamajada.es/api/products')
             ]);
             const dataProd = await resProd.json();
             setListaProductos(dataProd);
-           
+
         } catch (err) {
             console.error("Error cargando el mercado:", err);
         } finally {
@@ -163,13 +165,13 @@ function AdminPage() {
             trearCitas();
             cargarEventosCalendario();
         }
-        if (activeTab === 'stock'){
+        if (activeTab === 'stock') {
             fetchDatos();
         }
     }, [activeTab]);
 
 
-    
+
 
     const menuItems = useMemo(() => [
         
@@ -284,7 +286,7 @@ function AdminPage() {
                     <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Stock</h2>
                     <p className="text-slate-500 text-sm">Administración de precios y existencias.</p>
                 </div>
-                
+
             </div>
 
             <div className=" ">
@@ -303,21 +305,22 @@ function AdminPage() {
 
             <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
+
+                    {/* Columna Izquierda: Imagen */}
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
                         <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">
-                            
-                                <div className="flex flex-col items-center text-base-content/40">
-                                    <ImageIcon size={48} strokeWidth={1} />
-                                    <span className="text-xs font-medium mt-2">Click para subir imagen</span>
-                                </div>
-                            
-                            <input 
-                                type="file" 
+
+                            <div className="flex flex-col items-center text-base-content/40">
+                                <ImageIcon size={48} strokeWidth={1} />
+                                <span className="text-xs font-medium mt-2">Click para subir imagen</span>
+                            </div>
+
+                            <input
+                                type="file"
                                 name="foto"
-                            
-                                className="absolute inset-0 opacity-0 cursor-pointer" 
+
+                                className="absolute inset-0 opacity-0 cursor-pointer"
                                 accept="image/*"
                             />
                         </div>
@@ -327,7 +330,7 @@ function AdminPage() {
                         <div className="form-control">
                             <label className="label text-[10px] font-boldx uppercase text-base-content/60 tracking-widest">Título del Servicio</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Tag size={18}/></span>
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Tag size={18} /></span>
                                 <input type="text" name="titulo" placeholder="Ej: Cambio de Aceite Sintético" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
                             </div>
                         </div>
@@ -335,7 +338,7 @@ function AdminPage() {
                         <div className="form-control">
                             <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Dificultad</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><BarChart size={18}/></span>
+                                <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><BarChart size={18} /></span>
                                 <select name="dificultad" className="select select-bordered w-full pl-10 focus:select-primary bg-base-100" required>
                                     <option value="baja">Baja</option>
                                     <option value="media">Media</option>
@@ -348,7 +351,7 @@ function AdminPage() {
                             <div className="form-control">
                                 <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Tiempo Aprox.</label>
                                 <div className="relative">
-                                    <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Clock size={18}/></span>
+                                    <span className="absolute inset-y-0 left-3 flex items-center text-base-content/30"><Clock size={18} /></span>
                                     <input type="text" name="tiempo" placeholder="1h 30m" className="input input-bordered w-full pl-10 focus:input-primary bg-base-100" required />
                                 </div>
                             </div>
@@ -363,7 +366,7 @@ function AdminPage() {
                 <div className="form-control">
                     <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Descripción Detallada</label>
                     <div className="relative">
-                        <span className="absolute top-3 left-3 text-base-content/30"><FileText size={18}/></span>
+                        <span className="absolute top-3 left-3 text-base-content/30"><FileText size={18} /></span>
                         <textarea name="descripcion" className="textarea textarea-bordered w-full pl-10 h-32 focus:textarea-primary bg-base-100" placeholder="Describe qué incluye este servicio..."></textarea>
                     </div>
                 </div>
