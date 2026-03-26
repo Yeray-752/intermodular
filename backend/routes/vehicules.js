@@ -287,7 +287,7 @@ function parseVehicleInfo(raw, plate) {
 }
 
 // ── GET /api/vehicle/:plate ───────────────────────────────────
-router.get("/:plate", async (req, res) => {
+router.get("/matricula/:plate", async (req, res) => {
   const plate = req.params.plate.toUpperCase().replace(/[\s-]/g, "");
   console.log('matricula ')
 
