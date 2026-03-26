@@ -172,6 +172,7 @@ function AdminPage() {
     
 
     const menuItems = useMemo(() => [
+        
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },
         { id: 'stock', label: 'Stock de Productos', icon: Package },
