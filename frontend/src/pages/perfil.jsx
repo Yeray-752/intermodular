@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { data, useNavigate } from 'react-router';
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
+=======
+import { useLocation } from "react-router-dom";
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { data, useNavigate } from 'react-router';
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +33,21 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
+<<<<<<< HEAD
+=======
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [vehiculos, setVehiculos] = useState([]);
+    const [loadingVehiculos, setLoadingVehiculos] = useState(false);
+    const [formVehiculo, setFormVehiculo] = useState({
+        matricula: '',
+        marca: '',
+        modelo: '',
+        año: new Date().getFullYear()
+    });
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [loadingNotis, setLoadingNotis] = useState(false);
+
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
@@ -230,6 +252,67 @@ function Perfil() {
         }
     };
 
+<<<<<<< HEAD
+=======
+    useEffect(() => {
+        const node = dialogRef.current; // Accedemos al elemento real del DOM
+        if (!node) return;
+
+        if (open) {
+            node.showModal(); // Método nativo de HTML5
+        } else {
+            node.close();     // Método nativo de HTML5
+        }
+    }, [open])
+
+    const manejarCambio = (e) => {
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const enviarFormulario = (e) => {
+        e.preventDefault();
+        console.log("Datos enviados:", datos);
+        if (modo === 'manual') {
+            // registrarManual(datos);
+        } else {
+            buscarCoche(matricula)
+        }
+
+        // Opcional: Cerrar el modal después de la acción
+        setOpen(false);
+        // Aquí iría tu llamada a la API
+    };
+
+
+    const buscarCoche = async (matricula) => {
+
+        /* Toca hacer scraping */
+        // Construimos la URL con los parámetros necesarios
+        const url = `https://yeray.informaticamajada.es/api/vehicules/matricula/${matricula}`;
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
+            setCocheBuscado(await data)
+        } catch (e) {
+            console.error('Error capturado:', e.message);
+        }
+    }
+
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -443,6 +526,21 @@ function Perfil() {
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
                             </div>
+<<<<<<< HEAD
+=======
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
+                            >
+                                <Plus size={20} />
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 
                             <button
                                 onClick={() => setIsModalOpen(true)}

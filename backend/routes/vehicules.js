@@ -1,7 +1,13 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo } from '../controllers/vehiculeController.js';
 import puppeteer from 'puppeteer';
 
+=======
+import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo, getVehiculos } from '../controllers/vehiculeController.js';
+import puppeteer from 'puppeteer';
+import { verifyToken } from '../middlewares/auth.js';
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 
 const router = Router();
 
@@ -287,7 +293,7 @@ function parseVehicleInfo(raw, plate) {
 }
 
 // ── GET /api/vehicle/:plate ───────────────────────────────────
-router.get("/:plate", async (req, res) => {
+router.get("/matricula/:plate", async (req, res) => {
   const plate = req.params.plate.toUpperCase().replace(/[\s-]/g, "");
   console.log('matricula ')
 

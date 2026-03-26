@@ -38,7 +38,7 @@ app.use(languageMiddleware);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 500,
+  max: 5000,
   message: 'La página se encuentra saturada en estos momentos, por favor, inténtelo más tarde.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -72,7 +72,7 @@ app.use("/api/dates", datesRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use('/api/product_categories', product_categoryRoutes);
 app.use('/api/service_categories', service_categoryRoutes);
-app.use('/api/vehicle', vehiculesRoutes);
+app.use('/api/vehicules', vehiculesRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/rating', ratingRoutes);
