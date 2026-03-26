@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
+=======
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { data, useNavigate } from 'react-router';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
+>>>>>>> origin/Yeray-tercera
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
+import CarFinder from '../components/prueba/carFinder';
 
 function Perfil() {
     const [productos, setProductos] = useState([]);
@@ -26,6 +33,7 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
+<<<<<<< HEAD
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [vehiculos, setVehiculos] = useState([]);
     const [loadingVehiculos, setLoadingVehiculos] = useState(false);
@@ -38,6 +46,19 @@ function Perfil() {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 
+=======
+    const [cocheBuscado, setCocheBuscado] = useState('');
+    const [matricula, setMatricula] = useState('');
+    const [open, setOpen] = useState(false)
+    const dialogRef = useRef(null)
+    const [modo, setModo] = useState(null);
+    const [datos, setDatos] = useState({
+        marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
+    });
+    console.log(matricula)
+    console.log(cocheBuscado)
+    // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
+>>>>>>> origin/Yeray-tercera
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
@@ -68,6 +89,7 @@ function Perfil() {
         fetchUserData();
     }, [navigate]);
 
+<<<<<<< HEAD
     const traerProductos = async () => {
         try {
             const response = await fetch("https://yeray.informaticamajada.es/api/products");
@@ -231,6 +253,61 @@ function Perfil() {
         }
     };
 
+=======
+    useEffect(() => {
+        const node = dialogRef.current; // Accedemos al elemento real del DOM
+        if (!node) return;
+
+        if (open) {
+            node.showModal(); // Método nativo de HTML5
+        } else {
+            node.close();     // Método nativo de HTML5
+        }
+    }, [open])
+
+    const manejarCambio = (e) => {
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const enviarFormulario = (e) => {
+        e.preventDefault();
+        console.log("Datos enviados:", datos);
+        if (modo === 'manual') {
+            // registrarManual(datos);
+        } else {
+            buscarCoche(matricula)
+        }
+
+        // Opcional: Cerrar el modal después de la acción
+        setOpen(false);
+        // Aquí iría tu llamada a la API
+    };
+
+
+    const buscarCoche = async (matricula) => {
+
+        /* Toca hacer scraping */
+        // Construimos la URL con los parámetros necesarios
+        const url = `https://yeray.informaticamajada.es/api/vehicle/${matricula}`;
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
+            setCocheBuscado(await data)
+        } catch (e) {
+            console.error('Error capturado:', e.message);
+        }
+    }
+
+>>>>>>> origin/Yeray-tercera
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -268,7 +345,11 @@ function Perfil() {
         if (!confirm(t('profile:confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
+<<<<<<< HEAD
             const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
+=======
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelada`, {
+>>>>>>> origin/Yeray-tercera
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -443,6 +524,7 @@ function Perfil() {
                                 <p className="text-base-content/60 mt-1">
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
+<<<<<<< HEAD
                             </div>
 
                             <button
@@ -532,6 +614,235 @@ function Perfil() {
                                 </div>
                             )}
                         </div>
+=======
+                            </div>
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
+                            >
+                                <Plus size={20} />
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {cocheBuscado && (
+                                <div className="group p-8 bg-base-100 border border-base-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <Car size={80} className="text-[#ff5a1f]" />
+                                    </div>
+
+                                    <div className="flex items-center gap-5 mb-6">
+                                        <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">
+                                            <Car className="text-[#ff5a1f]" size={26} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-base-content leading-tight uppercase">
+                                                {cocheBuscado.data?.brand}{" "}
+                                                <span className="text-[#ff5a1f]">{cocheBuscado.data?.model}</span>
+                                            </h2>
+                                            <p className="text-xs font-bold tracking-[0.2em] text-base-content/40 mt-1">
+                                                {cocheBuscado.data?.plate}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-2 py-4 border-y border-base-200">
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Settings size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Motor</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.engine}</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 border-x border-base-200">
+                                            <Zap size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Potencia</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.power}</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Calendar size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Año</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.yearFrom}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                    <Car size={32} className="text-base-content/20" />
+                                </div>
+                                <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
+                                <p className="text-base-content/50 max-w-xs mx-auto mt-2">
+                                    Añade tu primer vehículo para poder solicitar servicios y reparaciones.
+                                </p>
+                                <button
+                                    onClick={() => setOpen(true)}
+                                    className="btn btn-primary mt-6 rounded-xl"
+                                >
+                                    Registrar mi primer coche
+                                </button>
+                            </div>
+
+
+
+                        </div>
+
+                        {/* MODAL ESTILIZADO */}
+                        {open && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+                                <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
+
+                                    <button
+                                        onClick={() => { setOpen(false); setModo(null); }}
+                                        className="absolute top-8 right-8 text-base-content/30 hover:text-base-content transition-colors z-10"
+                                    >
+                                        <X size={28} />
+                                    </button>
+
+                                    <div className="p-10">
+                                        {!modo ? (
+                                            /* PASO 1: Selección de modo con estilo nuevo */
+                                            <div className="py-4 text-center">
+                                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
+                                                    <Car className="text-[#ff5a1f]" size={32} />
+                                                </div>
+                                                <h3 className="text-2xl font-black mb-8 leading-tight">¿Cómo quieres añadir tu vehículo?</h3>
+                                                <div className="flex flex-col gap-4">
+                                                    <button
+                                                        onClick={() => setModo('manual')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">📝</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Entrada Manual</p>
+                                                            <p className="text-xs text-base-content/50">Introduce todos los datos</p>
+                                                        </div>
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => setModo('automatico')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">🤖</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Automático</p>
+                                                            <p className="text-xs text-base-content/50">Solo con tu matrícula</p>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            /* PASO 2: El formulario estilizado */
+                                            <>
+                                                <div className="flex flex-col items-center mb-8">
+                                                    <button
+                                                        onClick={() => setModo(null)}
+                                                        className="text-[10px] font-bold uppercase tracking-widest text-[#ff5a1f] mb-2 hover:underline"
+                                                    >
+                                                        ← Volver atrás
+                                                    </button>
+                                                    <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                                        {modo === 'manual' ? 'Registrar Vehículo' : 'Búsqueda Rápida'}
+                                                    </h2>
+                                                </div>
+
+                                                <form onSubmit={enviarFormulario} className="space-y-5">
+                                                    {/* Input Matrícula Principal */}
+                                                    <div>
+                                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                                        <input
+                                                            required
+                                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
+                                                            placeholder="1234BBB"
+                                                            onChange={(e) => setMatricula(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {modo === 'manual' && (
+                                                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-500">
+                                                            {/* MARCA */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.marca}
+                                                                    name="marca"
+                                                                    placeholder="Ej: Seat"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MODELO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.modelo}
+                                                                    name="modelo"
+                                                                    placeholder="Ej: Ibiza"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* AÑO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder='2020'
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.anio}
+                                                                    name="anio"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MOTORIZACIÓN (Potencia/Cilindrada) */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Motor (CV/cc)</label>
+                                                                <input
+                                                                    placeholder="Ej: 1.8"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.motor}
+                                                                    name="motor"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* COMBUSTIBLE (Selector) */}
+                                                            <div className="col-span-2">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Tipo de Combustible</label>
+                                                                <select
+                                                                    name="combustible"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
+                                                                    value={datos.combustible}
+                                                                    onChange={manejarCambio}
+                                                                >
+                                                                    <option value="">Seleccionar combustible...</option>
+                                                                    <option value="gasolina">Gasolina</option>
+                                                                    <option value="diesel">Diesel</option>
+                                                                    <option value="electrico">Eléctrico</option>
+                                                                    <option value="hibrido">Híbrido</option>
+                                                                    <option value="glp">GLP</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <button
+                                                        type="submit"
+                                                        className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
+                                                    >
+                                                        {modo === 'manual' ? 'Confirmar Registro' : 'Consultar Matrícula'}
+                                                    </button>
+                                                </form>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+>>>>>>> origin/Yeray-tercera
                     </div>
                 );
             case 'citas':

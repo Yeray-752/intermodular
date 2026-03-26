@@ -60,7 +60,11 @@ function Login() {
 
             console.log("Login exitoso, actualizando contexto...");
 
+<<<<<<< HEAD
             login(json.token);
+=======
+             login(json.token);
+>>>>>>> origin/Yeray-tercera
 
             //si quieres comprar pero no tienes sesión, te manda al login, esta línea te manda de vuelta, y si no vienes
             // de ningun sitio, te manda a home
@@ -84,15 +88,15 @@ function Login() {
 
                 <div className="relative z-10">
                     <form
-                        className="fieldset object-center bg-base-200 border-base-300 rounded-box w-md border-2 p-4 flex flex-col gap-4"
+                        className="fieldset object-center bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4"
                         onSubmit={handleLogin}
                     >
-                        <div className="text-2xl">
+                        <div className="text-2xl text-base-content">
                             <p>{t("title")}</p>
                         </div>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label">{t("email")}</label>
+                            <label className="label text-base-content">{t("email")}</label>
                             <input
                                 name="email"
                                 type="email"
@@ -108,7 +112,7 @@ function Login() {
                         </fieldset>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label">{t("password")}</label>
+                            <label className="label text-base-content">{t("password")}</label>
                             <input
                                 name="password"
                                 type="password"
@@ -131,7 +135,7 @@ function Login() {
                             />
                         </div>
                         <div className="flex flex-col items-center gap-4 mt-6">
-                            <div className="divider opacity-50 uppercase text-xs">O entra con</div>
+                            <div className="divider uppercase text-xs">O entra con</div>
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {
@@ -168,7 +172,7 @@ function Login() {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-neutral mt-2">
+                        <button type="submit" className="btn btn-primary text-base-100 mt-2">
                             {t("btn_submit")}
                         </button>
 

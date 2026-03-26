@@ -6,6 +6,8 @@ import hpp from 'hpp';
 import helmet from "helmet";
 import rateLimit  from "express-rate-limit";  
 
+/* import { chromium } from ('playwright'); */
+
 //Rutas
 import usersRoutes from "./routes/users.js";
 import productosRoutes from "./routes/products.js"
@@ -70,12 +72,16 @@ app.use("/api/dates", datesRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use('/api/product_categories', product_categoryRoutes);
 app.use('/api/service_categories', service_categoryRoutes);
-app.use('/api/vehicules', vehiculesRoutes);
+app.use('/api/vehicle', vehiculesRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/rating', ratingRoutes);
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
