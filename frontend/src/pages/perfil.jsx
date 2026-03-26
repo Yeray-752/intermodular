@@ -1,8 +1,14 @@
+<<<<<<< HEAD
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { data, useNavigate } from 'react-router';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
+=======
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { AuthContext } from "../../context/AuthContext";
 import { data, useNavigate } from 'react-router';
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +20,7 @@ import { login } from "../../../backend/controllers/userController";
 
 function Perfil() {
     const [productos, setProductos] = useState([]);
+    const [citaACancelar, setCitaACancelar] = useState(null);
     const [notificacionesPendientes, setNotificacionesPendientes] = useState(0);
     const [activeTab, setActiveTab] = useState('informacion');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,6 +36,8 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
+<<<<<<< HEAD
+=======
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [vehiculos, setVehiculos] = useState([]);
     const [loadingVehiculos, setLoadingVehiculos] = useState(false);
@@ -41,6 +50,7 @@ function Perfil() {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
@@ -246,6 +256,9 @@ function Perfil() {
         }
     };
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
     useEffect(() => {
         const node = dialogRef.current; // Accedemos al elemento real del DOM
         if (!node) return;
@@ -304,7 +317,11 @@ function Perfil() {
         }
     }
 
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
     const trearCitas = async () => {
+=======
+    const traerCitas = async () => {
+>>>>>>> origin/perfil/admin
         const token = localStorage.getItem("token");
         if (!token) return;
 
@@ -320,6 +337,7 @@ function Perfil() {
             if (response.ok) {
                 const data = await response.json();
                 setCitas(data);
+                console.log(data)
             }
         } catch (err) {
             setError(err.message);
@@ -329,7 +347,7 @@ function Perfil() {
     };
     useEffect(() => {
         if (activeTab === 'citas') {
-            trearCitas();
+            traerCitas();
         }
     }, [activeTab]);
 
@@ -337,12 +355,11 @@ function Perfil() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        // Confirmación amistosa antes de borrar
-        if (!confirm(t('profile:confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
+        // Quitamos el if(!confirm(...)) porque ya lo hace el modal nuevo
 
         try {
             const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
-                method: 'PATCH', // Importante: debe coincidir con router.patch
+                method: 'PATCH',
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -350,8 +367,8 @@ function Perfil() {
             });
 
             if (response.ok) {
-                // Optimistic UI: Filtramos la cita de la lista actual para que desaparezca al instante
                 setCitas(prevCitas => prevCitas.filter(cita => cita.id !== id));
+                // Opcional: podrías usar un toast aquí en lugar de alert
                 alert(t('profile:cancel_success') || "Cita cancelada correctamente");
             } else {
                 const errorData = await response.json();
@@ -360,6 +377,8 @@ function Perfil() {
         } catch (err) {
             console.error("Error en la petición:", err);
             alert("No se pudo conectar con el servidor");
+        } finally {
+            setCitaACancelar(null);
         }
     };
 
@@ -518,6 +537,8 @@ function Perfil() {
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
                             </div>
+<<<<<<< HEAD
+=======
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -530,6 +551,7 @@ function Perfil() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             
+>>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -790,7 +812,12 @@ function Perfil() {
                                         </div>
                                         <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
                                             <span className="badge badge-warning badge-md font-bold py-3 px-4 uppercase text-[10px]">{citas.estado}</span>
-                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => eliminarCitas(citas.id)}>{t('profile:cancel')}</button>
+                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => {
+                                                setCitaACancelar(citas.id); document.getElementById('modal_confirmar_cancelacion').showModal();
+                                            }}
+                                            >
+                                                {t('profile:cancel')}
+                                            </button>
                                         </div>
                                     </div>
                                 ))
@@ -1049,6 +1076,44 @@ function Perfil() {
                         {renderContent()}
                     </section>
                 </div>
+                {/* Modal de Confirmación de Cancelación */}
+                <dialog id="modal_confirmar_cancelacion" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
+                    <div className="modal-box bg-base-100 rounded-2xl shadow-2xl border border-base-200">
+                        <div className="flex flex-col items-center text-center gap-4 py-4">
+                            <div className="w-16 h-16 bg-error/10 text-error rounded-full flex items-center justify-center">
+                                <X size={40} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-2xl text-base-content">{t('profile:cancel_appointment_title') || "¿Cancelar cita?"}</h3>
+                                <p className="text-base-content/60 mt-2 font-medium">
+                                    {t('profile:cancel_warning') || "Esta acción no se puede deshacer. Perderás tu turno en el taller."}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="modal-action grid grid-cols-2 gap-3">
+                            <button
+                                className="btn btn-ghost font-bold"
+                                onClick={() => document.getElementById('modal_confirmar_cancelacion').close()}
+                            >
+                                {t('profile:keep_appointment') || "No, mantener"}
+                            </button>
+                            <button
+                                className="btn btn-error font-bold text-white shadow-lg shadow-error/20"
+                                onClick={() => {
+                                    if (citaACancelar) {
+                                        eliminarCitas(citaACancelar);
+                                        document.getElementById('modal_confirmar_cancelacion').close();
+                                    }
+                                }}
+                            >
+                                {t('profile:confirm_cancel_btn') || "Sí, cancelar"}
+                            </button>
+                        </div>
+                    </div>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
             </main>
             <Footer />
             {isModalOpen && (
