@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useContext } from 'react';
+import { AuthContext } from "../../context/AuthContext";
 import { data, useNavigate } from 'react-router';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
@@ -9,6 +10,7 @@ import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
 import CarFinder from '../components/prueba/carFinder';
+import { login } from "../../../backend/controllers/userController";
 
 function Perfil() {
     const [productos, setProductos] = useState([]);
@@ -44,6 +46,7 @@ function Perfil() {
     const [open, setOpen] = useState(false)
     const dialogRef = useRef(null)
     const [modo, setModo] = useState(null);
+    const {logout} = useContext(AuthContext)
     const [datos, setDatos] = useState({
         marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
     });
@@ -368,6 +371,7 @@ function Perfil() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("rol");
+        logout();
         navigate("/");
         location.reload()
     };
