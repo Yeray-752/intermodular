@@ -280,7 +280,7 @@ function Perfil() {
 
         /* Toca hacer scraping */
         // Construimos la URL con los parámetros necesarios
-        const url = `https://yeray.informaticamajada.es/api/vehicule/${matricula}`;
+        const url = `https://yeray.informaticamajada.es/api/vehicules/${matricula}`;
 
         try {
             const response = await fetch(url);
