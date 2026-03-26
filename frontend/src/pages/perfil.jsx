@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { data, useNavigate } from 'react-router';
+import { data, useNavigate, useLocation } from 'react-router';
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
