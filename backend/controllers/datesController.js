@@ -4,20 +4,20 @@ import { createNotification } from "./notificationsController.js";
 
 export const obtenerCitasID = async (req, res) => {
     try {
-        // Ajustamos el JOIN para usar la tabla 'Cliente'
-        const query = await db.execute(`
+        const query = `
             SELECT 
                 c.*, 
                 CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente 
             FROM cita c
-            INNER JOIN Cliente cl ON c.id_usuario = ?
-        `, [req.user.id]);
-
-        const [rows] = await db.execute(query, params);
+            INNER JOIN Cliente cl ON c.id_usuario = cl.id_usuario
+            WHERE c.id_usuario = ?
+        `;
+        // Ejecutar directamente con el ID del usuario del token
+        const [rows] = await db.execute(query, [req.user.id]);
         res.json(rows);
     } catch (error) {
-        console.error("Error en la consulta SQL:", error);
-        res.status(500).json({ error: "Error al obtener citas de la tabla Cliente" });
+        console.error("Error en obtenerCitasID:", error);
+        res.status(500).json({ error: "Error al obtener citas" });
     }
 };
 
@@ -195,38 +195,35 @@ export const cancelarCita = async (req, res) => {
 };
 
 export const actualizarEstadoCita = async (req, res) => {
-    const { id } = req.params;
-    const { estado } = req.params;
-  
+    const { id, estado } = req.params; // Asegúrate de que tu ruta sea /:id/:estado
 
-        console.log(id, estado)
     try {
-        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
-        const [result] = await db.execute(query, [estado, id]);
-
-
-        if (result.affectedRows === 0) {
+        // Primero necesitamos saber a quién pertenece la cita para notificarle
+        const [citaData] = await db.execute('SELECT id_usuario, fecha_cita FROM cita WHERE id = ?', [id]);
+        
+        if (citaData.length === 0) {
             return res.status(404).json({ message: "Cita no encontrada" });
         }
 
-        // NOTIFICACIÓN AL CLIENTE
-        // Usamos la clave 'cita_estado' que definiste en tus plantillas
+        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
+        await db.execute(query, [estado, id]);
+
+        // Ahora sí tenemos los datos para la notificación
         await createNotification(
-            cita[0].id_usuario,
+            citaData[0].id_usuario,
             'cita_estado',
             'cliente',
             {
-                fecha: cita[0].fecha,
+                fecha: citaData[0].fecha_cita,
                 estado: estado
             }
         );
 
         res.json({ message: "Estado actualizado y cliente notificado" });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
-    
-    
 };
 
 
