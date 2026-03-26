@@ -41,7 +41,7 @@ function Perfil() {
             }
 
             try {
-                const response = await fetch("http://localhost:3000/api/users/profile/me", {
+                const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/me", {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
@@ -84,7 +84,7 @@ function Perfil() {
         e.preventDefault();
         console.log("Datos enviados:", datos);
         if (modo === 'manual') {
-           // registrarManual(datos);
+            // registrarManual(datos);
         } else {
             buscarCoche(matricula)
         }
@@ -99,7 +99,7 @@ function Perfil() {
 
         /* Toca hacer scraping */
         // Construimos la URL con los parámetros necesarios
-        const url = `http://localhost:3000/api/vehicle/${matricula}`;
+        const url = `https://yeray.informaticamajada.es/api/vehicle/${matricula}`;
 
         try {
             const response = await fetch(url);
@@ -121,7 +121,7 @@ function Perfil() {
 
         setLoadingCitas(true); // Cambiado aquí
         try {
-            const response = await fetch("http://localhost:3000/api/dates", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -152,7 +152,7 @@ function Perfil() {
         if (!confirm(t('confirm_cancel') || "¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelada`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelada`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -205,7 +205,7 @@ function Perfil() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:3000/api/users/profile/update", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/update", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -296,181 +296,243 @@ function Perfil() {
                 );
             case 'vehiculos':
                 return (
-                    <div>
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('myCars')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('updateProfileData')}</p>
+                    <div className="space-y-6 animate-in fade-in duration-500">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                            <div>
+                                <h2 className="text-3xl font-bold text-base-content flex items-center gap-3">
+                                    <Car className="text-primary" size={32} />
+                                    {t('profile:myCars') || "Mis Vehículos"}
+                                </h2>
+                                <p className="text-base-content/60 mt-1">
+                                    {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
+                            >
+                                <Plus size={20} />
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                            </button>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                            {cocheBuscado ? (
-                                <div className="p-6 bg-base-100 border border-base-300 rounded-2xl hover:shadow-lg transition-all">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {cocheBuscado && (
+                                <div className="group p-8 bg-base-100 border border-base-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <Car size={80} className="text-[#ff5a1f]" />
+                                    </div>
 
-                                    {/* Header */}
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                                            <Car className="text-primary" size={22} />
+                                    <div className="flex items-center gap-5 mb-6">
+                                        <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">
+                                            <Car className="text-[#ff5a1f]" size={26} />
                                         </div>
-
                                         <div>
-                                            <h2 className="text-lg font-semibold text-base-content leading-tight">
+                                            <h2 className="text-xl font-black text-base-content leading-tight uppercase">
                                                 {cocheBuscado.data?.brand}{" "}
-                                                <span className="text-primary">{cocheBuscado.data?.model}</span>
+                                                <span className="text-[#ff5a1f]">{cocheBuscado.data?.model}</span>
                                             </h2>
-                                            <p className="text-sm text-base-content/60 font-mono">
+                                            <p className="text-xs font-bold tracking-[0.2em] text-base-content/40 mt-1">
                                                 {cocheBuscado.data?.plate}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {/* Divider */}
-                                    <div className="border-t border-base-300/40 my-3"></div>
-
-                                    {/* Specs */}
-                                    <div className="grid grid-cols-3 gap-3 text-sm text-base-content/70">
-
-                                        <div className="flex items-center gap-2">
-                                            <span>⚙</span>
-                                            <span>{cocheBuscado.data?.engine}</span>
+                                    <div className="grid grid-cols-3 gap-2 py-4 border-y border-base-200">
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Settings size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Motor</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.engine}</span>
                                         </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span>{cocheBuscado.data?.power}</span>
+                                        <div className="flex flex-col items-center gap-1 border-x border-base-200">
+                                            <Zap size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Potencia</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.power}</span>
                                         </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <span>📅</span>
-                                            <span>{cocheBuscado.data?.yearFrom}</span>
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Calendar size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Año</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.yearFrom}</span>
                                         </div>
-
                                     </div>
                                 </div>
-                            ) : (
-                                <p></p>
                             )}
-
-                            <button onClick={() => { setOpen(true) }} className="p-5 border-2 cursor-pointer border-dashed border-base-300 rounded-xl text-base-content/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
-                                <Plus size={20} />
-                                {t('addCar')}
-                            </button>
-                        </div>
-                        <dialog ref={dialogRef} className="modal" onCancel={() => setOpen(false)}>
-                            <div className="modal-box max-w-lg scrollbar-hide">
-                                {/* Botón de cerrar (esquina superior derecha) */}
+                            <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                    <Car size={32} className="text-base-content/20" />
+                                </div>
+                                <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
+                                <p className="text-base-content/50 max-w-xs mx-auto mt-2">
+                                    Añade tu primer vehículo para poder solicitar servicios y reparaciones.
+                                </p>
                                 <button
-                                    className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                                    onClick={() => setOpen(false)}
-                                >✕</button>
-
-                                {!modo ? (
-                                    /* PASO 1: Selección de modo */
-                                    <div className="py-4 text-center">
-                                        <h3 className="text-xl font-bold mb-6">¿Cómo quieres añadir tu vehículo?</h3>
-                                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                            <button
-                                                onClick={() => setModo('manual')}
-                                                className="btn btn-outline btn-primary h-32 flex-1 flex flex-col gap-2"
-                                            >
-                                                <span className="text-3xl">📝</span>
-                                                <span>Entrada Manual</span>
-                                            </button>
-
-                                            <button
-                                                onClick={() => setModo('automatico')}
-                                                className="btn btn-outline btn-secondary h-32 flex-1 flex flex-col gap-2"
-                                            >
-                                                <span className="text-3xl">🤖</span>
-                                                <span>Automático</span>
-                                                <span className="text-xs opacity-70">(Solo matrícula)</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    /* PASO 2: El formulario */
-                                    <form onSubmit={enviarFormulario} className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <button
-                                                type="button"
-                                                className="btn btn-xs btn-ghost"
-                                                onClick={() => setModo(null)}
-                                            >
-                                                ← Volver
-                                            </button>
-                                            <h2 className="text-lg font-bold">
-                                                {modo === 'manual' ? 'Añadir Vehículo' : 'Búsqueda Rápida'}
-                                            </h2>
-                                        </div>
-
-                                        {/* Campo Matrícula: Principal */}
-                                        <div className="form-control w-full">
-                                            <label className="label">
-                                                <span className="label-text font-semibold">Matrícula</span>
-                                            </label>
-                                            <input
-                                                name="matricula"
-                                                type="text"
-                                                placeholder="Ej: 1234BBB"
-                                                className="input input-bordered input-primary w-full uppercase"
-                                                
-                                               onChange={(e) => { setMatricula(e.target.value) }}
-                                                required
-                                            />
-                                        </div>
-
-                                        {modo === 'manual' && (
-                                            <div className="grid grid-cols-2 gap-4 animate-fadeIn">
-                                                <div className="form-control w-full">
-                                                    <label className="label"><span className="label-text">Marca</span></label>
-                                                    <input name="marca" className="input input-bordered w-full" value={datos.marca} onChange={manejarCambio} />
-                                                </div>
-
-                                                <div className="form-control w-full">
-                                                    <label className="label"><span className="label-text">Modelo</span></label>
-                                                    <input name="modelo" className="input input-bordered w-full" value={datos.modelo} onChange={manejarCambio} />
-                                                </div>
-
-                                                <div className="form-control w-full">
-                                                    <label className="label"><span className="label-text">Año</span></label>
-                                                    <input type="number" name="anio" className="input input-bordered w-full" value={datos.anio} onChange={manejarCambio} />
-                                                </div>
-
-                                                <div className="form-control w-full">
-                                                    <label className="label"><span className="label-text">Combustible</span></label>
-                                                    <select name="combustible" className="select select-bordered w-full" value={datos.combustible} onChange={manejarCambio}>
-                                                        <option value="">Elegir...</option>
-                                                        <option value="gasolina">Gasolina</option>
-                                                        <option value="diesel">Diesel</option>
-                                                        <option value="electrico">Eléctrico</option>
-                                                    </select>
-                                                </div>
-
-                                                <div className="form-control w-full col-span-2">
-                                                    <label className="label"><span className="label-text">Motor</span></label>
-                                                    <input name="motor" placeholder="Ej: 2.0 TDI" className="input input-bordered w-full" value={datos.motor} onChange={manejarCambio} />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div className="modal-action mt-6">
-                                            <button type="submit" className="btn btn-primary w-full text-white">
-                                                {modo === 'manual' ? 'Registrar Vehículo' : 'Consultar Matrícula'}
-                                            </button>
-                                        </div>
-                                    </form>
-                                )}
+                                    onClick={() => setOpen(true)}
+                                    className="btn btn-primary mt-6 rounded-xl"
+                                >
+                                    Registrar mi primer coche
+                                </button>
                             </div>
 
-                            {/* Este div permite cerrar el modal haciendo click fuera de la caja */}
-                            <form method="dialog" className="modal-backdrop">
-                                <button onClick={() => setOpen(false)}>close</button>
-                            </form>
-                        </dialog>
-                        <div>
-                            <h1>pruebas de matricula</h1>
-                            <input className='input' type="text" onChange={(e) => { setMatricula(e.target.value) }} />
-                            <button className='btn ml-3 text-white' onClick={() =>buscarCoche(matricula)}>trae</button>
-                        </div> 
+
+
+                        </div>
+
+                        {/* MODAL ESTILIZADO */}
+                        {open && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+                                <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
+
+                                    <button
+                                        onClick={() => { setOpen(false); setModo(null); }}
+                                        className="absolute top-8 right-8 text-base-content/30 hover:text-base-content transition-colors z-10"
+                                    >
+                                        <X size={28} />
+                                    </button>
+
+                                    <div className="p-10">
+                                        {!modo ? (
+                                            /* PASO 1: Selección de modo con estilo nuevo */
+                                            <div className="py-4 text-center">
+                                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
+                                                    <Car className="text-[#ff5a1f]" size={32} />
+                                                </div>
+                                                <h3 className="text-2xl font-black mb-8 leading-tight">¿Cómo quieres añadir tu vehículo?</h3>
+                                                <div className="flex flex-col gap-4">
+                                                    <button
+                                                        onClick={() => setModo('manual')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">📝</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Entrada Manual</p>
+                                                            <p className="text-xs text-base-content/50">Introduce todos los datos</p>
+                                                        </div>
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => setModo('automatico')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">🤖</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Automático</p>
+                                                            <p className="text-xs text-base-content/50">Solo con tu matrícula</p>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            /* PASO 2: El formulario estilizado */
+                                            <>
+                                                <div className="flex flex-col items-center mb-8">
+                                                    <button
+                                                        onClick={() => setModo(null)}
+                                                        className="text-[10px] font-bold uppercase tracking-widest text-[#ff5a1f] mb-2 hover:underline"
+                                                    >
+                                                        ← Volver atrás
+                                                    </button>
+                                                    <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                                        {modo === 'manual' ? 'Registrar Vehículo' : 'Búsqueda Rápida'}
+                                                    </h2>
+                                                </div>
+
+                                                <form onSubmit={enviarFormulario} className="space-y-5">
+                                                    {/* Input Matrícula Principal */}
+                                                    <div>
+                                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                                        <input
+                                                            required
+                                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
+                                                            placeholder="1234BBB"
+                                                            onChange={(e) => setMatricula(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {modo === 'manual' && (
+                                                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-500">
+                                                            {/* MARCA */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.marca}
+                                                                    name="marca"
+                                                                    placeholder="Ej: Seat"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MODELO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.modelo}
+                                                                    name="modelo"
+                                                                    placeholder="Ej: Ibiza"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* AÑO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder='2020'
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.anio}
+                                                                    name="anio"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MOTORIZACIÓN (Potencia/Cilindrada) */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Motor (CV/cc)</label>
+                                                                <input
+                                                                    placeholder="Ej: 1.8"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.motor}
+                                                                    name="motor"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* COMBUSTIBLE (Selector) */}
+                                                            <div className="col-span-2">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Tipo de Combustible</label>
+                                                                <select
+                                                                    name="combustible"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
+                                                                    value={datos.combustible}
+                                                                    onChange={manejarCambio}
+                                                                >
+                                                                    <option value="">Seleccionar combustible...</option>
+                                                                    <option value="gasolina">Gasolina</option>
+                                                                    <option value="diesel">Diesel</option>
+                                                                    <option value="electrico">Eléctrico</option>
+                                                                    <option value="hibrido">Híbrido</option>
+                                                                    <option value="glp">GLP</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <button
+                                                        type="submit"
+                                                        className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
+                                                    >
+                                                        {modo === 'manual' ? 'Confirmar Registro' : 'Consultar Matrícula'}
+                                                    </button>
+                                                </form>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             case 'citas':

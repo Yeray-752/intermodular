@@ -30,6 +30,7 @@ export const actualizarCita = async (req, res) => {
 };
 
 export const obtenerCitasTerminadas = async (req, res) => {
+    console.log('prueba de backend local')
     try {
         // Ajustamos el JOIN para usar la tabla 'Cliente'
         let query = `

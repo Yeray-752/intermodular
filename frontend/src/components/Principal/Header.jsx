@@ -36,7 +36,7 @@ function Header() {
 
         try {
             const lang = i18n.language || 'es';
-            const response = await fetch(`http://localhost:3000/api/cart?lang=${lang}`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/cart?lang=${lang}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ function Header() {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/cart/item/${idProducto}`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/cart/item/${idProducto}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

@@ -43,7 +43,7 @@ function TableReservations({ search, categoriaId, servicios }) {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/api/dates", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
