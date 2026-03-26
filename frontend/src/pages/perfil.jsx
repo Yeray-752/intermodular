@@ -283,7 +283,12 @@ function Perfil() {
         const url = `https://yeray.informaticamajada.es/api/vehicules/matricula/${matricula}`;
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
 
             if (!response.ok) {
                 throw new Error(`Error en la petición: ${response.status}`);
