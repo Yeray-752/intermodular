@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { data, useNavigate } from 'react-router';
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock } from 'lucide-react';
-=======
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { AuthContext } from "../../context/AuthContext";
 import { data, useNavigate } from 'react-router';
->>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -36,8 +30,6 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
-<<<<<<< HEAD
-=======
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [vehiculos, setVehiculos] = useState([]);
     const [loadingVehiculos, setLoadingVehiculos] = useState(false);
@@ -50,7 +42,6 @@ function Perfil() {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 
->>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
@@ -256,9 +247,7 @@ function Perfil() {
         }
     };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
     useEffect(() => {
         const node = dialogRef.current; // Accedemos al elemento real del DOM
         if (!node) return;
@@ -317,11 +306,9 @@ function Perfil() {
         }
     }
 
->>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
-    const trearCitas = async () => {
-=======
+
     const traerCitas = async () => {
->>>>>>> origin/perfil/admin
+
         const token = localStorage.getItem("token");
         if (!token) return;
 
@@ -537,8 +524,6 @@ function Perfil() {
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
                             </div>
-<<<<<<< HEAD
-=======
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -551,7 +536,6 @@ function Perfil() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             
->>>>>>> b47bc38a153d3076c467f1587694d7c58de7fd68
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
