@@ -51,8 +51,7 @@ function Perfil() {
     const [datos, setDatos] = useState({
         marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
     });
-    console.log(matricula)
-    console.log(cocheBuscado)
+
     // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
     useEffect(() => {
         const fetchUserData = async () => {
