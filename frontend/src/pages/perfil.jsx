@@ -1,6 +1,7 @@
+import { useLocation } from "react-router-dom";
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { data, useNavigate, useLocation } from 'react-router';
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell } from 'lucide-react';
+import { data, useNavigate } from 'react-router';
 import Header from '../components/Principal/Header';
 import Footer from '../components/Principal/Footer';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,18 @@ function Perfil() {
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [vehiculos, setVehiculos] = useState([]);
+    const [loadingVehiculos, setLoadingVehiculos] = useState(false);
+    const [formVehiculo, setFormVehiculo] = useState({
+        matricula: '',
+        marca: '',
+        modelo: '',
+        año: new Date().getFullYear()
+    });
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [loadingNotis, setLoadingNotis] = useState(false);
+
     const [cocheBuscado, setCocheBuscado] = useState('');
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
@@ -229,6 +242,59 @@ function Perfil() {
             alert("Error de conexión");
         }
     };
+
+    useEffect(() => {
+        const node = dialogRef.current; // Accedemos al elemento real del DOM
+        if (!node) return;
+
+        if (open) {
+            node.showModal(); // Método nativo de HTML5
+        } else {
+            node.close();     // Método nativo de HTML5
+        }
+    }, [open])
+
+    const manejarCambio = (e) => {
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const enviarFormulario = (e) => {
+        e.preventDefault();
+        console.log("Datos enviados:", datos);
+        if (modo === 'manual') {
+            // registrarManual(datos);
+        } else {
+            buscarCoche(matricula)
+        }
+
+        // Opcional: Cerrar el modal después de la acción
+        setOpen(false);
+        // Aquí iría tu llamada a la API
+    };
+
+
+    const buscarCoche = async (matricula) => {
+
+        /* Toca hacer scraping */
+        // Construimos la URL con los parámetros necesarios
+        const url = `https://yeray.informaticamajada.es/api/vehicle/${matricula}`;
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
+            setCocheBuscado(await data)
+        } catch (e) {
+            console.error('Error capturado:', e.message);
+        }
+    }
 
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
@@ -443,6 +509,18 @@ function Perfil() {
                                     {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
                                 </p>
                             </div>
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
+                            >
+                                <Plus size={20} />
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            
 
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -964,7 +1042,105 @@ function Perfil() {
                 </div>
             </main>
             <Footer />
-            
+            {isModalOpen && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in fade-in zoom-in duration-300">
+
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-6 right-6 text-base-content/30 hover:text-base-content transition-colors"
+                        >
+                            <X size={28} />
+                        </button>
+
+                        <div className="p-10">
+                            <div className="flex flex-col items-center mb-8">
+                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                    <Car className="text-[#ff5a1f]" size={32} />
+                                </div>
+                                <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                    {t('profile:registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
+                                </h2>
+                            </div>
+
+                            <form onSubmit={handleRegistrarVehiculo} className="space-y-5">
+                                {/* MATRÍCULA: Mayúsculas y máx 15 */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                    <input
+                                        required
+                                        maxLength={15}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest"
+                                        placeholder="0000-BBB"
+                                        value={formVehiculo.matricula}
+                                        onChange={(e) => setFormVehiculo({
+                                            ...formVehiculo,
+                                            matricula: e.target.value.toUpperCase()
+                                        })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* MARCA: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Toyota"
+                                            value={formVehiculo.marca}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    marca: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                    {/* MODELO: Primera Mayúscula */}
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                        <input
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                            placeholder="Corolla"
+                                            value={formVehiculo.modelo}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setFormVehiculo({
+                                                    ...formVehiculo,
+                                                    modelo: val.charAt(0).toUpperCase() + val.slice(1)
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* AÑO: Máximo año actual */}
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        max={new Date().getFullYear()}
+                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                        value={formVehiculo.año}
+                                        onChange={(e) => setFormVehiculo({ ...formVehiculo, año: e.target.value })}
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
+                                >
+                                    {t('profile:confirmAndAdd') || "Confirmar y Añadir"}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
