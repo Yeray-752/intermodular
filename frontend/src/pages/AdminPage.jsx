@@ -115,7 +115,6 @@ function AdminPage() {
         });
         if (res.ok) {
             const data = await res.json();
-            console.log(data)
 
             const format = data.map(c => {
                 // Si la fecha viene como "2026-02-16T23:00:00.000Z"
@@ -137,7 +136,6 @@ function AdminPage() {
                     allDay: false
                 };
             });
-            console.log(format)
             setEventos(format);
 
         }

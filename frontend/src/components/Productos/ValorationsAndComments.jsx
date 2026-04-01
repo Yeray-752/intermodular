@@ -38,8 +38,6 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         setLoading(true);
         const productIdNum = Number(id_producto);
 
-        console.log("Datos a enviar:", { productIdNum, rating, comment });
-
         if (!productIdNum || isNaN(productIdNum)) {
             alert("Error: No se ha detectado el producto actual.");
             setLoading(false);
