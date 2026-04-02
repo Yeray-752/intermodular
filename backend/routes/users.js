@@ -8,7 +8,7 @@ import { loginLimiter } from "../middlewares/rateLimiters.js";
 const router = Router();
 
 // --- Rutas Públicas ---
-router.post("/register", validateSchema(registerSchema), registerCliente);
+router.post("/register", validateSchema(registerSchema), registerClient);
 router.post("/login", loginLimiter, validateSchema(loginSchema), login);
 
 // --- Rutas Privadas (Requieren Token) ---
