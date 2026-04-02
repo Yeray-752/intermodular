@@ -9,8 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/perfil/selectorCanarias';
 import AdminButton from '../components/AdminComponents/AdminBoton';
-import CarFinder from '../components/prueba/carFinder';
-import { login } from "../../../backend/controllers/userController";
+
 
 function Perfil() {
     const [productos, setProductos] = useState([]);
