@@ -23,7 +23,7 @@ function Footer() {
     ];
 
     return (
-        <footer className="bg-base-200 text-base-100 pt-5 pb-8 mt-10">
+        <footer className="bg-base-200 text-base-100 pt-5 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
@@ -40,7 +40,7 @@ function Footer() {
                         
                         <div className="flex items-center justify-center space-x-4">
                             {[Facebook, Instagram, Phone].map((Icon, i) => (
-                                <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-100 dark:bg-base-400 flex items-center justify-center hover:bg-primary-content transition-colors duration-300">
+                                <a key={i} href="#" className="w-10 h-10 rounded-full bg-base-100 dark:bg-base-400 flex items-center justify-center hover:bg-primary transition-colors duration-300">
                                     <Icon size={18} className="text-warning" />
                                 </a>
                             ))}
@@ -49,28 +49,28 @@ function Footer() {
 
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <div className="w-2 h-6 bg-primary-content rounded-full"></div>
+                            <div className="w-2 h-6 bg-primary rounded-full"></div>
                             {t('footer:contactTitle')}
                         </h3>
                         <div className="space-y-4 text-base-100">
                             <div className="flex items-start gap-3">
-                                <MapPin size={20} className="text-primary-content mt-1 shrink-0" />
-                                <span className=" truncate hover:text-primary-content transition-colors cursor-pointer">{t('footer:address')}</span>
+                                <MapPin size={20} className="text-primary mt-1 shrink-0" />
+                                <span className=" truncate hover:text-primary transition-colors cursor-pointer">{t('footer:address')}</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <Phone size={20} className="text-primary-content shrink-0" />
-                                <a href="tel:+34912345678" className="hover:text-primary-content transition-colors">+34 912 345 678</a>
+                                <Phone size={20} className="text-primary shrink-0" />
+                                <a href="tel:+34912345678" className="hover:text-primary transition-colors">+34 912 345 678</a>
                             </div>
                             <div className="flex items-center gap-3">
-                                <Mail size={20} className="text-primary-content shrink-0" />
-                                <a href="mailto:info@akotan.com" className="hover:text-primary-content transition-colors">info@akotan.com</a>
+                                <Mail size={20} className="text-primary shrink-0" />
+                                <a href="mailto:info@akotan.com" className="hover:text-primary transition-colors">info@akotan.com</a>
                             </div>
                         </div>
                     </div>
 
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <div className="w-2 h-6 bg-primary-content rounded-full"></div>
+                            <div className="w-2 h-6 bg-primary rounded-full"></div>
                             {t('footer:linksTitle')}
                         </h3>
                         <ul className="space-y-3 list-none pl-4">
@@ -78,7 +78,7 @@ function Footer() {
                                 <li key={index}>
                                     <button 
                                         onClick={() => navigate(link.href)} 
-                                        className="hover:text-primary-content transition-colors flex items-center gap-2 text-left cursor-pointer"
+                                        className="hover:text-primary transition-colors flex items-center gap-2 text-left cursor-pointer"
                                     >
                                         {link.label}
                                     </button>
@@ -89,14 +89,14 @@ function Footer() {
 
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <div className="w-2 h-6 bg-primary-content rounded-full"></div>
+                            <div className="w-2 h-6 bg-primary rounded-full"></div>
                             {t('footer:scheduleTitle')}
                         </h3>
                         <div className="space-y-3 text-base-100">
                             {schedule.map((item, i) => (
                                 <div key={i} className="flex justify-between py-2 border-b border-primary-content">
                                     <span>{item.days}</span>
-                                    <span className="text-primary-content font-medium">{item.hours}</span>
+                                    <span className="text-primary font-medium">{item.hours}</span>
                                 </div>
                             ))}
                         </div>
@@ -110,17 +110,17 @@ function Footer() {
                         </p>
                         <p>
                             {t('footer:developedBy')} 
-                            <span className="text-primary-content font-medium ml-1"><a target='_blank' href='https://github.com/Yeray-752'>Yeray Carrión</a></span> & 
-                            <span className="text-primary-content font-medium ml-1"><a target='_blank' href='https://github.com/zhor19'>Óscar Gordillo</a></span>
+                            <span className="text-primary font-medium ml-1"><a target='_blank' href='https://github.com/Yeray-752'>Yeray Carrión</a></span> & 
+                            <span className="text-primary font-medium ml-1"><a target='_blank' href='https://github.com/zhor19'>Óscar Gordillo</a></span>
                         </p>
                         <div className="flex items-center gap-6">
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary transition-colors cursor-pointer">
                                 {t('legales:privacy')}
                             </button>
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary transition-colors cursor-pointer">
                                 {t('legales:terms')}
                             </button>
-                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary-content transition-colors cursor-pointer">
+                            <button onClick={() => navigate('/Aviso-legal')} className="hover:text-primary transition-colors cursor-pointer">
                                 {t('legales:legalNotice')}
                             </button>
                         </div>

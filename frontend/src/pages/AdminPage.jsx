@@ -404,7 +404,7 @@ function AdminPage() {
     };
 
     return (
-        <div className="bg-neutral min-h-screen flex flex-col">
+        <div className="bg-base-300 min-h-screen flex flex-col">
             <Header />
 
             <main className="flex-1 p-4 md:p-8 lg:p-7">

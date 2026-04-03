@@ -502,7 +502,7 @@ function Perfil() {
                                 <SelectorCanarias />
                             </div>
 
-                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary-content flex items-center gap-2">
+                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary flex items-center gap-2">
                                 <Save size={18} />
                                 {t('profile:saveChanges')}
                             </button>
@@ -983,7 +983,7 @@ function Perfil() {
                                 <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:newPassword')}</label>
                                 <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
                             </div>
-                            <button className="btn bg-primary-content text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
+                            <button className="btn bg-primary text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
                                 <Lock size={18} />
                                 {t('profile:updatePassword')}
                             </button>
@@ -997,7 +997,7 @@ function Perfil() {
     }
 
     return (
-        <div className='bg-neutral min-h-screen flex flex-col'>
+        <div className='bg-base-300 min-h-screen flex flex-col'>
             <Header />
 
             <div className="lg:hidden bg-base-100 border-b border-base-300 p-4">

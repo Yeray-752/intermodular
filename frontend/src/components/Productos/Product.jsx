@@ -117,7 +117,7 @@ function Product() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral">
+        <div className="min-h-screen bg-base-300">
             {/* Notificaciones */}
             {notificacion.mostrar && (
                 <div className="toast toast-top toast-center z-50">
@@ -140,10 +140,10 @@ function Product() {
                 </button>
 
                 {/* Tarjeta de Producto */}
-                <section className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                <section className=" bg-info rounded-2xl shadow-xl overflow-hidden">
+                    <div className=" bg-info grid grid-cols-1 md:grid-cols-2 gap-0">
                         {/* Imagen */}
-                        <div className="bg-base-100 p-12 flex items-center justify-center">
+                        <div className="p-12 flex items-center justify-center">
                             <img
                                 src={producto.image_url}
                                 alt={producto.name}
@@ -152,7 +152,7 @@ function Product() {
                         </div>
 
                         {/* Detalles */}
-                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-6 bg-base-100 text-base-content">
+                        <div className=" p-8 md:p-12 flex flex-col justify-center space-y-6 0 text-base-content">
                             <div>
                                 <h1 className="text-3xl font-bold mb-3">{producto.name}</h1>
                                 <p className="text-sm text-base-content/70 leading-relaxed">
@@ -178,7 +178,7 @@ function Product() {
 
                             {/* Botón de Acción Principal */}
                             <button
-                                className="btn border-0 bg-primary text-primary-content btn-lg w-full md:w-auto"
+                                className="btn border-0 bg-primary text-primary btn-lg w-full md:w-auto"
                                 onClick={añadirAlCarrito}
                                 disabled={producto.stock === 0}
                             >
@@ -189,7 +189,7 @@ function Product() {
                 </section>
 
                 {/* Valoraciones */}
-                <section className="bg-base-100 text-base-content rounded-2xl shadow-xl p-8 md:p-12">
+                <section className="bg-info text-base-content rounded-2xl shadow-xl p-8 md:p-12">
                     <RatingSystem id_producto={id} userid_producto={producto?.user_id} />
                 </section>
             </div>

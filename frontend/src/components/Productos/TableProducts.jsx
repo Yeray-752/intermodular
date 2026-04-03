@@ -22,19 +22,19 @@ function TableProducts({ search, categoriaId, productos }) {
                     <div
                         key={item.id}
                         onClick={() => navigate(`/producto/${item.id}`)}
-                        className="bg-base-100 text-base-content rounded-2xl shadow-md hover:shadow-xl w-full max-w-[320px] flex flex-col p-5 cursor-pointer transition-all duration-300 group"
+                        className="bg-info text-base-content rounded-2xl shadow-md hover:shadow-xl w-full max-w-[320px] flex flex-col p-5 cursor-pointer transition-all duration-300 group"
                     >
                         {/* Contenedor de Imagen (Igual que servicios) */}
                         <div className="relative mb-4">
                             <img
                                 src={item.image_url}
                                 alt={item.name}
-                                className="h-44 w-full object-contain bg-neutral-100 rounded-xl group-hover:scale-105 transition-transform duration-500"
+                                className="h-44 w-full object-contain bg-base-300-100 rounded-xl group-hover:scale-105 transition-transform duration-500"
                             />
 
                             <div className="absolute top-2 left-2">
                                 {item.stock === 0 && (
-                                    <span className="text-[11px] font-bold px-2 py-0.5 bg-neutral-content rounded-full shadow-sm">
+                                    <span className="text-[11px] font-bold px-2 py-0.5 bg-base-300-content rounded-full shadow-sm">
                                         {t('outOfStock')}
                                     </span>
                                 )}

@@ -46,7 +46,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-neutral">
+    <div className="flex flex-col min-h-screen bg-base-300">
       <Header />
       <main className="grow pb-20">
         <div className="flex flex-col items-center w-full p-4">
@@ -65,7 +65,7 @@ function App() {
           </h1>
 
           <nav className='relative mt-5 group w-87 sm:w-135 md:w-190 lg:w-243 xl:w-274 mx-auto px-10'>
-            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+            <button onClick={() => scroll(-250)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronLeft size={24} />
             </button>
 
@@ -79,8 +79,8 @@ function App() {
                     onClick={() => manejarClickCategoria(cat.id)}
                     className={`btn btn-sm md:btn-md rounded-full whitespace-nowrap transition-all active:translate-y-1 active:border-b-0
                         ${categoriaActiva === cat.id
-                        ? "bg-primary-content text-white border-b-4 border-orange-700"
-                        : "btn-outline btn-base-200 border-b-4 border-gray-400 hover:bg-primary-content hover:text-white"
+                        ? "bg-primary text-white border-b-4 border-orange-700"
+                        : "btn-outline btn-base-200 border-b-4 border-gray-400 hover:bg-primary hover:text-white"
                       }`}
                   >
                     {cat.name}
@@ -89,7 +89,7 @@ function App() {
               ))}
             </div>
 
-            <button onClick={() => scroll(250)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-neutral-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+            <button onClick={() => scroll(250)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
               <ChevronRight size={24} />
             </button>
           </nav>

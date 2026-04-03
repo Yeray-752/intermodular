@@ -77,7 +77,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            <div className="space-y-6 rounded-xl p-8 shadow-xl bg-base-100">
+            <div className="bg-base-300 space-y-6 rounded-xl p-8 shadow-xl">
 
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -111,7 +111,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                         {t("placeholder_textarea")}
                     </label>
                     <textarea
-                        className="textarea textarea-bordered w-full min-h-30 focus:textarea-primary transition-all duration-200 bg-base-100 text-base-content"
+                        className="textarea textarea-bordered w-full min-h-30 focus:textarea-primary transition-all duration-200 bg-base-300 text-base-content"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={t("placeholder_textarea")}
@@ -119,7 +119,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                 </div>
 
                 <button
-                    className={`btn bg-primary-content border-0 text-base-100 w-full shadow-md hover:shadow-lg transition-all duration-200`}
+                    className={`btn bg-primary border-0 text-base-100 w-full shadow-md hover:shadow-lg transition-all duration-200`}
                     onClick={handleSend}
                     disabled={loading || rating === 0}
                 >
@@ -137,7 +137,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                 <div className="space-y-4 max-h-125 overflow-y-auto pr-2">
 
                     {reviews.length === 0 && (
-                        <div className="text-center py-12 bg-base-200 rounded-xl">
+                        <div className="text-center py-12 rounded-xl">
                             <svg className="w-16 h-16 text-base-content/20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
@@ -150,7 +150,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                     {reviews.map((rev) => (
                         <div
                             key={rev.id}
-                            className="bg-base-100 rounded-xl border p-5 shadow-sm hover:shadow-lg transition-all duration-200"
+                            className="bg-base-300 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-200"
                         >
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-3">
@@ -191,8 +191,8 @@ export default function RatingSystem({ id_producto, userid_producto }) {
                                 </div>
                             </div>
 
-                            <div className="rounded-lg border border-base-300/50">
-                                <p className="text-sm text-base-content/90 bg-base-100 rounded-lg p-3 leading-relaxed italic wrap-break-word whitespace-pre-wrap">
+                            <div className="rounded-lg">
+                                <p className="text-sm text-neutral bg-base-100 rounded-lg p-3 leading-relaxed italic wrap-break-word whitespace-pre-wrap">
                                     {rev.comment}
                                 </p>
                             </div>

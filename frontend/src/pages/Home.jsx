@@ -11,7 +11,7 @@ export default function Home() {
   );
   document.documentElement.setAttribute("data-theme", theme);
   return (
-    <div className="min-h-screen flex flex-col bg-neutral text-base-200">
+    <div className="min-h-screen flex flex-col bg-base-300 text-base-100">
       <Header />
 
       <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
@@ -80,7 +80,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     29,99€
                   </span>
-                  <span className="text-sm bg-neutral px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 text-base-content px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -98,7 +98,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     49,99€
                   </span>
-                  <span className="text-sm bg-neutral text-base-content px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 text-base-content px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export default function Home() {
                   <span className="text-3xl font-bold text-base-content">
                     39,99€
                   </span>
-                  <span className="text-sm bg-neutral text-base-content px-3 py-1 rounded-full">
+                  <span className="text-sm bg-base-300 text-base-content px-3 py-1 rounded-full">
                     {t("offerVATIncluded")}
                   </span>
                 </div>
