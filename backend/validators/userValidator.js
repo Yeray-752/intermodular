@@ -18,7 +18,8 @@ export const registerSchema = z.object({
     nombre: z.string().min(2, "El nombre es requerido").trim(),
     apellidos: z.string().trim().optional(),
     email: z.string().email("Correo electrónico inválido"),
-    password: passwordRules
+    password: passwordRules,
+    captchaToken: z.string().min(1, "El captcha es obligatorio")
 });
 
 export const workshopSchema = z.object({

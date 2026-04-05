@@ -1,76 +1,89 @@
 import db from "../db.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import axios from 'axios'; // Importa axios al principio del archivo
+import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library';
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+// ─────────────────────────────────────────────
+// REGISTRO CLÁSICO (sin verificación por email)
+// ─────────────────────────────────────────────
 export const registerClient = async (req, res) => {
-    const { email, password, nombre, apellidos, direccion } = req.body;
-    const connection = await db.getConnection(); // Obtenemos conexión para la transacción
+    const { email, password, nombre, apellidos, direccion, captchaToken } = req.body;
 
+    const captchaRes = await axios.post(
+        'https://www.google.com/recaptcha/api/siteverify',
+        new URLSearchParams({
+            secret: process.env.RECAPTCHA_SECRET_KEY,
+            response: captchaToken,
+        })
+    );
+    if (!captchaRes.data.success) {
+        return res.status(400).json({ error: "Captcha inválido" });
+    }
+
+    const connection = await db.getConnection();
     try {
         await connection.beginTransaction();
 
-        // 1. Insertar en la tabla Usuario
         const hashedPw = await bcrypt.hash(password, 10);
         const [userResult] = await connection.query(
             "INSERT INTO Usuario (email, contraseña, rol) VALUES (?, ?, 'cliente')",
             [email, hashedPw]
         );
-
-        const newUserId = userResult.insertId;
-
-        // 2. Insertar en la tabla Cliente usando el ID recién creado
         await connection.query(
             "INSERT INTO Cliente (id_usuario, nombre, apellidos, direccion) VALUES (?, ?, ?, ?)",
-            [newUserId, nombre, apellidos, direccion]
+            [userResult.insertId, nombre, apellidos, direccion]
         );
 
         await connection.commit();
-        res.status(201).json({ message: "Cliente registrado con éxito", id: newUserId });
+
+        // ← Generar token igual que en login
+        const token = jwt.sign(
+            { id: userResult.insertId, rol: 'cliente' },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' }
+        );
+
+        res.status(201).json({ message: "Cliente registrado con éxito", token, rol: 'cliente' });
 
     } catch (error) {
         await connection.rollback();
-        console.error(error);
         res.status(500).json({ error: "Error al registrar el cliente" });
     } finally {
         connection.release();
     }
 };
 
+// ─────────────────────────────────────────────
+// LOGIN
+// ─────────────────────────────────────────────
 export const login = async (req, res) => {
-
     const { email, password, captchaToken } = req.body;
 
     try {
-
-
-        const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-        const response = await axios.post(
+        const captchaRes = await axios.post(
             'https://www.google.com/recaptcha/api/siteverify',
             new URLSearchParams({
-                secret: secretKey,
+                secret: process.env.RECAPTCHA_SECRET_KEY,
                 response: captchaToken,
             })
         );
 
-        if (!response.data.success) {
-            // Si entra aquí, es que Google recibió el token pero dijo que NO es válido
+        if (!captchaRes.data.success) {
             return res.status(400).json({
                 error: "Verificación de seguridad fallida",
-                details: response.data['error-codes']
+                details: captchaRes.data['error-codes']
             });
         }
 
         const [rows] = await db.query("SELECT * FROM Usuario WHERE email = ?", [email]);
-
         if (rows.length === 0) {
             return res.status(401).json({ error: "Credenciales incorrectas" });
         }
 
         const user = rows[0];
-
         const validPassword = await bcrypt.compare(password, user.contraseña);
         if (!validPassword) {
             return res.status(401).json({ error: "Credenciales incorrectas" });
@@ -78,25 +91,16 @@ export const login = async (req, res) => {
 
         const secret = process.env.JWT_SECRET;
         if (!secret) {
-            console.error("ERROR: JWT_SECRET no definido en el entorno.");
             return res.status(500).json({ error: "Error de configuración en el servidor" });
         }
 
-        // el token contiene tanto id del usuario como su rol (paginas admin)
         const token = jwt.sign(
-            {
-                id: user.id_usuario || user.id,
-                rol: user.rol
-            },
+            { id: user.id_usuario || user.id, rol: user.rol },
             secret,
-            { expiresIn: '8h' } // Cuando pasen las 8 horas el token caduca y el frontend lo desecha (en teoria)
+            { expiresIn: '8h' }
         );
 
-        res.json({
-            message: "Login exitoso",
-            token,
-            rol: user.rol
-        });
+        res.json({ message: "Login exitoso", token, rol: user.rol });
 
     } catch (error) {
         console.error("Error en el login:", error);
@@ -104,8 +108,10 @@ export const login = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────
+// PERFIL
+// ─────────────────────────────────────────────
 export const getClientProfile = async (req, res) => {
-    // Si llega aquí, es porque verifyToken ya validó que req.user existe
     try {
         const [rows] = await db.query(`
             SELECT u.email, u.rol, c.nombre, c.apellidos, c.direccion
@@ -115,7 +121,6 @@ export const getClientProfile = async (req, res) => {
         `, [req.user.id]);
 
         if (rows.length === 0) return res.status(404).json({ error: "Perfil no encontrado" });
-
         res.json(rows[0]);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener perfil" });
@@ -131,15 +136,13 @@ export const updateClientProfile = async (req, res) => {
     }
 
     try {
-        const query = `
-      UPDATE Cliente 
-      SET nombre = COALESCE(?, nombre), 
-          apellidos = COALESCE(?, apellidos), 
-          direccion = COALESCE(?, direccion)
-      WHERE id_usuario = ?
-    `;
-
-        const [result] = await db.query(query, [nombre, apellidos, direccion, userId]);
+        const [result] = await db.query(`
+            UPDATE Cliente 
+            SET nombre = COALESCE(?, nombre), 
+                apellidos = COALESCE(?, apellidos), 
+                direccion = COALESCE(?, direccion)
+            WHERE id_usuario = ?
+        `, [nombre, apellidos, direccion, userId]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "No se pudo encontrar el perfil para actualizar" });
@@ -156,17 +159,14 @@ export const changePassword = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        // 1. Obtener la contraseña actual de la DB
         const [rows] = await db.query("SELECT contraseña FROM Usuario WHERE id_usuario = ?", [userId]);
         const user = rows[0];
 
-        // 2. Comparar con la que envió el usuario
         const isMatch = await bcrypt.compare(currentPassword, user.contraseña);
         if (!isMatch) {
             return res.status(401).json({ error: "La contraseña actual es incorrecta" });
         }
 
-        // 3. Hashear la nueva y actualizar
         const hashedPw = await bcrypt.hash(newPassword, 10);
         await db.query("UPDATE Usuario SET contraseña = ? WHERE id_usuario = ?", [hashedPw, userId]);
 
@@ -176,9 +176,12 @@ export const changePassword = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────
+// GOOGLE LOGIN
+// ─────────────────────────────────────────────
 export const googleLogin = async (req, res) => {
     const { idToken } = req.body;
-    const connection = await db.getConnection(); // Para asegurar la transacción
+    const connection = await db.getConnection();
 
     try {
         const ticket = await client.verifyIdToken({
@@ -189,20 +192,16 @@ export const googleLogin = async (req, res) => {
 
         await connection.beginTransaction();
 
-        // 1. Buscar si el usuario ya existe
         let [rows] = await connection.query("SELECT * FROM Usuario WHERE email = ?", [email]);
         let user = rows[0];
 
         if (!user) {
-            // 2. Crear entrada en tabla 'Usuario'
             const [userRes] = await connection.query(
                 "INSERT INTO Usuario (email, rol) VALUES (?, 'cliente')",
                 [email]
             );
             const newId = userRes.insertId;
 
-            // 3. Crear entrada en tabla 'Cliente' 
-            // Usamos given_name (nombre) y family_name (apellidos) de Google
             await connection.query(
                 "INSERT INTO Cliente (id_usuario, nombre, apellidos) VALUES (?, ?, ?)",
                 [newId, given_name || name, family_name || '']

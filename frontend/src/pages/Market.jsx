@@ -20,8 +20,8 @@ function App() {
       try {
         const headers = { 'accept-language': i18n.language };
         const [resProd, resCat] = await Promise.all([
-          fetch('https://yeray.informaticamajada.es/api/products', { headers }),
-          fetch('https://yeray.informaticamajada.es/api/product_categories', { headers })
+          fetch('http://localhost:3000/api/products', { headers }),
+          fetch('http://localhost:3000/api/product_categories', { headers })
         ]);
         const dataProd = await resProd.json();
         const dataCat = await resCat.json();

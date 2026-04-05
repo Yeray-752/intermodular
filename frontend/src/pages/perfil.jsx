@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect,useRef, useMemo,useContext} from 'react';
+import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
 import { useLocation } from "react-router-dom";
 import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
@@ -21,9 +22,9 @@ function Perfil() {
     const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-    // Dentro de tu componente, antes del return del case 'notificaciones'
-    const { t, i18n } = useTranslation(['profile', 'notifications']); // Cargas ambos
-    // Creamos un helper local para las notis
+
+    const { t, i18n } = useTranslation(['profile', 'notifications']);
+
     const [citas, setCitas] = useState([])
     const token = localStorage.getItem("token");
     const [error, setError] = useState(null);
@@ -39,6 +40,17 @@ function Perfil() {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 
+    const [cocheBuscado, setCocheBuscado] = useState('');
+    const [matricula, setMatricula] = useState('');
+    const [open, setOpen] = useState(false)
+    const dialogRef = useRef(null)
+    const [modo, setModo] = useState(null);
+    const { logout } = useContext(AuthContext)
+    const [datos, setDatos] = useState({
+        marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
+    });
+
+    // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
@@ -48,7 +60,7 @@ function Perfil() {
             }
 
             try {
-                const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/me", {
+                const response = await fetch("http://localhost:3000/api/users/profile/me", {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
@@ -71,7 +83,7 @@ function Perfil() {
 
     const traerProductos = async () => {
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/products");
+            const response = await fetch("http://localhost:3000/api/products");
             if (response.ok) {
                 const data = await response.json();
                 setProductos(data);
@@ -86,7 +98,7 @@ function Perfil() {
         if (!token) return;
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/notifications/unread-count", {
+            const response = await fetch("http://localhost:3000/api/notifications/unread-count", {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -115,7 +127,7 @@ function Perfil() {
 
         setLoadingNotis(true);
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/notifications", {
+            const response = await fetch("http://localhost:3000/api/notifications", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -132,7 +144,7 @@ function Perfil() {
 
     const marcarTodasComoLeidas = async () => {
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
+            const response = await fetch(`http://localhost:3000/api/notifications/read-all`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -151,6 +163,20 @@ function Perfil() {
         }
     };
 
+    const getStatusBadgeClass = (estado) => {
+        switch (estado) {
+            case 'pendiente':
+                return 'badge-primary';
+
+            case 'completada':
+                return 'badge-success';
+            case 'cancelada':
+                return 'badge-error';
+            default:
+                return 'badge-warning';
+        }
+    };
+
     const marcarLeida = async (id) => {
         // CAMBIO: leido con "o"
         setNotificaciones(prev =>
@@ -158,7 +184,7 @@ function Perfil() {
         );
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/${id}/read`, {
+            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -205,7 +231,7 @@ function Perfil() {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
+            const response = await fetch("http://localhost:3000/api/vehicules", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -232,13 +258,81 @@ function Perfil() {
         }
     };
 
+
+    useEffect(() => {
+        const node = dialogRef.current; // Accedemos al elemento real del DOM
+        if (!node) return;
+
+        if (open) {
+            node.showModal(); // Método nativo de HTML5
+        } else {
+            node.close();     // Método nativo de HTML5
+        }
+    }, [open])
+
+    const manejarCambio = (e) => {
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const enviarFormulario = (e) => {
+        e.preventDefault();
+        console.log("Datos enviados:", datos);
+        if (modo === 'manual') {
+            // registrarManual(datos);
+        } else {
+            buscarCoche(matricula)
+        }
+
+        // Opcional: Cerrar el modal después de la acción
+        setOpen(false);
+        // Aquí iría tu llamada a la API
+    };
+
+
+    const buscarCoche = async (matricula) => {
+
+        /* Toca hacer scraping */
+        // Construimos la URL con los parámetros necesarios
+        const url = `http://localhost:3000/api/vehicules/matricula/${matricula}`;
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
+            setCocheBuscado(await data)
+        } catch (e) {
+            console.error('Error capturado:', e.message);
+        }
+    }
+
+
     const traerCitas = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        setLoadingCitas(true); // Cambiado aquí
+        // 1. Intentar cargar desde sessionStorage primero
+        const citasGuardadas = sessionStorage.getItem("misCitas");
+        if (citasGuardadas) {
+            setCitas(JSON.parse(citasGuardadas));
+            setLoadingCitas(false);
+            return;
+        }
+
+        setLoadingCitas(true);
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
+            const response = await fetch("http://localhost:3000/api/dates", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -248,14 +342,16 @@ function Perfil() {
             if (response.ok) {
                 const data = await response.json();
                 setCitas(data);
-                console.log(data)
+                // 2. Guardar en sessionStorage para futuras visitas
+                sessionStorage.setItem("misCitas", JSON.stringify(data));
             }
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoadingCitas(false); // Cambiado aquí
+            setLoadingCitas(false);
         }
     };
+
     useEffect(() => {
         if (activeTab === 'citas') {
             traerCitas();
@@ -266,10 +362,8 @@ function Perfil() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        // Quitamos el if(!confirm(...)) porque ya lo hace el modal nuevo
-
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
+            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
                 method: 'PATCH',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -278,8 +372,20 @@ function Perfil() {
             });
 
             if (response.ok) {
-                setCitas(prevCitas => prevCitas.filter(cita => cita.id !== id));
-                // Opcional: podrías usar un toast aquí en lugar de alert
+                // 1. Actualizar el estado local (React)
+                const citasActualizadas = prevCitas =>
+                    prevCitas.map(cita =>
+                        cita.id === id ? { ...cita, estado: 'cancelada' } : cita
+                    );
+
+                setCitas(citasActualizadas);
+
+                setCitas(prev => {
+                    const newCitas = prev.map(c => c.id === id ? { ...c, estado: 'cancelada' } : c);
+                    sessionStorage.setItem("misCitas", JSON.stringify(newCitas));
+                    return newCitas;
+                });
+
                 alert(t('profile:cancel_success') || "Cita cancelada correctamente");
             } else {
                 const errorData = await response.json();
@@ -301,6 +407,8 @@ function Perfil() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("rol");
+        sessionStorage.removeItem("misCitas");
+        logout();
         navigate("/");
         location.reload()
     };
@@ -323,7 +431,7 @@ function Perfil() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/update", {
+            const response = await fetch("http://localhost:3000/api/users/profile/update", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -369,7 +477,7 @@ function Perfil() {
 
         setLoadingVehiculos(true);
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
+            const response = await fetch("http://localhost:3000/api/vehicules", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -404,14 +512,14 @@ function Perfil() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {campos.map((field) => (
                                     <div className="flex flex-col" key={field.name}>
-                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
+                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">       
                                             {field.label}
                                         </label>
                                         <input
                                             name={field.name}
                                             type={field.type}
                                             defaultValue={field.value}
-                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
+                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content   
                                                 ${errors[field.name] ? 'border-error ring-1 ring-error' : 'border-base-300 focus:ring focus:ring-primary/50'}`}
                                         />
                                         {errors[field.name] && (
@@ -427,7 +535,7 @@ function Perfil() {
                                 <SelectorCanarias />
                             </div>
 
-                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary-content flex items-center gap-2">
+                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary-content flex items-center gap-2"> 
                                 <Save size={18} />
                                 {t('profile:saveChanges')}
                             </button>
@@ -444,7 +552,7 @@ function Perfil() {
                                     {t('profile:myCars') || "Mis Vehículos"}
                                 </h2>
                                 <p className="text-base-content/60 mt-1">
-                                    {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
+                                    {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}   
                                 </p>
                             </div>
 
@@ -458,83 +566,233 @@ function Perfil() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {loadingVehiculos ? (
-                                <div className="col-span-full flex flex-col items-center py-12">
-                                    <span className="loading loading-spinner loading-lg text-primary"></span>
-                                    <p className="mt-4 text-base-content/50">Cargando tu garaje...</p>
-                                </div>
-                            ) : vehiculos.length > 0 ? (
-                                <>
-                                    {vehiculos.map((v) => (
-                                        <div
-                                            key={v.matricula}
-                                            className="group bg-base-100 border border-base-300 rounded-3xl p-5 hover:shadow-xl hover:border-primary/30 transition-all duration-300 relative overflow-hidden"
-                                        >
-                                            <div className="absolute -right-4 -bottom-4 text-base-content/5 opacity-0 group-hover:opacity-100 transition-opacity rotate-12">
-                                                <Car size={100} />
-                                            </div>
 
-                                            <div className="flex items-start justify-between relative z-10">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                                        <Car size={24} />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-lg text-base-content capitalize">
-                                                            {v.marca} <span className="text-primary">{v.modelo}</span>
-                                                        </h3>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <span className="bg-neutral text-base-content text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-base-300">
-                                                                {v.matricula}
-                                                            </span>
-                                                            <span className="text-xs text-base-content/40 italic">Año {v.año}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                <button
-                                                    onClick={() => {
-                                                        if (window.confirm(`¿Estás seguro de que deseas eliminar el vehículo ${v.matricula}?`)) {
-                                                            eliminarVehiculo(v.matricula);
-                                                        }
-                                                    }}
-                                                    className="btn btn-circle btn-ghost btn-sm text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                    <X size={18} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
+                            >
+                                <Plus size={20} />
+                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                            </button>
+                        </div>
 
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="border-2 border-dashed border-base-300 rounded-3xl p-5 flex flex-col items-center justify-center gap-2 text-base-content/40 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group"
-                                    >
-                                        <div className="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <Plus size={24} />
-                                        </div>
-                                        <span className="font-medium text-sm">Registrar nuevo</span>
-                                    </button>
-                                </>
-                            ) : (
-                                /* Estado Vacío */
-                                <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
-                                    <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                        <Car size={32} className="text-base-content/20" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {cocheBuscado && (
+                                <div className="group p-8 bg-base-100 border border-base-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">     
+                                        <Car size={80} className="text-[#ff5a1f]" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
-                                    <p className="text-base-content/50 max-w-xs mx-auto mt-2">
-                                        Añade tu primer vehículo para poder solicitar servicios y reparaciones.
-                                    </p>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="btn btn-primary mt-6 rounded-xl"
-                                    >
-                                        Registrar mi primer coche
-                                    </button>
+
+                                    <div className="flex items-center gap-5 mb-6">
+                                        <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">   
+                                            <Car className="text-[#ff5a1f]" size={26} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-base-content leading-tight uppercase">
+                                                {cocheBuscado.data?.brand}{" "}
+                                                <span className="text-[#ff5a1f]">{cocheBuscado.data?.model}</span>
+                                            </h2>
+                                            <p className="text-xs font-bold tracking-[0.2em] text-base-content/40 mt-1">
+                                                {cocheBuscado.data?.plate}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-2 py-4 border-y border-base-200">
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Settings size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Motor</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.engine}</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 border-x border-base-200">
+                                            <Zap size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Potencia</span>        
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.power}</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Calendar size={16} className="text-base-content/30" />
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Año</span>
+                                            <span className="text-xs font-bold">{cocheBuscado.data?.yearFrom}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
+                            <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                    <Car size={32} className="text-base-content/20" />
+                                </div>
+                                <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
+                                <p className="text-base-content/50 max-w-xs mx-auto mt-2">
+                                    Añade tu primer vehículo para poder solicitar servicios y reparaciones.
+                                </p>
+                                <button
+                                    onClick={() => setOpen(true)}
+                                    className="btn btn-primary mt-6 rounded-xl"
+                                >
+                                    Registrar mi primer coche
+                                </button>
+                            </div>
+
+
+
                         </div>
+
+                        {/* MODAL ESTILIZADO */}
+                        {open && (
+                            <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+                                <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
+
+                                    <button
+                                        onClick={() => { setOpen(false); setModo(null); }}
+                                        className="absolute top-8 right-8 text-base-content/30 hover:text-base-content transition-colors z-10"
+                                    >
+                                        <X size={28} />
+                                    </button>
+
+                                    <div className="p-10">
+                                        {!modo ? (
+                                            /* PASO 1: Selección de modo con estilo nuevo */
+                                            <div className="py-4 text-center">
+                                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
+                                                    <Car className="text-[#ff5a1f]" size={32} />
+                                                </div>
+                                                <h3 className="text-2xl font-black mb-8 leading-tight">¿Cómo quieres añadir tu vehículo?</h3>
+                                                <div className="flex flex-col gap-4">
+                                                    <button
+                                                        onClick={() => setModo('manual')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">📝</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Entrada Manual</p>
+                                                            <p className="text-xs text-base-content/50">Introduce todos los datos</p>     
+                                                        </div>
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => setModo('automatico')}
+                                                        className="group flex items-center gap-4 p-5 rounded-2xl border border-base-300 hover:border-[#ff5a1f] hover:bg-orange-50/50 transition-all text-left"
+                                                    >
+                                                        <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">🤖</span>
+                                                        <div>
+                                                            <p className="font-bold text-base-content">Automático</p>
+                                                            <p className="text-xs text-base-content/50">Solo con tu matrícula</p>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            /* PASO 2: El formulario estilizado */
+                                            <>
+                                                <div className="flex flex-col items-center mb-8">
+                                                    <button
+                                                        onClick={() => setModo(null)}
+                                                        className="text-[10px] font-bold uppercase tracking-widest text-[#ff5a1f] mb-2 hover:underline"
+                                                    >
+                                                        ← Volver atrás
+                                                    </button>
+                                                    <h2 className="text-2xl font-black text-center text-base-content leading-tight">      
+                                                        {modo === 'manual' ? 'Registrar Vehículo' : 'Búsqueda Rápida'}
+                                                    </h2>
+                                                </div>
+
+                                                <form onSubmit={enviarFormulario} className="space-y-5">
+                                                    {/* Input Matrícula Principal */}
+                                                    <div>
+                                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                                        <input
+                                                            required
+                                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
+                                                            placeholder="1234BBB"
+                                                            onChange={(e) => setMatricula(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {modo === 'manual' && (
+                                                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-500">
+                                                            {/* MARCA */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.marca}
+                                                                    name="marca"
+                                                                    placeholder="Ej: Seat"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MODELO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                                                <input
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.modelo}
+                                                                    name="modelo"
+                                                                    placeholder="Ej: Ibiza"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* AÑO */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder='2020'
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.anio}
+                                                                    name="anio"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* MOTORIZACIÓN (Potencia/Cilindrada) */}
+                                                            <div className="col-span-1">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Motor (CV/cc)</label>
+                                                                <input
+                                                                    placeholder="Ej: 1.8"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
+                                                                    value={datos.motor}
+                                                                    name="motor"
+                                                                    onChange={manejarCambio}
+                                                                />
+                                                            </div>
+
+                                                            {/* COMBUSTIBLE (Selector) */}
+                                                            <div className="col-span-2">
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Tipo de Combustible</label>
+                                                                <select
+                                                                    name="combustible"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
+                                                                    value={datos.combustible}
+                                                                    onChange={manejarCambio}
+                                                                >
+                                                                    <option value="">Seleccionar combustible...</option>
+                                                                    <option value="gasolina">Gasolina</option>
+                                                                    <option value="diesel">Diesel</option>
+                                                                    <option value="electrico">Eléctrico</option>
+                                                                    <option value="hibrido">Híbrido</option>
+                                                                    <option value="glp">GLP</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <button
+                                                        type="submit"
+                                                        className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
+                                                    >
+                                                        {modo === 'manual' ? 'Confirmar Registro' : 'Consultar Matrícula'}
+                                                    </button>
+                                                </form>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             case 'citas':
@@ -560,21 +818,31 @@ function Perfil() {
                                             </div>
                                             <div>
                                                 <h4 className="font-extrabold text-lg text-base-content uppercase tracking-tight">{citas.servicio}</h4>
-                                                <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>
+                                                <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>  
                                                 <div className="flex items-center gap-2 mt-1 font-bold text-xs">
                                                     <Clock size={14} />
                                                     <span>{citas.fecha_cita}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
-                                            <span className="badge badge-warning badge-md font-bold py-3 px-4 uppercase text-[10px]">{citas.estado}</span>
-                                            <button className="btn btn-ghost btn-sm text-error hover:bg-error/10" onClick={() => {
-                                                setCitaACancelar(citas.id); document.getElementById('modal_confirmar_cancelacion').showModal();
-                                            }}
+
+                                        {citas.estado === 'pendiente' && (
+                                            <button
+                                                className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+                                                onClick={() => {
+                                                    setCitaACancelar(citas.id);
+                                                    document.getElementById('modal_confirmar_cancelacion').showModal();
+                                                }}
                                             >
                                                 {t('profile:cancel')}
                                             </button>
+                                        )}
+
+                                        <div className="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0">
+                                            <span className={`badge badge-outline ${getStatusBadgeClass(citas.estado)} badge-md font-bold py-3 px-4 uppercase text-[10px]`}>
+                                                {citas.estado}
+                                            </span>
+
                                         </div>
                                     </div>
                                 ))
@@ -608,7 +876,7 @@ function Perfil() {
                             {notificaciones.length > 0 && notificaciones.some(n => !n.leido) && (
                                 <button
                                     onClick={marcarTodasComoLeidas}
-                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 transition-all"
+                                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 transition-all"     
                                 >
                                     <CheckCheck size={14} /> Marcar todas como leídas
                                 </button>
@@ -642,7 +910,7 @@ function Perfil() {
                                         <div
                                             key={noti.id}
                                             // Mantenemos siempre bg-base-100 y eliminamos opacity-80
-                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 
+                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100
                 ${estaLeida
                                                     ? 'border-base-200 shadow-none'
                                                     : 'border-primary/20 shadow-md ring-1 ring-primary/5'}`}
@@ -659,7 +927,7 @@ function Perfil() {
                                                     />
                                                 </div>
 
-                                                {/* ICONO CAMPANA: Mantenemos el color aunque esté leída para que no se "apague" */}
+                                                {/* ICONO CAMPANA: Mantenemos el color aunque esté leída para que no se "apague" */}      
                                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors
                     ${estaLeida ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
                                                     <Bell size={24} />
@@ -684,7 +952,7 @@ function Perfil() {
                                             <div className="hidden md:flex items-center">
                                                 {estaLeida ? (
                                                     <div className="flex items-center gap-1 text-success opacity-80">
-                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Leída</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Leída</span>  
                                                         <Check size={14} strokeWidth={3} />
                                                     </div>
                                                 ) : (
@@ -698,7 +966,7 @@ function Perfil() {
                                 })
                             ) : (
                                 // ESTADO VACÍO
-                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-16 text-center">
+                                <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-16 text-center"> 
                                     <div className="w-16 h-16 bg-base-300/50 rounded-full flex items-center justify-center mx-auto mb-4 opacity-40">
                                         <Bell size={32} />
                                     </div>
@@ -733,7 +1001,7 @@ function Perfil() {
                                         <td className="text-sm">10/01/2026</td>
                                         <td><div className="badge badge-success badge-outline font-bold text-[10px]">COMPLETADA</div></td>
                                         <td className="text-right rounded-r-xl">
-                                            <button className="btn btn-ghost btn-xs text-primary underline font-bold">PDF</button>
+                                            <button className="btn btn-ghost btn-xs text-primary underline font-bold">PDF</button>        
                                         </td>
                                     </tr>
                                 </tbody>
@@ -843,7 +1111,7 @@ function Perfil() {
                             <div>
                                 <h3 className="font-black text-2xl text-base-content">{t('profile:cancel_appointment_title') || "¿Cancelar cita?"}</h3>
                                 <p className="text-base-content/60 mt-2 font-medium">
-                                    {t('profile:cancel_warning') || "Esta acción no se puede deshacer. Perderás tu turno en el taller."}
+                                    {t('profile:cancel_warning') || "Esta acción no se puede deshacer. Perderás tu turno en el taller."}  
                                 </p>
                             </div>
                         </div>
@@ -886,7 +1154,7 @@ function Perfil() {
 
                         <div className="p-10">
                             <div className="flex flex-col items-center mb-8">
-                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">      
                                     <Car className="text-[#ff5a1f]" size={32} />
                                 </div>
                                 <h2 className="text-2xl font-black text-center text-base-content leading-tight">
