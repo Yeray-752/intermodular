@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Check } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Settings, Zap, Check, ChartNoAxesColumnIcon } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { AuthContext } from "../context/AuthContext";
 import { data, useNavigate } from 'react-router';
@@ -41,7 +41,7 @@ function Perfil() {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loadingNotis, setLoadingNotis] = useState(false);
 
-    const [cocheBuscado, setCocheBuscado] = useState('');
+    const [cocheBuscado, setCocheBuscado] = useState([{}]);
     const [matricula, setMatricula] = useState('');
     const [open, setOpen] = useState(false)
     const dialogRef = useRef(null)
@@ -61,7 +61,7 @@ function Perfil() {
             }
 
             try {
-                const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/me", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
@@ -84,7 +84,7 @@ function Perfil() {
 
     const traerProductos = async () => {
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/products");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
             if (response.ok) {
                 const data = await response.json();
                 setProductos(data);
@@ -99,7 +99,7 @@ function Perfil() {
         if (!token) return;
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/notifications/unread-count", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/unread-count`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -128,7 +128,7 @@ function Perfil() {
 
         setLoadingNotis(true);
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/notifications", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -145,7 +145,7 @@ function Perfil() {
 
     const marcarTodasComoLeidas = async () => {
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -171,7 +171,7 @@ function Perfil() {
         );
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/${id}/read`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -198,52 +198,7 @@ function Perfil() {
         return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
     };
 
-    const handleRegistrarVehiculo = async (e) => {
-        e.preventDefault();
-
-        // Validar año antes de enviar
-        const currentYear = new Date().getFullYear();
-        if (formVehiculo.año > currentYear) {
-            alert("El año no puede ser mayor al actual");
-            return;
-        }
-
-        // Formateamos antes de enviar al backend
-        const vehiculoFormateado = {
-            matricula: formVehiculo.matricula.toUpperCase().trim(),
-            marca: formatText(formVehiculo.marca.trim()),
-            modelo: formatText(formVehiculo.modelo.trim()),
-            año: formVehiculo.año
-        };
-        const token = localStorage.getItem("token");
-
-        try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    matricula: formVehiculo.matricula,
-                    marca: formVehiculo.marca,
-                    modelo: formVehiculo.modelo,
-                    año: formVehiculo.año
-                })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert("Vehículo guardado");
-                setIsModalOpen(false);
-                traerVehiculos();
-            } else {
-                alert(data.message);
-            }
-        } catch (error) {
-            alert("Error de conexión");
-        }
-    };
+  
 
 
     useEffect(() => {
@@ -261,16 +216,36 @@ function Perfil() {
         setDatos({
             ...datos,
             [e.target.name]: e.target.value
+            
         });
+        console.log(datos);
     };
 
-    const enviarFormulario = (e) => {
+    const enviarFormulario = async (e) => {
         e.preventDefault();
         console.log("Datos enviados:", datos);
         if (modo === 'manual') {
-            // registrarManual(datos);
+             
+              try {
+                 console.log(datos);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vehicules`, {
+                method: 'POST',
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            });
+
+            
+        } catch (err) {
+            console.error("Error en la petición:", err);
+            alert("No se pudo conectar con el servidor");
+        } 
+             
         } else {
-            buscarCoche(matricula)
+            buscarCoche(datos.matricula)
+            console.log(datos.matricula)
         }
 
         // Opcional: Cerrar el modal después de la acción
@@ -279,11 +254,11 @@ function Perfil() {
     };
 
 
-    const buscarCoche = async (matricula) => {
+    const cocheUsuario = async () => {
 
         /* Toca hacer scraping */
         // Construimos la URL con los parámetros necesarios
-        const url = `https://yeray.informaticamajada.es/api/vehicules/matricula/${matricula}`;
+        const url = `${import.meta.env.VITE_API_URL}/api/vehicules/`;
 
         try {
             const response = await fetch(url, {
@@ -299,8 +274,39 @@ function Perfil() {
 
             const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
             setCocheBuscado(await data)
+            console.log(cocheBuscado)
+            
         } catch (e) {
             console.error('Error capturado:', e.message);
+        }
+    }
+
+     const buscarCoche = async (matricula) => {
+
+        /* Toca hacer scraping */
+        // Construimos la URL con los parámetros necesarios
+        const url = `${import.meta.env.VITE_API_URL}/api/vehicules/matricula/secreta`;
+        console.log('esta es la matricula' + matricula)
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ matricula })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`);
+            }
+
+            
+            cocheUsuario()
+        } catch (error) {
+            console.error("Error al cargar vehículos:", error);
+        } finally {
+            setLoadingVehiculos(false);
         }
     }
 
@@ -312,7 +318,7 @@ function Perfil() {
 
         setLoadingCitas(true); // Cambiado aquí
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -334,6 +340,9 @@ function Perfil() {
         if (activeTab === 'citas') {
             traerCitas();
         }
+        if (activeTab === 'vehiculos'){
+            cocheUsuario()
+        }
     }, [activeTab]);
 
     const eliminarCitas = async (id) => {
@@ -343,7 +352,7 @@ function Perfil() {
         // Quitamos el if(!confirm(...)) porque ya lo hace el modal nuevo
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/${id}/cancelar`, {
                 method: 'PATCH',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -398,7 +407,7 @@ function Perfil() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/update", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/update`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -438,30 +447,8 @@ function Perfil() {
             ? 'bg-base-100 text-primary font-semibold shadow-md'
             : 'text-base-content/70 hover:shadow-lg'}
     `;
-    const traerVehiculos = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+   
 
-        setLoadingVehiculos(true);
-        try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setVehiculos(data);
-            }
-        } catch (error) {
-            console.error("Error al cargar vehículos:", error);
-        } finally {
-            setLoadingVehiculos(false);
-        }
-    };
-    useEffect(() => {
-        if (activeTab === 'vehiculos') {
-            traerVehiculos();
-        }
-    }, [activeTab]);
 
 
     const renderContent = () => {
@@ -486,7 +473,7 @@ function Perfil() {
                                             name={field.name}
                                             type={field.type}
                                             defaultValue={field.value}
-                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-base-content 
+                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-neutral 
                                                 ${errors[field.name] ? 'border-error ring-1 ring-error' : 'border-base-300 focus:ring focus:ring-primary/50'}`}
                                         />
                                         {errors[field.name] && (
@@ -524,7 +511,7 @@ function Perfil() {
                             </div>
 
                             <button
-                                onClick={() => setIsModalOpen(true)}
+                                onClick={() => setOpen(true)}
                                 className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
                             >
                                 <Plus size={20} />
@@ -532,21 +519,11 @@ function Perfil() {
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            
-
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
-                            >
-                                <Plus size={20} />
-                                {t('profile:addVehicle') || "Añadir Vehículo"}
-                            </button>
-                        </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {cocheBuscado && (
-                                <div className="group p-8 bg-base-100 border border-base-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
+                            {cocheBuscado && cocheBuscado.length > 0 ? (
+                                cocheBuscado.map((coche) => (
+                                    <div key={coche.matricula} className="group p-8 bg-info border border-base-300 rounded-[2.5rem] w-80 hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <Car size={80} className="text-[#ff5a1f]" />
                                     </div>
@@ -557,11 +534,12 @@ function Perfil() {
                                         </div>
                                         <div>
                                             <h2 className="text-xl font-black text-base-content leading-tight uppercase">
-                                                {cocheBuscado.data?.brand}{" "}
-                                                <span className="text-[#ff5a1f]">{cocheBuscado.data?.model}</span>
+                                                {coche.marca}{" "}
+                                                <span className="text-[#ff5a1f]">{coche.modelo}</span>
+                                                
                                             </h2>
                                             <p className="text-xs font-bold tracking-[0.2em] text-base-content/40 mt-1">
-                                                {cocheBuscado.data?.plate}
+                                                {coche.matricula}
                                             </p>
                                         </div>
                                     </div>
@@ -570,22 +548,24 @@ function Perfil() {
                                         <div className="flex flex-col items-center gap-1">
                                             <Settings size={16} className="text-base-content/30" />
                                             <span className="text-[10px] font-bold uppercase text-base-content/40">Motor</span>
-                                            <span className="text-xs font-bold">{cocheBuscado.data?.engine}</span>
+                                            <span className="text-xs font-bold">{coche.motor}</span>
                                         </div>
                                         <div className="flex flex-col items-center gap-1 border-x border-base-200">
                                             <Zap size={16} className="text-base-content/30" />
-                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Potencia</span>
-                                            <span className="text-xs font-bold">{cocheBuscado.data?.power}</span>
+                                            <span className="text-[10px] font-bold uppercase text-base-content/40">Combustible</span>
+                                            <span className="text-xs font-bold">{coche.combustible}</span>
                                         </div>
                                         <div className="flex flex-col items-center gap-1">
                                             <Calendar size={16} className="text-base-content/30" />
                                             <span className="text-[10px] font-bold uppercase text-base-content/40">Año</span>
-                                            <span className="text-xs font-bold">{cocheBuscado.data?.yearFrom}</span>
+                                            <span className="text-xs font-bold">{coche.año}</span>
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                            <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
+                                ))
+                                
+                            ): (
+                                 <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
                                 <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                                     <Car size={32} className="text-base-content/20" />
                                 </div>
@@ -600,6 +580,8 @@ function Perfil() {
                                     Registrar mi primer coche
                                 </button>
                             </div>
+                            ) }
+                           
 
 
 
@@ -608,7 +590,7 @@ function Perfil() {
                         {/* MODAL ESTILIZADO */}
                         {open && (
                             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                                <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
+                                <div className="bg-info w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
 
                                     <button
                                         onClick={() => { setOpen(false); setModo(null); }}
@@ -670,9 +652,12 @@ function Perfil() {
                                                         <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
                                                         <input
                                                             required
-                                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
+                                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
                                                             placeholder="1234BBB"
-                                                            onChange={(e) => setMatricula(e.target.value)}
+                                                            value={datos.matricula}
+                                                            name="matricula"
+                                                            onChange={manejarCambio}
+                                                            
                                                         />
                                                     </div>
 
@@ -732,7 +717,7 @@ function Perfil() {
                                                                 <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Tipo de Combustible</label>
                                                                 <select
                                                                     name="combustible"
-                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
+                                                                    className="w-full px-5 py-4 rounded-2xl border  border-base-300 bg-info focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
                                                                     value={datos.combustible}
                                                                     onChange={manejarCambio}
                                                                 >
@@ -742,6 +727,7 @@ function Perfil() {
                                                                     <option value="electrico">Eléctrico</option>
                                                                     <option value="hibrido">Híbrido</option>
                                                                     <option value="glp">GLP</option>
+                                                                    <option value="gnc">GNC</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -749,7 +735,7 @@ function Perfil() {
 
                                                     <button
                                                         type="submit"
-                                                        className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
+                                                        className="w-full bg-primary hover:bg-primary text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
                                                     >
                                                         {modo === 'manual' ? 'Confirmar Registro' : 'Consultar Matrícula'}
                                                     </button>
@@ -1012,7 +998,7 @@ function Perfil() {
 
             <main className='flex-1 p-4 md:p-6 lg:p-8'>
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
-                    <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-base-100 w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
+                    <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-info w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
                         <div className="mb-10 hidden lg:block">
                             <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
                         </div>
@@ -1054,7 +1040,7 @@ function Perfil() {
                         </div>
                     </aside>
 
-                    <section className='bg-base-100 flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
+                    <section className='bg-info flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
                         {renderContent()}
                     </section>
                 </div>
@@ -1098,105 +1084,7 @@ function Perfil() {
                 </dialog>
             </main>
             <Footer />
-            {isModalOpen && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-base-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in fade-in zoom-in duration-300">
-
-                        <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-6 right-6 text-base-content/30 hover:text-base-content transition-colors"
-                        >
-                            <X size={28} />
-                        </button>
-
-                        <div className="p-10">
-                            <div className="flex flex-col items-center mb-8">
-                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                    <Car className="text-[#ff5a1f]" size={32} />
-                                </div>
-                                <h2 className="text-2xl font-black text-center text-base-content leading-tight">
-                                    {t('profile:registrarNuevoVehiculo') || "Registrar Nuevo Vehículo"}
-                                </h2>
-                            </div>
-
-                            <form onSubmit={handleRegistrarVehiculo} className="space-y-5">
-                                {/* MATRÍCULA: Mayúsculas y máx 15 */}
-                                <div>
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
-                                    <input
-                                        required
-                                        maxLength={15}
-                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:bg-base-100 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest"
-                                        placeholder="0000-BBB"
-                                        value={formVehiculo.matricula}
-                                        onChange={(e) => setFormVehiculo({
-                                            ...formVehiculo,
-                                            matricula: e.target.value.toUpperCase()
-                                        })}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    {/* MARCA: Primera Mayúscula */}
-                                    <div>
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
-                                        <input
-                                            required
-                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                                            placeholder="Toyota"
-                                            value={formVehiculo.marca}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                setFormVehiculo({
-                                                    ...formVehiculo,
-                                                    marca: val.charAt(0).toUpperCase() + val.slice(1)
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                    {/* MODELO: Primera Mayúscula */}
-                                    <div>
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
-                                        <input
-                                            required
-                                            className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                                            placeholder="Corolla"
-                                            value={formVehiculo.modelo}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                setFormVehiculo({
-                                                    ...formVehiculo,
-                                                    modelo: val.charAt(0).toUpperCase() + val.slice(1)
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* AÑO: Máximo año actual */}
-                                <div>
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        max={new Date().getFullYear()}
-                                        className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
-                                        value={formVehiculo.año}
-                                        onChange={(e) => setFormVehiculo({ ...formVehiculo, año: e.target.value })}
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="w-full bg-[#ff5a1f] hover:bg-[#e84e18] text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97]"
-                                >
-                                    {t('profile:confirmAndAdd') || "Confirmar y Añadir"}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
+            
         </div>
     );
 }

@@ -3,10 +3,12 @@ import { registrarVehiculo, eliminarVehiculo, actualizarVehiculo, getVehiculos }
 import puppeteer from 'puppeteer';
 import { verifyToken } from '../middlewares/auth.js';
 
+import db from '../db.js';
+
 const router = Router();
 
 // Todas las rutas de vehículos suelen requerir estar logueado
-router.use(verifyToken); 
+router.use(verifyToken);
 
 router.get('/', getVehiculos);
 router.post('/', registrarVehiculo);
@@ -19,7 +21,9 @@ async function scrapeAutodoc(plate) {
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
-      "--disable-blink-features=AutomationControlled",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-blink-features=AutomationControlled"
     ],
   });
 
@@ -71,7 +75,7 @@ async function scrapeAutodoc(plate) {
         try {
           const json = await response.json();
           if (json.carId) vehicleData = json;
-        } catch (_) {}
+        } catch (_) { }
       }
     });
 
@@ -80,7 +84,6 @@ async function scrapeAutodoc(plate) {
     await page.click("#kba1", { clickCount: 3 });
     await page.type("#kba1", plate.toUpperCase(), { delay: 100 });
     console.log("[Vehicle] Matrícula escrita:", plate);
-    
 
     // ── Paso 5: Pulsar botón Buscar ───────────────────────────
     await page.evaluate(() => {
@@ -99,9 +102,44 @@ async function scrapeAutodoc(plate) {
       const buscar = allBtns.find(b => b.textContent.trim().toLowerCase() === "buscar");
       if (buscar) buscar.click();
     });
-    await new Promise(r => setTimeout(r, 500));
+    
+    // Esperamos a que la web procese la búsqueda inicial
+    await new Promise(r => setTimeout(r, 2500));
 
-    // ── Paso 6: Esperar resultado ─────────────────────────────
+    // ── Paso 5.5: Gestionar selector de vehículos (Pop-up de motor) ──
+    // ── Paso 5.5: Gestionar selector de vehículos (Pop-up de motor) ──
+    try {
+      // Usamos el selector exacto del HTML que me pasaste
+      const selectorPopUp = '.popup-sidebar--selector.open';
+      const apareceSelector = await page.waitForSelector(selectorPopUp, { timeout: 6000 }).catch(() => null);
+
+      if (apareceSelector) {
+        console.log("[Vehicle] Pop-up detectado: Seleccionando la primera motorización...");
+
+        await page.evaluate(() => {
+          // Buscamos todos los contenedores de vehículos en la lista del pop-up
+          const opciones = document.querySelectorAll('.popup-sidebar-selector-vehicle');
+          
+          if (opciones.length > 0) {
+            // Hacemos clic en el primero. 
+            // Clicamos el div con role="button" que envuelve el radio y el label.
+            opciones[0].click();
+          } else {
+            // Fallback: si el clic en el div no funciona, buscamos el primer label
+            const primerLabel = document.querySelector('.popup-sidebar-selector-vehicle__wrap');
+            if (primerLabel) primerLabel.click();
+          }
+        });
+
+        // Esperamos a que la web procese el clic y redirija
+        console.log("[Vehicle] Opción seleccionada, esperando redirección...");
+        await new Promise(r => setTimeout(r, 4000));
+      }
+    } catch (e) {
+      console.log("[Vehicle] No se detectó el pop-up selector, continuando flujo normal.");
+    }
+
+    // ── Paso 6: Esperar resultado final ─────────────────────────────
     await Promise.race([
       page.waitForResponse(r => r.url().includes("search-number"), { timeout: 10000 }).catch(() => null),
       page.waitForNavigation({ waitUntil: "networkidle2", timeout: 10000 }).catch(() => null),
@@ -109,50 +147,44 @@ async function scrapeAutodoc(plate) {
     await new Promise(r => setTimeout(r, 2000));
 
     const currentUrl = page.url();
-    console.log("[Vehicle] URL:", currentUrl);
+    console.log("[Vehicle] URL actual:", currentUrl);
 
-    // ── Paso 7: Navegar a la página del vehículo ─────────────
+    // ── Paso 7: Navegar a la página de recambios del vehículo ─────────────
     if (vehicleData?.carId) {
       await page.goto(
         `https://www.autodoc.es/recambios/car/${vehicleData.carId}`,
         { waitUntil: "networkidle2", timeout: 30000 }
       );
     } else if (currentUrl.includes("/recambios/") && !currentUrl.includes("search")) {
-      console.log("[Vehicle] Navegó directo al vehículo");
+      console.log("[Vehicle] Ya estamos en la página del vehículo");
     } else {
       await page.screenshot({ path: "debug.png" });
-      throw new Error("No se pudo obtener el vehículo. Se guardó debug.png");
+      throw new Error("No se pudo identificar el vehículo tras la búsqueda. Revisa debug.png");
     }
 
-    // ── Paso 8: Extraer y parsear todos los datos ─────────────
-    console.log("[Vehicle] Extrayendo datos...");
+    // ── Paso 8: Extracción de datos brutos ─────────────────────────────
+    console.log("[Vehicle] Extrayendo datos de la página...");
     const raw = await page.evaluate(() => {
       const url = location.href;
-
-      // carId desde la URL (el número después de la última carpeta antes del motor)
       const urlParts = url.split("/");
-      const carSegment = urlParts.find(p => /^\d+-/.test(p)); // ej: "16684-1-8"
+      const carSegment = urlParts.find(p => /^\d+-/.test(p)); 
       const carId = carSegment ? parseInt(carSegment.split("-")[0]) : null;
 
       const title = document.title?.trim() || null;
       const h1 = document.querySelector("h1")?.textContent?.trim() || null;
 
       const breadcrumbs = Array.from(
-        document.querySelectorAll(
-          '[class*="breadcrumb"] a, [class*="breadcrumb"] span, nav a, ol li a, ol li span'
-        )
+        document.querySelectorAll('[class*="breadcrumb"] a, [class*="breadcrumb"] span, nav a, ol li a, ol li span')
       ).map(el => el.textContent.trim()).filter(t => t.length > 1);
 
-      // Intentar JSON-LD
       let jsonLd = null;
       document.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
         try {
           const d = JSON.parse(s.textContent);
           if (d["@type"] === "Car" || d.brand || d.model) jsonLd = d;
-        } catch (_) {}
+        } catch (_) { }
       });
 
-      // Extraer specs de la tabla de características si existe
       const specs = {};
       document.querySelectorAll('[class*="spec"] tr, [class*="characteristic"] tr, table tr').forEach(row => {
         const cells = row.querySelectorAll("td, th");
@@ -166,16 +198,13 @@ async function scrapeAutodoc(plate) {
       return { url, carId, title, h1, breadcrumbs, jsonLd, specs };
     });
 
-    // ── Parsear marca, modelo, año, etc. desde title/h1/url ──
-    const parsed = parseVehicleInfo(raw, plate);
-    console.log("[Vehicle] Datos extraídos:", JSON.stringify(parsed));
-
-    return parsed;
+    return parseVehicleInfo(raw, plate);
 
   } finally {
     await browser.close();
   }
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // Parsear datos del vehículo desde los textos disponibles
@@ -191,12 +220,12 @@ function parseVehicleInfo(raw, plate) {
     return {
       plate,
       carId: carId || jsonLd.carId || null,
-      brand:    jsonLd.brand?.name || jsonLd.brand || null,
-      model:    jsonLd.model || null,
-      year:     jsonLd.vehicleModelDate || null,
-      fuel:     jsonLd.fuelType || null,
-      engine:   jsonLd.vehicleEngine?.engineDisplacement || null,
-      power:    null,
+      brand: jsonLd.brand?.name || jsonLd.brand || null,
+      model: jsonLd.model || null,
+      year: jsonLd.vehicleModelDate || null,
+      fuel: jsonLd.fuelType || null,
+      engine: jsonLd.vehicleEngine?.engineDisplacement || null,
+      power: null,
       url,
       breadcrumbs,
     };
@@ -249,8 +278,8 @@ function parseVehicleInfo(raw, plate) {
   const power = powerCv
     ? `${powerCv[1]} cv`
     : powerKw
-    ? `${powerKw[1]} kW`
-    : null;
+      ? `${powerKw[1]} kW`
+      : null;
 
   // Extraer año hasta (rango "2002 - 2007")
   const yearRangeMatch = (h1 || "").match(/desde\s+(\d{4})(?:\s*[-–]\s*(\d{4}))?/i);
@@ -262,51 +291,100 @@ function parseVehicleInfo(raw, plate) {
   const bodyType = variantMatch ? variantMatch[0] : null;
 
   // Specs desde tabla si existen
-  const specBrand    = specs["marca"] || specs["fabricante"] || null;
-  const specModel    = specs["modelo"] || null;
-  const specFuel     = specs["combustible"] || specs["tipo de combustible"] || null;
-  const specPower    = specs["potencia"] || specs["potencia máxima"] || null;
-  const specEngine   = specs["motor"] || specs["cilindrada"] || null;
+  const specBrand = specs["marca"] || specs["fabricante"] || null;
+  const specModel = specs["modelo"] || null;
+  const specFuel = specs["combustible"] || specs["tipo de combustible"] || null;
+  const specPower = specs["potencia"] || specs["potencia máxima"] || null;
+  const specEngine = specs["motor"] || specs["cilindrada"] || null;
 
   return {
     plate,
     carId,
-    brand:    specBrand  || brand,
-    model:    specModel  || model,
-    yearFrom: yearFrom   || null,
-    yearTo:   yearTo     || null,
-    engine:   specEngine || engine,
-    fuel:     specFuel   || fuel,
-    power:    specPower  || power,
+    brand: specBrand || brand,
+    model: specModel || model,
+    yearFrom: yearFrom || null,
+    yearTo: yearTo || null,
+    engine: specEngine || engine,
+    fuel: specFuel || fuel,
+    power: specPower || power,
     bodyType,
     url,
     breadcrumbs,
     rawTitle: title,
-    rawH1:    h1,
+    rawH1: h1,
   };
 }
 
 // ── GET /api/vehicle/:plate ───────────────────────────────────
-router.get("/matricula/:plate", async (req, res) => {
-  const plate = req.params.plate.toUpperCase().replace(/[\s-]/g, "");
-  console.log('matricula ')
+// ── GET /api/vehicle/:plate ───────────────────────────────────
+router.post("/matricula/secreta", async (req, res) => {
 
-  const valid = /^[0-9]{4}[A-Z]{3}$|^[A-Z]{1,2}[0-9]{4}[A-Z]{2}$/.test(plate);
-  if (!valid) {
-    return res.status(400).json({
-      success: false,
-      error: "Matrícula no válida. Formato esperado: 1234ABC",
-    });
-  }
+ const { matricula: rawPlate } = req.body;
+    const id_usuario = req.user.id; 
 
-  try {
-    const data = await scrapeAutodoc(plate);
-    return res.json({ success: true, data });
-  } catch (err) {
-    console.error("[Vehicle] Error:", err.message);
-    const status = err.message.includes("no encontrada") ? 404 : 500;
-    return res.status(status).json({ success: false, error: err.message });
-  }
+    if (!rawPlate) {
+        return res.status(400).json({ message: "La matrícula es obligatoria" });
+    }
+
+    // 1. Limpieza y validación de matrícula
+    const plate = rawPlate.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
+    const valid = /^([0-9]{4}[A-Z]{3}|[A-Z]{1,2}[0-9]{4}[A-Z]{1,2})$/.test(plate);
+    
+    if (!valid) {
+        return res.status(400).json({ message: "Formato de matrícula no válido" });
+    }
+
+    try {
+        // 2. Ejecutar Scraper
+        console.log(`[Scraper] Buscando: ${plate}`);
+        const vehicleData = await scrapeAutodoc(plate);
+
+        // 3. NORMALIZACIÓN DE COMBUSTIBLE (Para tu ENUM con Mayúsculas y Tildes)
+        let fuelRaw = (vehicleData.fuel || "").toLowerCase();
+        let combustibleFinal = 'Gasolina'; // Valor por defecto que existe en tu ENUM
+
+        if (fuelRaw.includes('diesel') || fuelRaw.includes('gasóleo') || fuelRaw.includes('diésel')) {
+            combustibleFinal = 'Diésel';
+        } else if (fuelRaw.includes('gasolina')) {
+            combustibleFinal = 'Gasolina';
+        } else if (fuelRaw.includes('híbrido') || fuelRaw.includes('hybrid')) {
+            combustibleFinal = 'Híbrido';
+        } else if (fuelRaw.includes('eléctrico') || fuelRaw.includes('electric')) {
+            combustibleFinal = 'Eléctrico';
+        } else if (fuelRaw.includes('glp')) {
+            combustibleFinal = 'GLP';
+        } else if (fuelRaw.includes('gnc')) {
+            combustibleFinal = 'GNC';
+        }
+
+        // 4. Limpieza de Motor (solo el número decimal, ej: 1.8)
+        const motorLimpio = vehicleData.engine ? vehicleData.engine.match(/\d+\.\d+/)?.[0] : null;
+
+        // 5. Query e Inserción
+        const query = 'INSERT INTO Vehiculo (matricula, id_usuario, marca, modelo, año, motor, combustible) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        
+        await db.execute(query, [
+            plate, 
+            id_usuario, 
+            vehicleData.brand, 
+            vehicleData.model, 
+            vehicleData.yearFrom, 
+            motorLimpio || vehicleData.engine, // Fallback si no hay decimal
+            combustibleFinal
+        ]);
+
+        res.status(201).json({ 
+            message: "Vehículo registrado correctamente",
+            data: { matricula: plate, combustible: combustibleFinal } 
+        });
+
+    } catch (error) {
+        console.error("[Error Registro]:", error.message);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: "Esta matrícula ya está en tu garaje" });
+        }
+        res.status(500).json({ error: error.message });
+    }
 });
 
 export default router;

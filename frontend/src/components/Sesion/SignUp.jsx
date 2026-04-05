@@ -28,7 +28,7 @@ function SignUp() {
 
     try {
       // 2. Enviar a la API (Ruta que creamos con transacción)
-      const response = await fetch("https://yeray.informaticamajada.es/api/users/register", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

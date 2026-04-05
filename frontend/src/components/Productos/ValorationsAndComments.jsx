@@ -17,7 +17,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
 
     const fetchRatings = async () => {
         try {
-            const res = await fetch(`https://yeray.informaticamajada.es/api/rating/${id_producto}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/rating/${id_producto}`);
             if (!res.ok) throw new Error("Error al obtener valoraciones");
             const data = await res.json();
             setReviews(data);
@@ -47,7 +47,7 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         }
 
         try {
-            const res = await fetch(`https://yeray.informaticamajada.es/api/rating`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/rating`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

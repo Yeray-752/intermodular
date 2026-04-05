@@ -21,7 +21,7 @@ function Product() {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`https://yeray.informaticamajada.es/api/products/${id}`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
             headers: { 'accept-language': i18n.language }
         })
             .then(response => {
@@ -50,7 +50,7 @@ function Product() {
         }
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/cart/add", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
