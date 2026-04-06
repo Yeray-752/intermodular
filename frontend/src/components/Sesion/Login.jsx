@@ -38,7 +38,7 @@ function Login() {
         }
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/users/login", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -62,11 +62,9 @@ function Login() {
 
             login(json.token);
 
-            //si quieres comprar pero no tienes sesión, te manda al login, esta línea te manda de vuelta, y si no vienes
-            // de ningun sitio, te manda a home
             const destino = location.state?.from?.pathname || "/";
             navigate(destino, { replace: true });
-
+            location.reload()
         } catch (error) {
             console.error("Error de conexión:", error);
             setErrors({ general: ["No se pudo conectar con el servidor"] });
@@ -135,7 +133,7 @@ function Login() {
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {
-                                        const response = await fetch("https://yeray.informaticamajada.es/api/users/google-login", {
+                                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/google-login`, {
                                             method: "POST",
                                             headers: { "Content-Type": "application/json" },
                                             body: JSON.stringify({ idToken: credentialResponse.credential }),
@@ -149,7 +147,7 @@ function Login() {
                                             localStorage.setItem("rol", json.rol);
 
                                             // 2. ACTUALIZAR EL CONTEXTO (si tu función login espera el token)
-                                            // login(json.token); 
+                                            login(json.token); 
 
                                             // 3. Redirigir (usando tu lógica de destino previo)
                                             const destino = location.state?.from?.pathname || "/";

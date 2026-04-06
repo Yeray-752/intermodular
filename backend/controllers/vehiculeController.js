@@ -4,7 +4,7 @@ import db from '../db.js';
 
 export const registrarVehiculo = async (req, res) => {
     // EL ID VIENE DEL TOKEN (req.user), NO DEL BODY
-    const { matricula, marca, modelo, año } = req.body;
+    const { matricula, marca, modelo, anio, motor, combustible } = req.body;
     const id_usuario = req.user.id; 
 
     if (!matricula) {
@@ -12,8 +12,8 @@ export const registrarVehiculo = async (req, res) => {
     }
 
     try {
-        const query = 'INSERT INTO Vehiculo (matricula, id_usuario, marca, modelo, año) VALUES (?, ?, ?, ?, ?)';
-        await db.execute(query, [matricula, id_usuario, marca, modelo, año]);
+        const query = 'INSERT INTO Vehiculo (matricula, id_usuario, marca, modelo, año, motor, combustible) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        await db.execute(query, [matricula, id_usuario, marca, modelo, anio, motor, combustible]);
         res.status(201).json({ message: "Vehículo registrado con éxito" });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {

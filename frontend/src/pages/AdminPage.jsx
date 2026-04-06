@@ -44,7 +44,7 @@ function AdminPage() {
         if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/actualizar/${id}/${estado}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/actualizar/${id}/${estado}`, {
                 method: 'PATCH', // Importante: debe coincidir con router.patch
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -77,7 +77,7 @@ function AdminPage() {
 
         setLoading(true);
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/dates/admin/pendientes", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/admin/pendientes`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -110,7 +110,7 @@ function AdminPage() {
     };
     const cargarEventosCalendario = async () => {
         const token = localStorage.getItem("token");
-        const res = await fetch("https://yeray.informaticamajada.es/api/dates/admin/procesando", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/admin/procesando`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
@@ -145,7 +145,7 @@ function AdminPage() {
         try {
 
             const [resProd, resCat] = await Promise.all([
-                fetch('https://yeray.informaticamajada.es/api/products')
+                fetch(`${import.meta.env.VITE_API_URL}/api/products`)
             ]);
             const dataProd = await resProd.json();
             setListaProductos(dataProd);
@@ -194,7 +194,7 @@ function AdminPage() {
     const RenderReservas = () => (
         <div>
             <div className="mb-8">
-                <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Reservas</h2>
+                <h2 className="text-3xl font-black mb-2 text-base-content tracking-tight">Reservas</h2>
             </div>
 
             <div className="overflow-x-auto bg-white rounded-2xl border-3 border-neutral shadow-sm">
@@ -402,13 +402,13 @@ function AdminPage() {
     };
 
     return (
-        <div className="bg-neutral min-h-screen flex flex-col">
+        <div className="bg-base-300 min-h-screen flex flex-col">
             <Header />
 
             <main className="flex-1 p-4 md:p-8 lg:p-7">
                 <div className="flex flex-col lg:flex-row max-w-7xl mx-auto gap-4">
 
-                    <aside className="lg:flex flex-col bg-white w-full lg:w-80 flex-none p-8 rounded-3xl border border-slate-200 shadow-sm">
+                    <aside className="lg:flex flex-col bg-info w-full lg:w-80 flex-none p-8 rounded-3xl shadow-sm">
 
                         <nav className="space-y-3 flex-1">
                             {menuItems.map(item => {
@@ -430,7 +430,7 @@ function AdminPage() {
                             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Panel de Control General</p>
                         </div>
                     </aside>
-                    <section className="bg-white p-8 border border-slate-200 shadow-sm flex-1 rounded-3xl min-h-150">
+                    <section className="bg-info p-8 border shadow-sm flex-1 rounded-3xl min-h-150">
                         {renderContent()}
                     </section>
                 </div>

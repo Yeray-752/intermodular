@@ -4,20 +4,25 @@ import { createNotification } from "./notificationsController.js";
 
 export const obtenerCitasID = async (req, res) => {
     try {
+        const idUsuario = req.user.id; // ✅ Aquí tomamos el id desde el token
+
+        if (!idUsuario) return res.status(400).json({ error: "Usuario no identificado" });
+
         const query = `
             SELECT 
                 c.*, 
-                CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente 
+                CONCAT(cl.nombre, ' ', cl.apellidos) AS nombre_cliente
             FROM cita c
             INNER JOIN Cliente cl ON c.id_usuario = cl.id_usuario
             WHERE c.id_usuario = ?
+            ORDER BY c.fecha_cita DESC
         `;
-        // Ejecutar directamente con el ID del usuario del token
-        const [rows] = await db.execute(query, [req.user.id]);
-        res.json(rows);
+
+        const [result] = await db.execute(query, [idUsuario]);
+        res.json(result);
     } catch (error) {
-        console.error("Error en obtenerCitasID:", error);
-        res.status(500).json({ error: "Error al obtener citas" });
+        console.error("Error en la consulta SQL:", error);
+        res.status(500).json({ error: "Error al obtener las citas" });
     }
 };
 

@@ -225,6 +225,6 @@ export const purchaseProduct = async (req, res) => {
     console.error("Error en la compra:", error);
     res.status(500).json({ error: "Error procesando la compra" });
   } finally {
-    connection.release(); // Liberamos la conexión al pool
+    connection.release();
   }
 };
