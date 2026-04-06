@@ -6,7 +6,7 @@ import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registerClient = async (req, res) => {
-    const { email, password, nombre, apellidos, direccion } = req.body;
+    /* const { email, password, nombre, apellidos, direccion } = req.body;
     const connection = await db.getConnection(); // Obtenemos conexión para la transacción
 
     try {
@@ -36,7 +36,7 @@ export const registerClient = async (req, res) => {
         res.status(500).json({ error: "Error al registrar el cliente" });
     } finally {
         connection.release();
-    }
+    } */
 };
 
 export const login = async (req, res) => {
