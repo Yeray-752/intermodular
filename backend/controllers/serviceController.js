@@ -28,31 +28,60 @@ export const getServices = async (req, res) => {
 };
 
 export const createService = async (req, res) => {
-    const { category_id, base_price, duration, difficulty, name, description } = req.body;
-    const image_url = req.file ? `/uploads/services/${req.file.filename}` : null;
-
     const connection = await db.getConnection();
+
     try {
+        // 🔥 VALIDACIÓN
+        const result = validateService(req.body);
+        if (!result.success) {
+            return res.status(400).json({
+                errors: result.error.flatten().fieldErrors
+            });
+        }
+
+        const { category_id, base_price, duration, difficulty, name, description } = result.data;
+
+        // 🔥 VALIDAR IMAGEN
+        if (!req.file) {
+            return res.status(400).json({ error: "La imagen es obligatoria" });
+        }
+
+        const image_url = req.file.path; 
+        // 👆 ya viene como /uploads/services/xxx.webp si usas el middleware dinámico
+
         await connection.beginTransaction();
 
         const [servResult] = await connection.query(
-            "INSERT INTO services (category_id, image_url, base_price, duration, difficulty) VALUES (?, ?, ?, ?, ?)",
+            `INSERT INTO services 
+            (category_id, image_url, base_price, duration, difficulty) 
+            VALUES (?, ?, ?, ?, ?)`,
             [category_id, image_url, base_price, duration, difficulty]
         );
 
         await connection.query(
-            "INSERT INTO service_translations (service_id, language_code, name, description) VALUES (?, ?, ?, ?)",
+            `INSERT INTO service_translations 
+            (service_id, language_code, name, description) 
+            VALUES (?, ?, ?, ?)`,
             [servResult.insertId, 'es', name, description]
         );
 
-        await createNotification(req.user.id, 'servicio_nuevo', 'admin', { 
-            servicio: name 
-        });
+        await createNotification(
+            req.user.id,
+            'servicio_nuevo',
+            'admin',
+            { servicio: name }
+        );
 
         await connection.commit();
-        res.status(201).json({ message: "Servicio creado con imagen", id: servResult.insertId });
+
+        res.status(201).json({
+            message: "Servicio creado con imagen",
+            id: servResult.insertId
+        });
+
     } catch (error) {
         await connection.rollback();
+        console.error(error);
         res.status(500).json({ error: "Error al crear servicio" });
     } finally {
         connection.release();

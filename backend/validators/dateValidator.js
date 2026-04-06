@@ -2,24 +2,18 @@ import { z } from "zod";
 
 const EstadoCita = z.enum(['pendiente','procesando','completada','cancelada']);
 
-export const validateCita = (data) => {
-  
-  const schema = z.object({
-    // Nuevo campo para el nombre del usuario
-    
-    servicio: z.string().min(1, "El nombre del servicio es obligatorio"),
-    
-    comentarios: z.string().max(255, "El comentario es demasiado largo").optional(),
-    
-    vehiculoSeleccionado: z.string().min(1, "Debes seleccionar un vehículo"),
-    
-    fechaCita: z.string().refine((val) => !isNaN(Date.parse(val)), {
-      message: "Fecha inválida",
-    }),
+import { z } from "zod";
 
-    // Estado con valor por defecto si no se envía
-    estado: EstadoCita.default('pendiente'),
+export const validateService = (data) => {
+  const schema = z.object({
+    category_id: z.coerce.number().int().positive(),
+    base_price: z.coerce.number().positive(),
+    duration: z.string().min(1),
+    difficulty: z.enum(["baja", "media", "alta"]),
+    name: z.string().min(1),
+    description: z.string().optional()
   });
+
   return schema.safeParse(data);
 };
 
