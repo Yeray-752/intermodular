@@ -55,7 +55,7 @@ const CalendarioSemanalTailwind = ({ initialEvents }) => {
     const { event } = pendingChange;
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`https://yeray.informaticamajada.es/api/dates/${event.id}/update`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/${event.id}/update`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ fechaCita: event.startStr })

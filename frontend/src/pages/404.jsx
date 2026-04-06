@@ -19,7 +19,7 @@ export default function Error404() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link to="/">
-              <div className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-content shadow hover:bg-primary-focus focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+              <div className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary shadow hover:bg-primary-focus focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
                 {t("button")}
               </div>
             </Link>

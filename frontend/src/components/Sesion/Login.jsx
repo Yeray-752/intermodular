@@ -38,7 +38,7 @@ function Login() {
         }
 
         try {
-            const response = await fetch("https://yeray.informaticamajada.es/api/users/login", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -82,15 +82,15 @@ function Login() {
 
                 <div className="relative z-10">
                     <form
-                        className="fieldset object-center bg-base-200 border-base-300 rounded-box w-md border-2 p-4 flex flex-col gap-4"
+                        className="fieldset object-center bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4"
                         onSubmit={handleLogin}
                     >
-                        <div className="text-2xl">
+                        <div className="text-2xl text-base-content">
                             <p>{t("title")}</p>
                         </div>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label">{t("email")}</label>
+                            <label className="label text-base-content">{t("email")}</label>
                             <input
                                 name="email"
                                 type="email"
@@ -106,7 +106,7 @@ function Login() {
                         </fieldset>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label">{t("password")}</label>
+                            <label className="label text-base-content">{t("password")}</label>
                             <input
                                 name="password"
                                 type="password"
@@ -129,11 +129,11 @@ function Login() {
                             />
                         </div>
                         <div className="flex flex-col items-center gap-4 mt-6">
-                            <div className="divider opacity-50 uppercase text-xs">O entra con</div>
+                            <div className="divider uppercase text-xs">O entra con</div>
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {
-                                        const response = await fetch("https://yeray.informaticamajada.es/api/users/google-login", {
+                                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/google-login`, {
                                             method: "POST",
                                             headers: { "Content-Type": "application/json" },
                                             body: JSON.stringify({ idToken: credentialResponse.credential }),
@@ -166,7 +166,7 @@ function Login() {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-neutral mt-2">
+                        <button type="submit" className="btn btn-primary text-base-100 mt-2">
                             {t("btn_submit")}
                         </button>
 

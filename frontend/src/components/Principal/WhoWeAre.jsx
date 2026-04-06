@@ -6,15 +6,15 @@ function WhoWeAre() {
   const { t } = useTranslation("about");
 
   return (
-    <div className="min-h-screen bg-neutral text-base-content px-4 md:px-6 py-12 md:py-16">
+    <div className="min-h-screen bg-base-300 text-base-content px-4 md:px-6 py-12 md:py-16">
       <div className="max-w-7xl mx-auto space-y-20">
 
-        <div className="inline-flex items-center gap-2 bg-base-100 px-4 py-2 rounded-full shadow-sm">
+        <div className="inline-flex items-center gap-2 bg-info px-4 py-2 rounded-full shadow-sm">
           <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
           <span className="text-sm font-semibold text-base-content/70">{t("sobre_nosotros_badge")}</span>
         </div>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-28 items-center bg-base-100 rounded-2xl p-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-28 items-center bg-info rounded-2xl p-5">
           <div className="relative">
             <div className="rounded-2xl overflow-hidden shadow-2xl">
               <img
@@ -37,7 +37,7 @@ function WhoWeAre() {
           </div>
         </section>
 
-        <section className="bg-base-100 rounded-2xlx p-5">
+        <section className="bg-info rounded-2xl p-5">
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-1 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold leading-tight">
@@ -57,7 +57,7 @@ function WhoWeAre() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="timeline-end timeline-box bg-base-100 shadow-md border border-base-300">
+                  <div className="timeline-end timeline-box bg-info shadow-md border border-base-300">
                     {t("creacion_empresa")}
                   </div>
                   <hr className="bg-orange-500" />
@@ -71,7 +71,7 @@ function WhoWeAre() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="timeline-end timeline-box bg-base-100 shadow-md border border-base-300">
+                  <div className="timeline-end timeline-box bg-info shadow-md border border-base-300">
                     {t("clientes_satisfechos")}
                   </div>
                   <hr className="bg-orange-500" />
@@ -85,7 +85,7 @@ function WhoWeAre() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="timeline-end timeline-box bg-base-100 shadow-md border border-base-300">
+                  <div className="timeline-end timeline-box bg-info shadow-md border border-base-300">
                     {t("premio_calidad")}
                   </div>
                   <hr className="" />
@@ -99,7 +99,7 @@ function WhoWeAre() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="timeline-end timeline-box bg-base-100 shadow-md border border-base-300">
+                  <div className="timeline-end timeline-box bg-info shadow-md border border-base-300">
                     {t("expansion_insular")}
                   </div>
                 </li>
@@ -112,7 +112,7 @@ function WhoWeAre() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="timeline-end timeline-box bg-base-100 shadow-md border border-base-300">
+                  <div className="timeline-end timeline-box bg-info shadow-md border border-base-300">
                     {t("espana")}
                   </div>
                 </li>
@@ -122,9 +122,9 @@ function WhoWeAre() {
           </section>
         </section>
 
-        <section className="bg-base-100 p-8 md:p-12 rounded-2xl shadow-xl border relative">
+        <section className="bg-info p-8 md:p-12 rounded-2xl shadow-xl relative">
 
-          <div className="absolute -top-4 left-8 bg-base-content text-base-100 text-sm px-4 py-1 rounded-full font-semibold shadow-lg">
+          <div className="absolute -top-4 left-8 bg-base-content text-neutral-content text-sm px-4 py-1 rounded-full font-semibold shadow-lg">
             {t("contacto_badge")}
           </div>
 

@@ -20,6 +20,7 @@ jobs:
           script: |
             cd /var/www/html/intermodular
 
+            # Actualizar repo
             git fetch --all
             git reset --hard origin/master
             git clean -df -e .env
@@ -36,14 +37,20 @@ jobs:
             PORT=${{ secrets.PORT }}
             EOF
 
-            # Frontend
             cd frontend
+
+            cat > .env.production <<EOF
+            VITE_API_URL=${{ secrets.VITE_API_URL_PRODUCTION }}
+            EOF
+
+            cat > .env.development <<EOF
+            VITE_API_URL=${{ secrets.VITE_API_URL_DEVELOPMENT }}
+            EOF
+
             npm install
             npm run build
 
-            # Backend
             cd ../backend
             npm install
 
             pm2 start server.js --name api-intermodular || pm2 restart api-intermodular
-

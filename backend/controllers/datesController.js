@@ -55,6 +55,7 @@ export const actualizarCita = async (req, res) => {
 };
 
 export const obtenerCitasTerminadas = async (req, res) => {
+    console.log('prueba de backend local')
     try {
         // Ajustamos el JOIN para usar la tabla 'Cliente'
         let query = `
@@ -146,38 +147,6 @@ export const crearCita = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-export const actualizarEstadoCita = async (req, res) => {
-    const { id } = req.params;
-    const { estado } = req.params;
-    console.log(id, estado)
-    try {
-        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
-        const [result] = await db.execute(query, [estado, id]);
-
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Cita no encontrada" });
-        }
-
-        // NOTIFICACIÓN AL CLIENTE
-        // Usamos la clave 'cita_estado' que definiste en tus plantillas
-        await createNotification(
-            cita[0].id_usuario,
-            'cita_estado',
-            'cliente',
-            {
-                fecha: cita[0].fecha,
-                estado: estado
-            }
-        );
-
-        res.json({ message: "Estado actualizado y cliente notificado" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 export const cancelarCita = async (req, res) => {
     const { id } = req.params;
     const id_usuario_token = req.user.id;
@@ -194,8 +163,11 @@ export const cancelarCita = async (req, res) => {
         if (!esAdmin && cita[0].id_usuario !== id_usuario_token) {
             return res.status(403).json({ message: "No autorizado" });
         }
+         if (cita[0].estado !== 'pendiente') {
+            return res.status(400).json({ message: "Solo se pueden cancelar citas en estado pendiente" });
+        }
 
-        await db.execute('UPDATE Cita SET estado = ? WHERE id_cita = ?', ['cancelada', id]);
+        await db.execute('UPDATE cita SET estado = ? WHERE id = ?', ['cancelada', id]);
 
         // LÓGICA DE NOTIFICACIONES REFINADA
         if (esAdmin) {
@@ -219,22 +191,47 @@ export const cancelarCita = async (req, res) => {
             );
         }
 
-        // 3. (Opcional) Evitar cancelar citas que ya pasaron o ya están completadas
-        if (cita[0].estado !== 'pendiente') {
-            return res.status(400).json({ message: "Solo se pueden cancelar citas en estado pendiente" });
-        }
-
-        // 4. Procedemos a la cancelación
-        await db.execute(
-            'UPDATE cita SET estado = ? WHERE id = ?',
-            ['cancelada', id]
-        );
-
+       
+       
         res.json({ message: "Cita cancelada correctamente por el usuario" });
     } catch (error) {
+        res.status(500).json({message: "problemitas con cancelar cita" });
+    }
+};
+
+export const actualizarEstadoCita = async (req, res) => {
+    const { id, estado } = req.params; // Asegúrate de que tu ruta sea /:id/:estado
+
+    try {
+        // Primero necesitamos saber a quién pertenece la cita para notificarle
+        const [citaData] = await db.execute('SELECT id_usuario, fecha_cita FROM cita WHERE id = ?', [id]);
+        
+        if (citaData.length === 0) {
+            return res.status(404).json({ message: "Cita no encontrada" });
+        }
+
+        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
+        await db.execute(query, [estado, id]);
+
+        // Ahora sí tenemos los datos para la notificación
+        await createNotification(
+            citaData[0].id_usuario,
+            'cita_estado',
+            'cliente',
+            {
+                fecha: citaData[0].fecha_cita,
+                estado: estado
+            }
+        );
+
+        res.json({ message: "Estado actualizado y cliente notificado" });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 export const obtenerCitasEnProceso = async (req, res) => {
     try {

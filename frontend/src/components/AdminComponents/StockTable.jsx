@@ -49,7 +49,7 @@ const StockTable = ({ productos, categorias }) => {
 
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-neutral">
+          <tr className="bg-base-300">
             <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Img</th>
             <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Producto</th>
             <th className="p-3 border text-[11px] font-bold uppercase tracking-wider text-center">Stock</th>

@@ -38,7 +38,7 @@ function Header() {
 
         try {
             const lang = i18n.language || 'es';
-            const response = await fetch(`https://yeray.informaticamajada.es/api/cart?lang=${lang}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart?lang=${lang}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function Header() {
         if (!token) return;
 
         try {
-            const response = await fetch(`https://yeray.informaticamajada.es/api/cart/item/${idProducto}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/item/${idProducto}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -84,7 +84,7 @@ function Header() {
     if (!user || !token) return;
 
     try {
-        const response = await fetch('https://yeray.informaticamajada.es/api/notifications/unread-count', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/unread-count`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -95,14 +95,6 @@ function Header() {
         console.error("Error al obtener conteo de notificaciones:", error);
     }
 };
-
-useEffect(() => {
-    fetchNotificaciones();
-
-    const interval = setInterval(fetchNotificaciones, 10000); // cada 10s
-
-    return () => clearInterval(interval);
-}, [user]);
 
 useEffect(() => {
     fetchNotificaciones();
@@ -168,7 +160,7 @@ useEffect(() => {
                                         <label htmlFor="my-drawer-5" className="btn btn-ghost btn-circle drawer-button indicator">
                                             <ShoppingCart size={24} className="text-base-100" />
                                             {datosCarrito.items?.length > 0 && (
-                                                <span className="badge badge-sm indicator-item bg-primary text-primary-content border-none">
+                                                <span className="badge badge-sm indicator-item bg-primary text-base-100 border-none">
                                                     {datosCarrito.items.length}
                                                 </span>
                                             )}

@@ -24,7 +24,7 @@ function TableReservations({ search, categoriaId, servicios }) {
     // 1. Cargar los vehículos del usuario al montar el componente
     useEffect(() => {
         if (token) {
-            fetch("https://yeray.informaticamajada.es/api/vehicules", { // Ajusta a tu endpoint real
+            fetch(`${import.meta.env.VITE_API_URL}/api/vehicules`, { // Ajusta a tu endpoint real
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(res => res.json())
@@ -52,7 +52,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                 fechaCita: fechaSQL // Enviamos el formato limpio
             };
 
-            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,11 +122,11 @@ function TableReservations({ search, categoriaId, servicios }) {
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full mb-5">
             {/* Renderizado de Cards de servicio... igual que antes */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
                 {serviciosFiltrados.map((servicio) => (
-                    <div key={servicio.id} className="bg-base-100 text-base-content rounded-2xl shadow-md hover:shadow-xl w-full max-w-[320px] flex flex-col p-5">
+                    <div key={servicio.id} className="bg-info text-base-content rounded-2xl shadow-md hover:shadow-xl w-full max-w-[320px] flex flex-col p-5">
                         <div className="relative mb-4">
                             <img src={servicio.image_url} alt={servicio.name} className="h-44 w-full object-cover rounded-xl" />
                             <span className="absolute top-2 right-2 text-md font-medium bg-primary text-base-100 px-3 py-1 rounded-full">{servicio.duration}</span>
@@ -135,13 +135,13 @@ function TableReservations({ search, categoriaId, servicios }) {
                             <h2 className="text-lg font-bold mb-2 text-base-content line-clamp-1">{servicio.name}</h2>
                             <p className="text-sm text-base-content font-semibold mb-4 line-clamp-3 h-14">{servicio.description}</p>
                             <div className="mt-auto">
-                                <p className="text-xs mb-4">
+                                {/* <p className="text-xs mb-4">
                                     <span className="font-semibold text-lg">{t('difficulty')}:</span>{" "}
                                     <span className={`font-semibold text-lg ${getDifficultyColor(servicio.difficulty)}`}>
                                         {t(`levels.${servicio.difficulty}`)}
                                     </span>
-                                </p>
-                                <div className="flex items-center justify-between pt-4 border-t border-base-300">
+                                </p> */}
+                                <div className="flex items-center justify-between pt-4 border-t-2 border-primary">
                                     <span className="text-2xl font-extrabold text-secondary">{servicio.price}€</span>
                                     <button className="btn btn-primary btn-sm text-base-100 text-lg rounded-full px-6" onClick={() => abrirModal(servicio)}>{t('book')}</button>
                                 </div>

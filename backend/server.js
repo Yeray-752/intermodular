@@ -6,6 +6,8 @@ import hpp from 'hpp';
 import helmet from "helmet";
 import rateLimit  from "express-rate-limit";  
 
+/* import { chromium } from ('playwright'); */
+
 //Rutas
 import usersRoutes from "./routes/users.js";
 import productosRoutes from "./routes/products.js"
@@ -36,7 +38,7 @@ app.use(languageMiddleware);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 500,
+  max: 5000,
   message: 'La página se encuentra saturada en estos momentos, por favor, inténtelo más tarde.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -75,7 +77,11 @@ app.use('/api/order', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/rating', ratingRoutes);
 
+
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+

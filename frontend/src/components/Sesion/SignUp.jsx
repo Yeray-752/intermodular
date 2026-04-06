@@ -33,7 +33,8 @@ function SignUp() {
     }
 
     try {
-      const response = await fetch("https://yeray.informaticamajada.es/api/users/register", {
+      // 2. Enviar a la API (Ruta que creamos con transacción)
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,11 +71,8 @@ function SignUp() {
     >
       <div className="absolute inset-0 backdrop-blur-md bg-black/30" />
       <div className="relative z-10">
-
-        <form
-          className="fieldset bg-base-200 border-base-300 rounded-box w-md border-2 p-4 flex flex-col gap-4"
-          onSubmit={handleRegistration}
-        >
+        <form className="fieldset bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4" onSubmit={handleRegistration}>
+          
           {errors.general && (
             <div className="alert alert-error text-sm py-2">{errors.general[0]}</div>
           )}
@@ -85,65 +83,37 @@ function SignUp() {
 
           <div className="grid grid-cols-2 gap-4">
             <fieldset className="fieldset flex flex-col">
-              <label className="label">{t("signup.name")}</label>
-              <input
-                name="nombre"
-                type="text"
-                className={`input w-full ${errors.nombre ? 'border-error' : ''}`}
-                placeholder="Federico"
-              />
+              <label className="label text-base-content">{t("signup.name")}</label>
+              <input name="nombre" type="text" className={`input w-full ${errors.nombre ? 'border-error' : ''}`} placeholder="Federico" />
               {errors.nombre && <span className="text-error text-xs mt-1">{errors.nombre[0]}</span>}
             </fieldset>
 
             <fieldset className="fieldset flex flex-col">
-              <label className="label">{t("signup.lastname")}</label>
-              <input
-                name="apellidos"
-                type="text"
-                className={`input w-full ${errors.apellidos ? 'border-error' : ''}`}
-                placeholder="Castillos"
-              />
+              <label className="label text-base-content">{t("signup.lastname")}</label>
+              <input name="apellidos" type="text" className={`input w-full ${errors.apellidos ? 'border-error' : ''}`} placeholder="Castillos" />
               {errors.apellidos && <span className="text-error text-xs mt-1">{errors.apellidos[0]}</span>}
             </fieldset>
           </div>
 
           <fieldset className="fieldset flex flex-col">
-            <label className="label">{t("signup.email")}</label>
-            <input
-              name="email"
-              type="email"
-              className={`input w-full ${errors.email ? 'border-error' : ''}`}
-              placeholder="usuario@gmail.com"
-            />
+            <label className="label text-base-content">{t("signup.email")}</label>
+            <input name="email" type="email" className={`input w-full ${errors.email ? 'border-error' : ''}`} placeholder="usuario@gmail.com" />
             {errors.email && <span className="text-error text-xs mt-1">{errors.email[0]}</span>}
           </fieldset>
 
           <fieldset className="fieldset flex flex-col">
-            <label className="label">{t("signup.password")}</label>
-            <input
-              name="password"
-              type="password"
-              className={`input w-full ${errors.password ? 'border-error' : ''}`}
-              placeholder="Contraseña_123"
-            />
+            <label className="label text-base-content">{t("signup.password")}</label>
+            <input name="password" type="password" className={`input w-full ${errors.password ? 'border-error' : ''}`} placeholder="Contraseña_123" />
             {errors.password ? (
               <span className="text-error text-xs mt-1">{errors.password[0]}</span>
             ) : (
-              <span className="text-gray-500 text-[10px] leading-tight mt-1">
+              <span className="text-base-content text-[10px] leading-tight mt-1">
                 Min. 8 caracteres, una mayúscula, un número.
               </span>
             )}
           </fieldset>
 
-          <div className="flex justify-center my-2">
-            <ReCAPTCHA
-              sitekey="6LdVslcsAAAAAMbtWa8wBnuaYVmhM4O7h9mz7RMk"
-              onChange={(token) => setCaptchaToken(token)}
-              onExpired={() => setCaptchaToken(null)}
-            />
-          </div>
-
-          <button type="submit" className="btn btn-neutral mt-4">
+          <button type="submit" className="btn btn-primary text-base-100 mt-4">
             {t("signup.btn_submit")}
           </button>
 
