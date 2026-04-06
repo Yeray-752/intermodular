@@ -71,43 +71,43 @@ function SignUp() {
     >
       <div className="absolute inset-0 backdrop-blur-md bg-black/30" />
       <div className="relative z-10">
-        <form className="fieldset bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4" onSubmit={handleRegistration}>
+        <form className="fieldset bg-base-100 rounded-box w-md  p-4 flex flex-col gap-4" onSubmit={handleRegistration}>
           
           {errors.general && (
             <div className="alert alert-error text-sm py-2">{errors.general[0]}</div>
           )}
 
-          <div className="text-2xl">
+          <div className="text-2xl text-accent">
             <p>{t("signup.title")}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <fieldset className="fieldset flex flex-col">
-              <label className="label text-base-content">{t("signup.name")}</label>
-              <input name="nombre" type="text" className={`input w-full ${errors.nombre ? 'border-error' : ''}`} placeholder="Federico" />
+              <label className=" text-accent">{t("signup.name")}</label>
+              <input name="nombre" type="text" className={`border border-accent text-accent input w-full ${errors.nombre ? 'border-error' : ''}`} placeholder="Federico" />
               {errors.nombre && <span className="text-error text-xs mt-1">{errors.nombre[0]}</span>}
             </fieldset>
 
             <fieldset className="fieldset flex flex-col">
-              <label className="label text-base-content">{t("signup.lastname")}</label>
-              <input name="apellidos" type="text" className={`input w-full ${errors.apellidos ? 'border-error' : ''}`} placeholder="Castillos" />
+              <label className=" text-accent">{t("signup.lastname")}</label>
+              <input name="apellidos" type="text" className={`border border-accent text-accent input w-full ${errors.apellidos ? 'border-error' : ''}`} placeholder="Castillos" />
               {errors.apellidos && <span className="text-error text-xs mt-1">{errors.apellidos[0]}</span>}
             </fieldset>
           </div>
 
           <fieldset className="fieldset flex flex-col">
-            <label className="label text-base-content">{t("signup.email")}</label>
-            <input name="email" type="email" className={`input w-full ${errors.email ? 'border-error' : ''}`} placeholder="usuario@gmail.com" />
+            <label className=" text-accent">{t("signup.email")}</label>
+            <input name="email" type="email" className={`border border-accent text-accent input w-full ${errors.email ? 'border-error' : ''}`} placeholder="usuario@gmail.com" />
             {errors.email && <span className="text-error text-xs mt-1">{errors.email[0]}</span>}
           </fieldset>
 
           <fieldset className="fieldset flex flex-col">
-            <label className="label text-base-content">{t("signup.password")}</label>
-            <input name="password" type="password" className={`input w-full ${errors.password ? 'border-error' : ''}`} placeholder="Contraseña_123" />
+            <label className="   text-accent">{t("signup.password")}</label>
+            <input name="password" type="password" className={`border border-accent text-accent input w-full ${errors.password ? 'border-error' : ''}`} placeholder="Contraseña_123" />
             {errors.password ? (
               <span className="text-error text-xs mt-1">{errors.password[0]}</span>
             ) : (
-              <span className="text-base-content text-[10px] leading-tight mt-1">
+              <span className="text-accent text-[10px] leading-tight mt-1">
                 Min. 8 caracteres, una mayúscula, un número.
               </span>
             )}
@@ -117,7 +117,7 @@ function SignUp() {
             {t("signup.btn_submit")}
           </button>
 
-          <Link to="/Login" className="link link-hover mt-2 text-center text-sm">
+          <Link to="/Login" className="link link-hover mt-2 text-center text-accent text-sm">
             {t("signup.link_login")}
           </Link>
         </form>

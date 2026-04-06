@@ -547,7 +547,7 @@ function Perfil() {
                     <div className="space-y-6 animate-in fade-in duration-500">
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                             <div>
-                                <h2 className="text-3xl font-bold text-base-content flex items-center gap-3">
+                                <h2 className="text-3xl font-bold text-accent flex items-center gap-3">
                                     <Car className="text-primary" size={32} />
                                     {t('profile:myCars') || "Mis Vehículos"}
                                 </h2>
@@ -566,11 +566,11 @@ function Perfil() {
                         </div>
 
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 place-self-center-safe">
                             {cocheBuscado && cocheBuscado.length > 0 ? (
                                 cocheBuscado.map((coche) => (
-                                    <div key={coche.matricula} className="group p-8 bg-info border border-base-300 rounded-[2.5rem] w-80 hover:shadow-2xl hover:shadow-orange-100 transition-all duration-300 relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <div key={coche.matricula} className="mr-5 p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
+                                        <div className="absolute top-0 right-0 p-4 opacity-50 transition-opacity">
                                             <Car size={80} className="text-[#ff5a1f]" />
                                         </div>
 
@@ -579,7 +579,7 @@ function Perfil() {
                                                 <Car className="text-[#ff5a1f]" size={26} />
                                             </div>
                                             <div>
-                                                <h2 className="text-xl font-black text-base-content leading-tight uppercase">
+                                                <h2 className="text-xl font-black text-accent leading-tight uppercase">
                                                     {coche.marca}{" "}
                                                     <span className="text-[#ff5a1f]">{coche.modelo}</span>
 
@@ -640,7 +640,7 @@ function Perfil() {
 
                                     <button
                                         onClick={() => { setOpen(false); setModo(null); }}
-                                        className="absolute top-8 right-8 text-base-content/30 hover:text-base-content transition-colors z-10"
+                                        className="absolute top-8 right-8 text-base-content/30 hover:text-accent transition-colors z-10"
                                     >
                                         <X size={28} />
                                     </button>
@@ -687,7 +687,7 @@ function Perfil() {
                                                     >
                                                         ← Volver atrás
                                                     </button>
-                                                    <h2 className="text-2xl font-black text-center text-base-content leading-tight">
+                                                    <h2 className="text-2xl font-black text-center text-accent leading-tight">
                                                         {modo === 'manual' ? 'Registrar Vehículo' : 'Búsqueda Rápida'}
                                                     </h2>
                                                 </div>
@@ -816,11 +816,11 @@ function Perfil() {
                                                 <Calendar size={28} />
                                             </div>
                                             <div>
-                                                <h4 className="font-extrabold text-lg text-base-content uppercase tracking-tight">{citas.servicio}</h4>
+                                                <h4 className="font-extrabold text-lg text-accent uppercase tracking-tight">{citas.servicio}</h4>
                                                 <p className="text-sm text-base-content/60 font-medium">{citas.vahiculo_selecionado}</p>
-                                                <div className="flex items-center gap-2 mt-1 font-bold text-xs">
+                                                <div className="flex items-center gap-2 mt-1 font-bold text-accent text-xs">
                                                     <Clock size={14} />
-                                                    <span>{citas.fecha_cita}</span>
+                                                    <span className='text-accent'>{citas.fecha_cita}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -909,7 +909,7 @@ function Perfil() {
                                         <div
                                             key={noti.id}
                                             // Mantenemos siempre bg-base-100 y eliminamos opacity-80
-                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100
+                                            className={`p-6 border rounded-2xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-300
                 ${estaLeida
                                                     ? 'border-base-200 shadow-none'
                                                     : 'border-primary/20 shadow-md ring-1 ring-primary/5'}`}
@@ -987,15 +987,15 @@ function Perfil() {
 
                         <div className="overflow-x-auto">
                             <table className="table w-full border-separate border-spacing-y-2">
-                                <thead>
-                                    <tr className="text-base-content/50 uppercase text-[10px] tracking-widest border-none">
+                                <thead className='border-2'>
+                                    <tr className="text-base-content/50  uppercase text-[10px] tracking-widest">
                                         <th>{t('profile:service')}</th>
                                         <th>{t('profile:date')}</th>
                                         <th>{t('profile:status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className="bg-base-200/40 hover:bg-base-200 transition-colors rounded-xl">
+                                    <tr className="bg-base-300 hover:bg-base-200 transition-colors rounded-xl">
                                         <td className="font-bold rounded-l-xl">Revisión General</td>
                                         <td className="text-sm">10/01/2026</td>
                                         <td><div className="badge badge-success badge-outline font-bold text-[10px]">COMPLETADA</div></td>
@@ -1045,7 +1045,7 @@ function Perfil() {
             <div className="lg:hidden bg-base-100 border-b border-base-300 p-4">
                 <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="flex items-center gap-2 text-base-content font-semibold"
+                    className="flex items-center gap-2 text-accent font-semibold"
                 >
                     {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     <span>{t('profile:menu')}</span>
@@ -1056,7 +1056,7 @@ function Perfil() {
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
                     <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-info w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
                         <div className="mb-10 hidden lg:block">
-                            <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
+                            <h1 className='text-3xl font-black text-accent tracking-tight'>AKOTAN</h1>
                         </div>
                         <nav className='space-y-2 flex-1'>
                             {menuItems.map(item => {
@@ -1096,7 +1096,7 @@ function Perfil() {
                         </div>
                     </aside>
 
-                    <section className='bg-info flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar'>
+                    <section className='bg-info flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[620px] overflow-y-auto custom-scrollbar'>
                         {renderContent()}
                     </section>
                 </div>

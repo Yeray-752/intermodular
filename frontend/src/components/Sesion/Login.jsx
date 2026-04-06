@@ -82,19 +82,19 @@ function Login() {
 
                 <div className="relative z-10">
                     <form
-                        className="fieldset object-center bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4"
+                        className="fieldset object-center bg-base-100 rounded-box w-md p-4 flex flex-col gap-4"
                         onSubmit={handleLogin}
                     >
-                        <div className="text-2xl text-base-content">
+                        <div className="text-2xl text-accent">
                             <p>{t("title")}</p>
                         </div>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label text-base-content">{t("email")}</label>
+                            <label className="label text-accent">{t("email")}</label>
                             <input
                                 name="email"
                                 type="email"
-                                className={`input w-full ${errors.email ? 'border-error' : ''}`}
+                                className={`border border-accent text-accent input w-full ${errors.email ? 'border-error' : ''}`}
                                 placeholder="usuario@gmail.com"
                             />
                             {errors.email && (
@@ -106,11 +106,11 @@ function Login() {
                         </fieldset>
 
                         <fieldset className="fieldset flex flex-col gap-2">
-                            <label className="label text-base-content">{t("password")}</label>
+                            <label className="label text-accent">{t("password")}</label>
                             <input
                                 name="password"
                                 type="password"
-                                className={`input w-full ${errors.password ? 'border-error' : ''}`}
+                                className={`border border-accent text-accent input w-full ${errors.password ? 'border-error' : ''}`}
                                 placeholder="Contraseña_123"
                             />
                             {errors.password && (
@@ -129,7 +129,7 @@ function Login() {
                             />
                         </div>
                         <div className="flex flex-col items-center gap-4 mt-6">
-                            <div className="divider uppercase text-xs">O entra con</div>
+                            <div className="text-accent divider uppercase before:bg-accent after:bg-accent text-xs">O entra con</div>
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {
@@ -170,7 +170,7 @@ function Login() {
                             {t("btn_submit")}
                         </button>
 
-                        <Link to="/registro" className="link link-hover mt-2 text-center">
+                        <Link to="/registro" className="text-accent link link-hover mt-2 text-center">
                             {t("link_signup")}
                         </Link>
                     </form>
