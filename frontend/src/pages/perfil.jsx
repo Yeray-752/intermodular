@@ -1056,7 +1056,7 @@ function Perfil() {
                 <div className='flex flex-col lg:flex-row max-w-7xl mx-auto gap-6'>
                     <aside className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:flex flex-col bg-info w-full lg:w-72 flex-none p-6 rounded-2xl shadow-xl`}>
                         <div className="mb-10 hidden lg:block">
-                            <h1 className='text-3xl font-black text-accent tracking-tight'>AKOTAN</h1>
+                            <h1 className='text-3xl font-black text-base-content tracking-tight'>AKOTAN</h1>
                         </div>
                         <nav className='space-y-2 flex-1'>
                             {menuItems.map(item => {

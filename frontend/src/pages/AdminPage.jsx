@@ -32,6 +32,8 @@ function AdminPage() {
     const [eventos, setEventos] = useState([]);
     const [listaProductos, setListaProductos] = useState([]);
     const [categorias, setCategorias] = useState([]);
+    const [datosVentas, setDatosVentas] = useState([]);
+    const [filtro, setFiltro] = useState('semana');
 
     // --- DATOS (Consistencia con tus imágenes) ---
     const [reservas, setReservas] = useState([]);
@@ -60,7 +62,7 @@ function AdminPage() {
                 if (estado === 'procesando') {
                     cargarEventosCalendario();
                 }
-               
+
             } else {
                 const errorData = await response.json();
                 alert(errorData.error || "Error al cancelar la cita");
@@ -157,6 +159,23 @@ function AdminPage() {
         }
     };
 
+    const traerVentas = async () => {
+        const token = localStorage.getItem("token");
+        // Pasamos el filtro en la URL
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/ventas?filter=${filtro}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setDatosVentas(data);
+    };
+
+    // Cada vez que 'filtro' cambie, pedimos datos nuevos
+    useEffect(() => {
+        if (activeTab === 'metricas') {
+            traerVentas();
+        }
+    }, [activeTab, filtro]);
+
 
     useEffect(() => {
         if (activeTab === 'reservas') {
@@ -166,13 +185,14 @@ function AdminPage() {
         if (activeTab === 'stock') {
             fetchDatos();
         }
+
     }, [activeTab]);
 
 
 
 
     const menuItems = useMemo(() => [
-        
+
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },
         { id: 'stock', label: 'Stock de Productos', icon: Package },
@@ -303,7 +323,7 @@ function AdminPage() {
 
             <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
+
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">Foto del Servicio</label>
                         <div className="relative group w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary">
@@ -385,7 +405,32 @@ function AdminPage() {
             case 'servicios': return <RenderActualilzacionServicios />;
             case 'productos': return <RenderActualilzacionProducto />;
             case 'stock': return <RenderStock />
-            case 'metricas': return <VentasChart />
+            case 'metricas': return (
+                <div>
+                    {activeTab === 'metricas' && (
+                        <div className="p-4 bg-base-300 rounded-box">
+                            {/* FILTRO: Botones de daisyUI */}
+                            <div className="flex justify-end mb-4">
+                                <div className="join border border-base-300">
+                                    <button
+                                        className={`text-base-100 join-item btn btn-sm ${filtro === 'semana' ? 'btn-primary' : ''}`}
+                                        onClick={() => setFiltro('semana')}
+                                    >
+                                        Semana
+                                    </button>
+                                    <button
+                                        className={`text-base-100 join-item btn btn-sm ${filtro === 'año' ? 'btn-primary' : ''}`}
+                                        onClick={() => setFiltro('año')}
+                                    >
+                                        Año
+                                    </button>
+                                </div>
+                            </div>
+                            <VentasChart data={datosVentas} />
+                        </div>
+                    )}
+                </div>
+            );
                 return (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         {['Ventas Hoy', 'Citas Pendientes', 'Cierre Mensual'].map((item, i) => (

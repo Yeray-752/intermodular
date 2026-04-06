@@ -198,7 +198,7 @@ useEffect(() => {
 
             <div className="drawer-side z-80">
                 <label htmlFor="my-drawer-5" aria-label="close sidebar" className="drawer-overlay"></label>
-                <div className="menu p-4 w-80 sm:w-96 min-h-full bg-base-100 text-base-content shadow-2xl flex flex-col">
+                <div className="menu p-4 w-80 sm:w-96 min-h-full bg-base-300 text-base-content shadow-2xl flex flex-col">
                     <div className="flex items-center justify-between mb-6 border-b pb-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             <ShoppingCart className="text-primary" /> {t('cart.title')}
@@ -213,7 +213,7 @@ useEffect(() => {
                                 const sinStock = item.cantidad > item.stock;
 
                                 return (
-                                    <div key={item.id_producto} className={`flex flex-col bg-base-200 p-3 rounded-xl border-2 transition-colors ${sinStock ? 'border-error/50 bg-error/5' : 'border-transparent'}`}>
+                                    <div key={item.id_producto} className={`flex flex-col bg-info p-3 rounded-xl border-2 transition-colors ${sinStock ? 'border-error/50 bg-error/5' : 'border-transparent'}`}>
                                         <div className="flex gap-4 items-center">
                                             <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
                                             <div className="flex-1">

@@ -178,7 +178,7 @@ function Product() {
 
                             {/* Botón de Acción Principal */}
                             <button
-                                className="btn border-0 bg-primary text-primary btn-lg w-full md:w-auto"
+                                className="btn border-0 bg-primary text-primary-content btn-lg w-full md:w-auto"
                                 onClick={añadirAlCarrito}
                                 disabled={producto.stock === 0}
                             >

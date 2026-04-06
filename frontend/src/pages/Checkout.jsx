@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { ShoppingBag, CreditCard, MapPin, AlertCircle, ArrowLeft, Trash2 } from 'lucide-react';
+import Header from '../components/Principal/Header';
+import Footer from '../components/Principal/Footer';
 
 function Checkout() {
     const navigate = useNavigate();
@@ -115,7 +117,9 @@ function Checkout() {
     const hayErroresStock = cart.items?.some(item => item.cantidad > item.stock);
 
     return (
-        <div className="min-h-screen bg-base-200 p-4 md:p-8">
+        <>
+            <Header />
+        <div className="min-h-screen bg-base-300 p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
                 <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2 mb-6">
                     <ArrowLeft size={20} /> {t('formulario:back')}
@@ -134,7 +138,7 @@ function Checkout() {
                             </div>
                         ) : (
                             cart.items.map((item) => (
-                                <div key={item.id_producto} className={`card card-side bg-base-100 shadow-xl border-2 ${item.cantidad > item.stock ? 'border-error' : 'border-transparent'}`}>
+                                <div key={item.id_producto} className={`card card-side bg-info shadow-xl border-2 ${item.cantidad > item.stock ? 'border-error' : 'border-transparent'}`}>
                                     <figure className="w-40 md:w-56">
                                         <img src={item.image_url} alt={item.name} className="h-full object-cover" />
                                     </figure>
@@ -162,8 +166,8 @@ function Checkout() {
                     </div>
 
                     {/* RESUMEN sticky */}
-                    <div className="lg:col-span-1">
-                        <div className="card bg-base-100 shadow-2xl sticky top-24">
+                    <div className="lg:col-span-1 mt-18">
+                        <div className="card bg-info shadow-2xl sticky top-24">
                             <div className="card-body">
                                 <h3 className="font-bold text-xl border-b pb-2">Resumen</h3>
                                 <div className="flex justify-between py-6 text-3xl font-black">
@@ -187,7 +191,7 @@ function Checkout() {
             {/* MODAL DE PAGO (Replica la estética de tu Product.jsx) */}
             {showModal && (
                 <div className="modal modal-open modal-bottom sm:modal-middle">
-                    <div className="modal-box max-w-2xl bg-base-100 rounded-2xl border border-base-300">
+                    <div className="modal-box max-w-2xl bg-base-300 rounded-2xl border border-base-300">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => setShowModal(false)}>✕</button>
 
                         <form onSubmit={handleFinalizarCompra} className="space-y-6">
@@ -200,9 +204,9 @@ function Checkout() {
 
                             {/* TIPO DE ENTREGA */}
                             <section>
-                                <label className="label font-semibold">{t('formulario:checkout.deliveryType')}</label>
+                                <label className="mb-4 label font-semibold">{t('formulario:checkout.deliveryType')}</label>
                                 <select
-                                    className="select select-bordered w-full"
+                                    className="select text-accent select-bordered w-full"
                                     value={tipoEntrega}
                                     onChange={(e) => setTipoEntrega(e.target.value)}
                                     required
@@ -218,7 +222,7 @@ function Checkout() {
                                 <section className="animate-in fade-in slide-in-from-top-4 duration-300">
                                     <label className="label font-semibold">Ciudad de entrega</label>
                                     <select
-                                        className={`select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
+                                        className={`text-accent select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
                                         value={ciudad}
                                         onChange={(e) => {
                                             setCiudad(e.target.value);
@@ -241,7 +245,7 @@ function Checkout() {
                                         required
                                         type="text"
                                         placeholder={t('formulario:checkout.cardHolder')}
-                                        className="input input-bordered w-full"
+                                        className="text-accent input input-bordered w-full"
                                         value={nombreTarjeta}
                                         onChange={(e) => setNombreTarjeta(e.target.value)}
                                     />
@@ -250,7 +254,7 @@ function Checkout() {
                                         type="text"
                                         required
                                         placeholder="Nº Tarjeta (Luhn check)"
-                                        className={`input input-bordered w-full ${!tarjetaValida && "input-error"}`}
+                                        className={`text-accent input input-bordered w-full ${!tarjetaValida && "input-error"}`}
                                         value={tarjeta}
                                         onChange={(e) => {
                                             const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
@@ -265,7 +269,7 @@ function Checkout() {
                                             type="text"
                                             placeholder="MM/AA"
                                             required
-                                            className={`input input-bordered w-full ${!vencimientoValido && "input-error"}`}
+                                            className={`text-accent input input-bordered w-full ${!vencimientoValido && "input-error"}`}
                                             value={vencimiento}
                                             onChange={(e) => {
                                                 let v = e.target.value.replace(/\D/g, "");
@@ -278,7 +282,7 @@ function Checkout() {
                                             required
                                             type="password"
                                             placeholder="CVV"
-                                            className="input input-bordered w-full"
+                                            className="text-accent input input-bordered w-full"
                                             maxLength={4}
                                         />
                                     </div>
@@ -293,7 +297,10 @@ function Checkout() {
                 </div>
             )}
         </div>
+            <Footer />
+        </>
     );
+    
 }
 
 export default Checkout;

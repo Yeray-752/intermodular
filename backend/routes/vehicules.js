@@ -16,7 +16,7 @@ router.put('/:matricula', actualizarVehiculo);
 router.delete('/:matricula', eliminarVehiculo);
 
 async function scrapeAutodoc(plate) {
-  const browser = await puppeteer.launch({
+ const browser = await puppeteer.launch({
     headless: "new",
     args: [
       "--no-sandbox",
@@ -30,6 +30,7 @@ async function scrapeAutodoc(plate) {
   try {
     const page = await browser.newPage();
 
+    // Camuflaje para evitar detección de bots
     await page.evaluateOnNewDocument(() => {
       Object.defineProperty(navigator, "webdriver", { get: () => undefined });
     });
@@ -65,16 +66,16 @@ async function scrapeAutodoc(plate) {
       console.log("[Vehicle] Cookies aceptadas");
       await new Promise(r => setTimeout(r, 1500));
     } catch (_) {
-      console.log("[Vehicle] Sin banner de cookies");
+      console.log("[Vehicle] Sin banner de cookies o ya aceptadas");
     }
 
-    // ── Paso 3: Interceptar respuesta AJAX ───────────────────
-    let vehicleData = null;
+    // ── Paso 3: Interceptar respuesta AJAX (Opcional, ayuda a identificar el carId) ──
+    let vehicleDataAjax = null;
     page.on("response", async (response) => {
       if (response.url().includes("search-number")) {
         try {
           const json = await response.json();
-          if (json.carId) vehicleData = json;
+          if (json.carId) vehicleDataAjax = json;
         } catch (_) { }
       }
     });
@@ -89,6 +90,7 @@ async function scrapeAutodoc(plate) {
     await page.evaluate(() => {
       const input = document.querySelector("#kba1");
       let container = input?.parentElement;
+      // Buscamos el botón "Buscar" subiendo por el DOM (máximo 5 niveles)
       for (let i = 0; i < 5; i++) {
         const btns = Array.from(container?.querySelectorAll("button") || []);
         const buscar = btns.find(b =>
@@ -98,95 +100,83 @@ async function scrapeAutodoc(plate) {
         if (buscar) { buscar.click(); return; }
         container = container?.parentElement;
       }
+      // Fallback si el bucle no lo encuentra
       const allBtns = Array.from(document.querySelectorAll("button"));
       const buscar = allBtns.find(b => b.textContent.trim().toLowerCase() === "buscar");
       if (buscar) buscar.click();
     });
     
     // Esperamos a que la web procese la búsqueda inicial
-    await new Promise(r => setTimeout(r, 2500));
+    await new Promise(r => setTimeout(r, 3000));
 
-    // ── Paso 5.5: Gestionar selector de vehículos (Pop-up de motor) ──
-    // ── Paso 5.5: Gestionar selector de vehículos (Pop-up de motor) ──
+    // ── Paso 6: Gestionar Pop-ups (Error de matrícula o Selector de Motor) ──
     try {
-      // Usamos el selector exacto del HTML que me pasaste
       const selectorPopUp = '.popup-sidebar--selector.open';
       const apareceSelector = await page.waitForSelector(selectorPopUp, { timeout: 6000 }).catch(() => null);
 
       if (apareceSelector) {
-        console.log("[Vehicle] Pop-up detectado: Seleccionando la primera motorización...");
+        // A. Comprobar si es un Error (Matrícula no encontrada)
+        const isError = await page.evaluate(() => {
+            const popup = document.querySelector('.popup-sidebar--selector.open');
+            return popup && popup.getAttribute('data-car-search-type') === 'error-pop-up';
+        });
 
+        if (isError) {
+            console.log("[Vehicle] ERROR: Matrícula no encontrada en Autodoc");
+            await page.screenshot({ path: "debug_error_matricula.png" });
+            throw new Error("No hemos podido encontrar ningún vehículo asociado a esta matrícula.");
+        }
+
+        // B. Si es un selector de motorizaciones (múltiples opciones)
+        console.log("[Vehicle] Selector múltiple detectado, eligiendo la primera opción...");
         await page.evaluate(() => {
-          // Buscamos todos los contenedores de vehículos en la lista del pop-up
           const opciones = document.querySelectorAll('.popup-sidebar-selector-vehicle');
-          
           if (opciones.length > 0) {
-            // Hacemos clic en el primero. 
-            // Clicamos el div con role="button" que envuelve el radio y el label.
             opciones[0].click();
           } else {
-            // Fallback: si el clic en el div no funciona, buscamos el primer label
             const primerLabel = document.querySelector('.popup-sidebar-selector-vehicle__wrap');
             if (primerLabel) primerLabel.click();
           }
         });
 
-        // Esperamos a que la web procese el clic y redirija
-        console.log("[Vehicle] Opción seleccionada, esperando redirección...");
-        await new Promise(r => setTimeout(r, 4000));
+        console.log("[Vehicle] Opción seleccionada, esperando carga...");
+        await new Promise(r => setTimeout(r, 6000));
       }
     } catch (e) {
-      console.log("[Vehicle] No se detectó el pop-up selector, continuando flujo normal.");
+      // Propagamos el error de "no encontrado" si fue lo que saltó
+      if (e.message.includes("No hemos podido encontrar")) throw e;
+      console.log("[Vehicle] No se detectó pop-up de interrupción, siguiendo flujo normal.");
     }
 
-    // ── Paso 6: Esperar resultado final ─────────────────────────────
+    // ── Paso 7: Esperar redirección final ─────────────────────────────
     await Promise.race([
       page.waitForResponse(r => r.url().includes("search-number"), { timeout: 10000 }).catch(() => null),
       page.waitForNavigation({ waitUntil: "networkidle2", timeout: 10000 }).catch(() => null),
     ]);
-    await new Promise(r => setTimeout(r, 2000));
-
+    
     const currentUrl = page.url();
-    console.log("[Vehicle] URL actual:", currentUrl);
+    console.log("[Vehicle] URL actual tras búsqueda:", currentUrl);
 
-    // ── Paso 7: Navegar a la página de recambios del vehículo ─────────────
-    if (vehicleData?.carId) {
+    // ── Paso 8: Asegurar que estamos en la página de recambios ─────────────
+    if (vehicleDataAjax?.carId) {
       await page.goto(
-        `https://www.autodoc.es/recambios/car/${vehicleData.carId}`,
+        `https://www.autodoc.es/recambios/car/${vehicleDataAjax.carId}`,
         { waitUntil: "networkidle2", timeout: 30000 }
       );
-    } else if (currentUrl.includes("/recambios/") && !currentUrl.includes("search")) {
-      console.log("[Vehicle] Ya estamos en la página del vehículo");
-    } else {
-      await page.screenshot({ path: "debug.png" });
-      throw new Error("No se pudo identificar el vehículo tras la búsqueda. Revisa debug.png");
+    } else if (!currentUrl.includes("/recambios/") || currentUrl.includes("search")) {
+        // Si después de todo seguimos en el buscador, algo falló
+        await page.screenshot({ path: "debug_fallo_identificacion.png" });
+        throw new Error("No se pudo identificar el vehículo. Revisa debug_fallo_identificacion.png");
     }
 
-    // ── Paso 8: Extracción de datos brutos ─────────────────────────────
-    console.log("[Vehicle] Extrayendo datos de la página...");
-    const raw = await page.evaluate(() => {
-      const url = location.href;
-      const urlParts = url.split("/");
-      const carSegment = urlParts.find(p => /^\d+-/.test(p)); 
-      const carId = carSegment ? parseInt(carSegment.split("-")[0]) : null;
-
-      const title = document.title?.trim() || null;
-      const h1 = document.querySelector("h1")?.textContent?.trim() || null;
-
-      const breadcrumbs = Array.from(
-        document.querySelectorAll('[class*="breadcrumb"] a, [class*="breadcrumb"] span, nav a, ol li a, ol li span')
-      ).map(el => el.textContent.trim()).filter(t => t.length > 1);
-
-      let jsonLd = null;
-      document.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
-        try {
-          const d = JSON.parse(s.textContent);
-          if (d["@type"] === "Car" || d.brand || d.model) jsonLd = d;
-        } catch (_) { }
-      });
-
+    // ── Paso 9: Extracción de datos brutos de la página ─────────────
+    console.log("[Vehicle] Extrayendo datos técnicos...");
+    const rawData = await page.evaluate(() => {
+      const h1 = document.querySelector("h1")?.textContent?.trim() || "";
       const specs = {};
-      document.querySelectorAll('[class*="spec"] tr, [class*="characteristic"] tr, table tr').forEach(row => {
+      
+      // Buscamos en tablas de características técnicas
+      document.querySelectorAll('table tr, [class*="characteristic"] tr, [class*="spec"] tr').forEach(row => {
         const cells = row.querySelectorAll("td, th");
         if (cells.length >= 2) {
           const key = cells[0].textContent.trim().toLowerCase();
@@ -195,14 +185,46 @@ async function scrapeAutodoc(plate) {
         }
       });
 
-      return { url, carId, title, h1, breadcrumbs, jsonLd, specs };
+      // Intentamos sacar marca/modelo de la URL si faltan
+      const urlParts = window.location.href.split("/");
+
+      return {
+        brand: specs["marca"] || urlParts[4]?.toUpperCase() || "Desconocido",
+        model: specs["modelo"] || urlParts[5]?.toUpperCase() || "Desconocido",
+        yearFrom: h1.match(/\b(19|20)\d{2}\b/)?.[0] || null,
+        engine: h1.match(/\d+\.\d+/)?.[0] || null, // Ej: extrae "1.8" de "1.8 TDCi"
+        fuelRaw: specs["combustible"] || h1 || ""
+      };
     });
 
-    return parseVehicleInfo(raw, plate);
+    // ── Paso 10: Limpieza final (Normalización para ENUMs de DB) ─────────
+    const result = {
+        marca: rawData.brand,
+        modelo: rawData.model,
+        anio: rawData.yearFrom,
+        motor: rawData.engine,
+        combustible: "Gasolina" // Valor por defecto
+    };
+
+    const fuel = rawData.fuelRaw.toLowerCase();
+    if (fuel.includes('diesel') || fuel.includes('gasóleo') || fuel.includes('diésel')) {
+        result.combustible = 'Diésel';
+    } else if (fuel.includes('híbrido') || fuel.includes('hybrid')) {
+        result.combustible = 'Híbrido';
+    } else if (fuel.includes('eléctrico') || fuel.includes('electric')) {
+        result.combustible = 'Eléctrico';
+    } else if (fuel.includes('glp')) {
+        result.combustible = 'GLP';
+    } else if (fuel.includes('gnc')) {
+        result.combustible = 'GNC';
+    }
+
+    return result;
 
   } finally {
     await browser.close();
   }
+
 }
 
 
@@ -326,27 +348,20 @@ router.post("/matricula/secreta", async (req, res) => {
         return res.status(400).json({ message: "La matrícula es obligatoria" });
     }
 
-    // 1. Limpieza y validación de matrícula
+    // Limpieza de matrícula
     const plate = rawPlate.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
-    const valid = /^([0-9]{4}[A-Z]{3}|[A-Z]{1,2}[0-9]{4}[A-Z]{1,2})$/.test(plate);
     
-    if (!valid) {
-        return res.status(400).json({ message: "Formato de matrícula no válido" });
-    }
-
     try {
-        // 2. Ejecutar Scraper
-        console.log(`[Scraper] Buscando: ${plate}`);
+        console.log(`[Scraper] Iniciando búsqueda para: ${plate}`);
         const vehicleData = await scrapeAutodoc(plate);
 
-        // 3. NORMALIZACIÓN DE COMBUSTIBLE (Para tu ENUM con Mayúsculas y Tildes)
+        // --- NORMALIZACIÓN PARA TU ENUM ---
+        // Basado en: 'Gasolina','Diésel','Híbrido','Eléctrico','GLP','GNC'
         let fuelRaw = (vehicleData.fuel || "").toLowerCase();
-        let combustibleFinal = 'Gasolina'; // Valor por defecto que existe en tu ENUM
+        let combustibleFinal = 'Gasolina'; // Valor por defecto
 
         if (fuelRaw.includes('diesel') || fuelRaw.includes('gasóleo') || fuelRaw.includes('diésel')) {
             combustibleFinal = 'Diésel';
-        } else if (fuelRaw.includes('gasolina')) {
-            combustibleFinal = 'Gasolina';
         } else if (fuelRaw.includes('híbrido') || fuelRaw.includes('hybrid')) {
             combustibleFinal = 'Híbrido';
         } else if (fuelRaw.includes('eléctrico') || fuelRaw.includes('electric')) {
@@ -355,35 +370,43 @@ router.post("/matricula/secreta", async (req, res) => {
             combustibleFinal = 'GLP';
         } else if (fuelRaw.includes('gnc')) {
             combustibleFinal = 'GNC';
+        } else if (fuelRaw.includes('gasolina')) {
+            combustibleFinal = 'Gasolina';
         }
 
-        // 4. Limpieza de Motor (solo el número decimal, ej: 1.8)
+        // Limpieza de motor (extrae el decimal ej: 1.8)
         const motorLimpio = vehicleData.engine ? vehicleData.engine.match(/\d+\.\d+/)?.[0] : null;
 
-        // 5. Query e Inserción
         const query = 'INSERT INTO Vehiculo (matricula, id_usuario, marca, modelo, año, motor, combustible) VALUES (?, ?, ?, ?, ?, ?, ?)';
         
         await db.execute(query, [
             plate, 
             id_usuario, 
-            vehicleData.brand, 
-            vehicleData.model, 
-            vehicleData.yearFrom, 
-            motorLimpio || vehicleData.engine, // Fallback si no hay decimal
+            vehicleData.brand || 'Desconocido', 
+            vehicleData.model || 'Desconocido', 
+            vehicleData.yearFrom || null, 
+            motorLimpio || vehicleData.engine || 'N/A', 
             combustibleFinal
         ]);
 
         res.status(201).json({ 
             message: "Vehículo registrado correctamente",
-            data: { matricula: plate, combustible: combustibleFinal } 
+            data: { matricula: plate, marca: vehicleData.brand, combustible: combustibleFinal } 
         });
 
     } catch (error) {
         console.error("[Error Registro]:", error.message);
+
+        // Error específico cuando Autodoc no encuentra la matrícula
+        if (error.message.includes("No hemos podido encontrar")) {
+            return res.status(404).json({ message: error.message });
+        }
+
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ message: "Esta matrícula ya está en tu garaje" });
         }
-        res.status(500).json({ error: error.message });
+
+        res.status(500).json({ message: "Error en el servidor", error: error.message });
     }
 });
 
