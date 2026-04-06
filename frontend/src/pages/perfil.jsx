@@ -60,7 +60,7 @@ function Perfil() {
             }
 
             try {
-                const response = await fetch("http://localhost:3000/api/users/profile/me", {
+                const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/me", {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
@@ -83,7 +83,7 @@ function Perfil() {
 
     const traerProductos = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/products");
+            const response = await fetch("https://yeray.informaticamajada.es/api/products");
             if (response.ok) {
                 const data = await response.json();
                 setProductos(data);
@@ -98,7 +98,7 @@ function Perfil() {
         if (!token) return;
 
         try {
-            const response = await fetch("http://localhost:3000/api/notifications/unread-count", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications/unread-count", {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -127,7 +127,7 @@ function Perfil() {
 
         setLoadingNotis(true);
         try {
-            const response = await fetch("http://localhost:3000/api/notifications", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/notifications", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -144,7 +144,7 @@ function Perfil() {
 
     const marcarTodasComoLeidas = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/notifications/read-all`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/read-all`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -184,7 +184,7 @@ function Perfil() {
         );
 
         try {
-            const response = await fetch(`http://localhost:3000/api/notifications/${id}/read`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -231,7 +231,7 @@ function Perfil() {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch("http://localhost:3000/api/vehicules", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -296,7 +296,7 @@ function Perfil() {
 
         /* Toca hacer scraping */
         // Construimos la URL con los parámetros necesarios
-        const url = `http://localhost:3000/api/vehicules/matricula/${matricula}`;
+        const url = `https://yeray.informaticamajada.es/api/vehicules/matricula/${matricula}`;
 
         try {
             const response = await fetch(url, {
@@ -332,7 +332,7 @@ function Perfil() {
 
         setLoadingCitas(true);
         try {
-            const response = await fetch("http://localhost:3000/api/dates", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/dates", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -363,7 +363,7 @@ function Perfil() {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/dates/${id}/cancelar`, {
+            const response = await fetch(`https://yeray.informaticamajada.es/api/dates/${id}/cancelar`, {
                 method: 'PATCH',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -431,7 +431,7 @@ function Perfil() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:3000/api/users/profile/update", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/users/profile/update", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -477,7 +477,7 @@ function Perfil() {
 
         setLoadingVehiculos(true);
         try {
-            const response = await fetch("http://localhost:3000/api/vehicules", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/vehicules", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
