@@ -1,31 +1,47 @@
-import { Edit3, Trash2, Package, Star, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit3, Trash2, Package, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Search, Filter } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from "react-i18next";
 
-const StockTable = ({ productos, categorias }) => {
-  const [listaProductos, setListaProductos] = useState(productos);
-  
-  // --- Lógica de Paginación ---
+const StockTable = ({ productos }) => {
+  const { t } = useTranslation("admin");
+  const [selectedProd, setSelectedProd] = useState(null);
+  const { i18n } = useTranslation();
+
+  const [filtro, setFiltro] = useState('todos');
+  const [busqueda, setBusqueda] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Índices para segmentar el array
+  const productosFiltrados = productos.filter(prod => {
+    const coincideBusqueda =
+      prod.name.toLowerCase().includes(busqueda.toLowerCase()) ||
+      prod.description.toLowerCase().includes(busqueda.toLowerCase());
+
+    const coincideFiltro =
+      filtro === 'todos' ? true :
+        filtro === 'bajo' ? (prod.stock > 0 && prod.stock <= 10) :
+          filtro === 'disponible' ? (prod.stock > 10) :
+            filtro === 'agotado' ? (prod.stock === 0) : true;
+
+    return coincideBusqueda && coincideFiltro;
+  });
+
+  // 3. Lógica de Paginación (Sobre la lista YA filtrada)
+  const totalPages = Math.ceil(productosFiltrados.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = listaProductos.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(listaProductos.length / itemsPerPage);
+  const currentItems = productosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  // ----------------------------
 
   const renderStars = (rating) => {
     const numericRating = Math.round(Number(rating));
     return (
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5 justify-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <svg
             key={star}
-            className={`w-4 h-5 ${star <= numericRating ? "text-warning" : "text-base-content/20"}`}
+            className={`w-3 h-3 ${star <= numericRating ? "text-warning" : "text-base-content/20"}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -36,133 +52,291 @@ const StockTable = ({ productos, categorias }) => {
     );
   };
 
+  // Dentro de tu componente StockTable
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    // Si por lo que sea no hay producto seleccionado, no hacemos nada
+    if (!selectedProd) {
+      console.error("No hay un producto seleccionado para editar");
+      return;
+    }
+
+    const formData = new FormData(e.target);
+    const id = selectedProd.id; // Ahora ya no será null
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}/update`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          'x-lang': i18n.language
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        alert("Producto actualizado con éxito");
+        document.getElementById(`editProduct${id}`).close();
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }
+  };
+
   return (
-    <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="flex justify-between items-center p-4">
-        <button className="btn bg-slate-900 hover:bg-slate-800 text-white border-none normal-case flex gap-2 rounded-xl px-6">
-          <Plus size={18} /> Filtros
-        </button>
-        <span className="text-xs font-semibold text-slate-500 uppercase">
-          Mostrando {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, listaProductos.length)} de {listaProductos.length}
-        </span>
-      </div>
+    <div className="w-full bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="p-8 space-y-6">
 
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-base-300">
-            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Img</th>
-            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Producto</th>
-            <th className="p-3 border text-[11px] font-bold uppercase tracking-wider text-center">Stock</th>
-            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Precio</th>
-            <th className="p-3 border text-[11px] text-center font-bold uppercase tracking-wider">Rating</th>
-            <th className="p-3 border text-[11px] font-bold uppercase tracking-wider text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {currentItems.map((prod) => (
-            <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
-              <td className="p-3 border-b border-l">
-                <img
-                  src={prod.image_url}
-                  alt={prod.nombre}
-                  className="w-10 h-10 rounded-lg object-cover border border-slate-100 mx-auto"
-                />
-              </td>
-              <td className="p-3 border-b text-center">
-                <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase">
-                  {prod.name}
-                </span>
-              </td>
-              <td className="p-3 text-center border-b">
-                <div className="flex flex-col items-center">
-                  <span className={`text-sm font-mono font-bold ${prod.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
-                    {prod.stock}
-                  </span>
-                  <div className="w-12 h-1 bg-slate-100 rounded-full mt-1 overflow-hidden">
-                    <div
-                      className={`h-full ${prod.stock < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`}
-                      style={{ width: `${Math.min(prod.stock, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </td>
-              <td className="p-3 border-b font-mono text-sm font-bold text-center text-slate-600">
-                {prod.price}€
-              </td>
-              <td className="p-3 border-b">
-                <div className="flex justify-center text-amber-500">
-                  <span className="text-xs font-bold">{renderStars(prod.rating)}</span>
-                </div>
-              </td>
-              <td className="p-3 text-right border-b">
-                <div className="flex justify-end gap-2">
-                  <button className="p-1.5 hover:bg-slate-200 rounded-md text-slate-400 transition-colors">
-                    <Edit3 size={16} />
-                  </button>
-                  <button className="p-1.5 hover:bg-rose-50 hover:text-rose-500 rounded-md text-slate-400 transition-colors">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="btn btn-sm"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="btn btn-sm"
-          >
-            Siguiente
-          </button>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div>
-            <p className="text-sm text-slate-700">
-              Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span>
-            </p>
+            <h2 className="text-2xl font-black flex items-center gap-3 italic">
+              <Package className="text-primary" size={28} />
+              {t("stock_table.title", "GESTIÓN DE STOCK")}
+            </h2>
+            <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Inventario en tiempo real</p>
           </div>
-          <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => paginate(currentPage - 1)}
-                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => paginate(index + 1)}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                    currentPage === index + 1
-                      ? 'z-10 bg-slate-900 text-white focus-visible:outline-slate-900 focus-visible:outline-offset-0'
-                      : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
 
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => paginate(currentPage + 1)}
-                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </nav>
+          <div className="relative w-full lg:w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar pieza o descripción..."
+              className="input input-bordered w-full pl-12 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              value={busqueda}
+              onChange={(e) => { setBusqueda(e.target.value); setCurrentPage(1); }}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit">
+          {[
+            { id: 'todos', label: 'Todos', icon: Filter, color: 'text-slate-500' },
+            { id: 'disponible', label: 'En Stock', icon: CheckCircle2, color: 'text-emerald-500' },
+            { id: 'bajo', label: 'Bajo Stock', icon: AlertTriangle, color: 'text-amber-500' },
+            { id: 'agotado', label: 'Agotado', icon: XCircle, color: 'text-rose-500' }
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => { setFiltro(item.id); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${filtro === item.id ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'
+                }`}
+            >
+              <item.icon size={14} className={item.color} />
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* TABLA ESTILIZADA */}
+        <div className="overflow-x-auto rounded-2xl border border-slate-100">
+          <table className="table w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-50 text-slate-400 border-b border-slate-100">
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest text-center">{t("stock_table.th_img")}</th>
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest">{t("stock_table.th_product")}</th>
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest text-center">{t("stock_table.th_stock")}</th>
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest text-center">{t("stock_table.th_price")}</th>
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest text-center">{t("stock_table.th_rating")}</th>
+                <th className="py-4 font-bold text-[10px] uppercase tracking-widest text-right">{t("stock_table.th_actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {currentItems.length > 0 ? currentItems.map((prod) => (
+                <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="p-4 text-center">
+                    <div className="avatar">
+                      <div className="w-12 h-12 rounded-xl ring-1 ring-slate-200 group-hover:ring-primary transition-all">
+                        <img src={prod.image_url} alt={prod.name} className="object-cover" />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div>
+                      <p className="font-bold text-slate-800 text-sm">{prod.name}</p>
+                      <p className="text-[10px] text-slate-400 line-clamp-1 max-w-50">{prod.description}</p>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className={`text-xs font-black ${prod.stock <= 10 ? 'text-rose-500' : 'text-slate-700'}`}>
+                        {prod.stock}
+                      </span>
+                      <progress
+                        className={`progress w-12 h-1.5 ${prod.stock <= 10 ? 'progress-error' : 'progress-success'}`}
+                        value={prod.stock}
+                        max="100"
+                      ></progress>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <span className="badge badge-ghost font-mono font-bold text-slate-600">{prod.price}€</span>
+                  </td>
+                  <td className="p-4">
+                    {renderStars(prod.rating)}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        className="p-1.5 hover:bg-slate-200 rounded-md text-slate-400"
+                        onClick={() => {
+                          setSelectedProd(prod);
+                          document.getElementById('edit_product_modal').showModal();
+                        }}
+                      >
+                        <Edit3 size={16} />
+                      </button>
+                      <button className="p-1.5 hover:bg-rose-50 hover:text-rose-500 rounded-md text-slate-400 transition-colors" onClick={() => document.getElementById(`deleteProduct${prod.id}`).showModal()}>
+                        <Trash2 size={16} />
+                      </button>
+
+
+                      <dialog id={`deleteProduct${prod.id}`} className="modal text-left">
+                        <div className="modal-box">
+                          <h3 className="font-bold text-lg text-rose-600">{t("stock_table.delete_title")}</h3>
+                          <p className="py-4">ID: {prod.id} - {prod.name}</p>
+                          <div className="modal-action">
+                            <form method="dialog">
+                              <button className="btn">{t("stock_table.close")}</button>
+                            </form>
+                          </div>
+                        </div>
+                      </dialog>
+                    </div>
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="6" className="py-20 text-center">
+                    <div className="flex flex-col items-center opacity-20">
+                      <Package size={48} />
+                      <p className="font-bold mt-2">No se encontraron productos</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <dialog id="edit_product_modal" className="modal text-left">
+          <div className="modal-box max-w-2xl bg-white">
+            {selectedProd && (
+              <div key={selectedProd.id}>
+                <h3 className="font-black text-2xl mb-6 text-slate-800 uppercase italic">
+                  {t("stock_table.edit_title", "Editar Producto")}: {selectedProd.name}
+                </h3>
+
+                <form onSubmit={handleUpdate} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Nombre */}
+                    <div className="form-control">
+                      <label className="label text-[10px] font-bold uppercase text-slate-400">
+                        {t("stock_table.th_product")}
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        defaultValue={selectedProd.name}
+                        className="input input-bordered w-full font-medium"
+                        required
+                      />
+                    </div>
+
+                    {/* Precio */}
+                    <div className="form-control">
+                      <label className="label text-[10px] font-bold uppercase text-slate-400">
+                        {t("stock_table.th_price")}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="price"
+                        defaultValue={selectedProd.price}
+                        className="input input-bordered w-full font-mono"
+                        required
+                      />
+                    </div>
+
+                    {/* Stock */}
+                    <div className="form-control">
+                      <label className="label text-[10px] font-bold uppercase text-slate-400">
+                        {t("stock_table.th_stock")}
+                      </label>
+                      <input
+                        type="number"
+                        name="stock"
+                        defaultValue={selectedProd.stock}
+                        className="input input-bordered w-full"
+                        required
+                      />
+                    </div>
+
+                    {/* Imagen */}
+                    <div className="form-control">
+                      <label className="label text-[10px] font-bold uppercase text-slate-400">
+                        Nueva Imagen (Opcional)
+                      </label>
+                      <input
+                        type="file"
+                        name="image"
+                        className="file-input file-input-bordered w-full file-input-primary"
+                        accept="image/*"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Descripción */}
+                  <div className="form-control">
+                    <label className="label text-[10px] font-bold uppercase text-slate-400">
+                      {t("stock_table.description", "Descripción")}
+                    </label>
+                    <textarea
+                      name="description"
+                      defaultValue={selectedProd.description}
+                      className="textarea textarea-bordered h-24 w-full font-medium"
+                    ></textarea>
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="modal-action">
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => document.getElementById('edit_product_modal').close()}
+                    >
+                      {t("stock_table.close", "Cerrar")}
+                    </button>
+                    <button type="submit" className="btn btn-primary px-8">
+                      {t("stock_table.save", "Guardar Cambios")}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </dialog>
+
+        {/* PAGINACIÓN */}
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+          <p className="text-xs text-slate-400 font-bold uppercase tracking-tighter">
+            {t("stock_table.page")} {currentPage} / {totalPages || 1}
+          </p>
+          <div className="join bg-slate-100 p-1 rounded-xl">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => paginate(currentPage - 1)}
+              className="btn btn-ghost btn-xs join-item rounded-lg disabled:bg-transparent"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => paginate(currentPage + 1)}
+              className="btn btn-ghost btn-xs join-item rounded-lg disabled:bg-transparent"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@ function App() {
 
           <h1 className='mt-4 font-bold text-6xl w-full max-w-6xl px-10'>{t('categories')}</h1>
 
-          <p className='mt-2 max-w-xl font-black mb-10'>Encuentra y agenda el mantenimiento perfecto para tu vehiculo con nuestra tecnologia de diagnóstico avanzado</p> {/* traducir */}
+          <p className='mt-2 max-w-xl font-black mb-10'>{t('subtitle')}</p>
           <div className='p-5 rounded-2xl place-items-center-safe'>
             <div className="relative w-190 mb-4">
             {/* Icono posicionado a la izquierda */}

@@ -41,13 +41,11 @@ export const createService = async (req, res) => {
 
         const { category_id, base_price, duration, difficulty, name, description } = result.data;
 
-        // 🔥 VALIDAR IMAGEN
         if (!req.file) {
             return res.status(400).json({ error: "La imagen es obligatoria" });
         }
 
         const image_url = req.file.path; 
-        // 👆 ya viene como /uploads/services/xxx.webp si usas el middleware dinámico
 
         await connection.beginTransaction();
 
