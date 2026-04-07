@@ -1,12 +1,17 @@
 import { Router } from "express";
 import { createProduct, getProducts, getProductsById, updateProduct, deleteProduct,purchaseProduct } from "../controllers/productController.js";
+import { verifyToken, isAdmin } from '../middlewares/auth.js';
+import { upload } from '../middlewares/upload.js';
+import { processImage } from '../middlewares/processImage.js';
 
 const router = Router();
 
-router.post("/", createProduct);
+router.post("/", upload.single('image'), processImage('products'), createProduct);
 router.get("/", getProducts);
 router.get("/:id", getProductsById);
-router.put("/:id/update", updateProduct);
+
+router.put('/:id/update', verifyToken, isAdmin, upload.single('image'), processImage('products'), updateProduct);
+
 router.delete("/:id/delete", deleteProduct);
 
 router.post('/:id/order', purchaseProduct);

@@ -2,11 +2,14 @@ import { Edit3, Trash2, Package, ChevronLeft, ChevronRight, AlertTriangle, Check
 import { useState } from 'react';
 import { useTranslation } from "react-i18next";
 
-const StockTable = ({ productos }) => {
+const StockTable = ({ productos, categorias }) => {
+
   const { t } = useTranslation("admin");
   const [selectedProd, setSelectedProd] = useState(null);
   const { i18n } = useTranslation();
 
+  const [preview, setPreview] = useState(null);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [filtro, setFiltro] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,6 +119,7 @@ const StockTable = ({ productos }) => {
             { id: 'bajo', label: 'Bajo Stock', icon: AlertTriangle, color: 'text-amber-500' },
             { id: 'agotado', label: 'Agotado', icon: XCircle, color: 'text-rose-500' }
           ].map((item) => (
+            
             <button
               key={item.id}
               onClick={() => { setFiltro(item.id); setCurrentPage(1); }}
@@ -147,7 +151,7 @@ const StockTable = ({ productos }) => {
                   <td className="p-4 text-center">
                     <div className="avatar">
                       <div className="w-12 h-12 rounded-xl ring-1 ring-slate-200 group-hover:ring-primary transition-all">
-                        <img src={prod.image_url} alt={prod.name} className="object-cover" />
+                        <img src={`${import.meta.env.VITE_API_URL}${prod.image_url}`} alt={prod.name} className="object-cover" />
                       </div>
                     </div>
                   </td>
@@ -160,7 +164,7 @@ const StockTable = ({ productos }) => {
                   <td className="p-4 text-center">
                     <div className="flex flex-col items-center gap-1">
                       <span className={`text-xs font-black ${prod.stock <= 10 ? 'text-rose-500' : 'text-slate-700'}`}>
-                        {prod.stock}
+                          {prod.stock}
                       </span>
                       <progress
                         className={`progress w-12 h-1.5 ${prod.stock <= 10 ? 'progress-error' : 'progress-success'}`}
@@ -181,6 +185,7 @@ const StockTable = ({ productos }) => {
                         className="p-1.5 hover:bg-slate-200 rounded-md text-slate-400"
                         onClick={() => {
                           setSelectedProd(prod);
+                          setPreview(prod.image_url);
                           document.getElementById('edit_product_modal').showModal();
                         }}
                       >
@@ -220,102 +225,148 @@ const StockTable = ({ productos }) => {
         </div>
 
         <dialog id="edit_product_modal" className="modal text-left">
-          <div className="modal-box max-w-2xl bg-white">
-            {selectedProd && (
-              <div key={selectedProd.id}>
-                <h3 className="font-black text-2xl mb-6 text-slate-800 uppercase italic">
-                  {t("stock_table.edit_title", "Editar Producto")}: {selectedProd.name}
-                </h3>
+  <div className="modal-box max-w-3xl bg-white">
+    {selectedProd && (
+      <div key={selectedProd.id}>
+        <h3 className="font-black text-2xl mb-6 text-slate-800 uppercase italic">
+          {t("stock_table.edit_title")}: {selectedProd.name}
+        </h3>
 
-                <form onSubmit={handleUpdate} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Nombre */}
-                    <div className="form-control">
-                      <label className="label text-[10px] font-bold uppercase text-slate-400">
-                        {t("stock_table.th_product")}
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        defaultValue={selectedProd.name}
-                        className="input input-bordered w-full font-medium"
-                        required
-                      />
-                    </div>
+        <form onSubmit={handleUpdate} className="space-y-6">
 
-                    {/* Precio */}
-                    <div className="form-control">
-                      <label className="label text-[10px] font-bold uppercase text-slate-400">
-                        {t("stock_table.th_price")}
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        name="price"
-                        defaultValue={selectedProd.price}
-                        className="input input-bordered w-full font-mono"
-                        required
-                      />
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {/* Stock */}
-                    <div className="form-control">
-                      <label className="label text-[10px] font-bold uppercase text-slate-400">
-                        {t("stock_table.th_stock")}
-                      </label>
-                      <input
-                        type="number"
-                        name="stock"
-                        defaultValue={selectedProd.stock}
-                        className="input input-bordered w-full"
-                        required
-                      />
-                    </div>
+            {/* IZQUIERDA */}
+            <div className="space-y-4">
 
-                    {/* Imagen */}
-                    <div className="form-control">
-                      <label className="label text-[10px] font-bold uppercase text-slate-400">
-                        Nueva Imagen (Opcional)
-                      </label>
-                      <input
-                        type="file"
-                        name="image"
-                        className="file-input file-input-bordered w-full file-input-primary"
-                        accept="image/*"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Descripción */}
-                  <div className="form-control">
-                    <label className="label text-[10px] font-bold uppercase text-slate-400">
-                      {t("stock_table.description", "Descripción")}
-                    </label>
-                    <textarea
-                      name="description"
-                      defaultValue={selectedProd.description}
-                      className="textarea textarea-bordered h-24 w-full font-medium"
-                    ></textarea>
-                  </div>
-
-                  {/* Acciones */}
-                  <div className="modal-action">
-                    <button
-                      type="button"
-                      className="btn btn-ghost"
-                      onClick={() => document.getElementById('edit_product_modal').close()}
-                    >
-                      {t("stock_table.close", "Cerrar")}
-                    </button>
-                    <button type="submit" className="btn btn-primary px-8">
-                      {t("stock_table.save", "Guardar Cambios")}
-                    </button>
-                  </div>
-                </form>
+              {/* Nombre */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  {t("stock_table.th_product")}
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={selectedProd.name}
+                  className="input input-bordered w-full"
+                />
               </div>
-            )}
+
+              {/* Descripción */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  {t("stock_table.description")}
+                </label>
+                <textarea
+                  name="description"
+                  defaultValue={selectedProd.description}
+                  className="textarea textarea-bordered w-full h-24"
+                />
+              </div>
+
+            </div>
+
+            {/* DERECHA */}
+            <div className="space-y-4">
+
+              {/* Precio */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  {t("stock_table.th_price")}
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="price"
+                  defaultValue={selectedProd.price}
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              {/* Stock */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  {t("stock_table.th_stock")}
+                </label>
+                <input
+                  type="number"
+                  name="stock"
+                  defaultValue={selectedProd.stock}
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              {/* Categoría */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  Categoría
+                </label>
+                <select
+                  name="category_id"
+                  defaultValue={selectedProd.category_id}
+                  className="select select-bordered w-full"
+                >
+                  {categorias?.map(cat => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Imagen */}
+              <div className="form-control">
+                <label className="label text-xs font-bold uppercase">
+                  Imagen
+                </label>
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  className="file-input file-input-bordered w-full"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+
+                {preview && (
+                  <img
+                    src={
+                      preview.startsWith("blob")
+                        ? preview
+                        : `${import.meta.env.VITE_API_URL}${preview}`
+                    }
+                    className="w-24 h-24 object-cover rounded-xl mt-3"
+                  />
+                )}
+              </div>
+
+            </div>
           </div>
-        </dialog>
+
+          {/* BOTONES */}
+          <div className="modal-action">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => document.getElementById('edit_product_modal').close()}
+            >
+              {t("stock_table.close")}
+            </button>
+
+            <button type="submit" className="btn btn-primary px-8">
+              {loadingUpdate ? "Guardando..." : t("stock_table.save")}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    )}
+  </div>
+</dialog>
 
         {/* PAGINACIÓN */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">

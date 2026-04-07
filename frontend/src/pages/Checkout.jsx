@@ -136,7 +136,7 @@ function Checkout() {
                             cart.items.map((item) => (
                                 <div key={item.id_producto} className={`card card-side bg-base-100 shadow-xl border-2 ${item.cantidad > item.stock ? 'border-error' : 'border-transparent'}`}>
                                     <figure className="w-40 md:w-56">
-                                        <img src={item.image_url} alt={item.name} className="h-full object-cover" />
+                                        <img src={`${import.meta.env.VITE_API_URL}${item.image_url}`} alt={item.name} className="h-full object-cover" />
                                     </figure>
                                     <div className="card-body">
                                         <div className="flex justify-between items-start">

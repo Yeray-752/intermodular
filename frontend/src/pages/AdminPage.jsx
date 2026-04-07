@@ -10,6 +10,7 @@ import Calendario from "../components/AdminComponents/Calendario";
 import StockTable from '../components/AdminComponents/StockTable';
 import { VentasChart } from "../components/AdminComponents/estadisticas";
 import AdminNotifications from "../components/AdminComponents/adminNotifications";
+import ServicesTable from '../components/AdminComponents/ServicesTable';
 function AdminPage() {
     const [activeTab, setActiveTab] = useState('reservas');
     const [loading, setLoading] = useState(true);
@@ -18,20 +19,64 @@ function AdminPage() {
     const [listaProductos, setListaProductos] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [reservas, setReservas] = useState([]);
+    const [listaServicios, setListaServicios] = useState([]);
+    const [categoriasServicios, setCategoriasServicios] = useState([]);
 
     const { t, i18n } = useTranslation("admin");
 
     const fetchDatos = async () => {
         try {
-            const resProd = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
-                headers: { 'accept-language': i18n.language } // <--- Esto es clave
-            });
+            const [resProd, resCat] = await Promise.all([
+                fetch(`${import.meta.env.VITE_API_URL}/api/products`),
+                fetch(`${import.meta.env.VITE_API_URL}/api/product_categories`)
+            ]);
+
             const dataProd = await resProd.json();
+            const dataCat = await resCat.json();
+
             setListaProductos(dataProd);
+            setCategorias(dataCat);
+
         } catch (err) {
-            console.error(err);
+            console.error("Error cargando datos:", err);
+        } finally {
+            setLoading(false);
         }
     };
+
+    const fetchServicios = async () => {
+        try {
+            const [resSrv, resCat] = await Promise.all([
+                fetch(`${import.meta.env.VITE_API_URL}/api/services`),
+                fetch(`${import.meta.env.VITE_API_URL}/api/service_categories`)
+            ]);
+            const dataSrv = await resSrv.json();
+            const dataCat = await resCat.json();
+            setListaServicios(dataSrv);
+            setCategoriasServicios(dataCat);
+        } catch (err) {
+            console.error("Error cargando servicios:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'reservas') {
+            trearCitas();
+            cargarEventosCalendario();
+        }
+        if (activeTab === 'stock') fetchDatos();
+        if (activeTab === 'servicios') fetchServicios(); // ← añade esto
+    }, [activeTab]);
+
+    const RenderServicios = () => (
+    <div>
+        <div className="mb-8">
+            <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Gestión de Servicios</h2>
+            <p className="text-slate-500 text-sm">Catálogo de servicios en tiempo real</p>
+        </div>
+        <ServicesTable servicios={listaServicios} categorias={categoriasServicios} onUpdate={fetchServicios} />
+    </div>
+);
 
     // --- LÓGICA DE DATOS ---
     const ActualizarCitas = async (id, estado) => {
@@ -117,7 +162,7 @@ function AdminPage() {
         { id: 'reservas', label: t("menu.reservas"), icon: ClipboardList },
         { id: 'notificaciones', label: "Notificaciones", icon: Bell },
         { id: 'stock', label: t("menu.stock"), icon: Package },
-        { id: 'servicios', label: t("menu.servicios"), icon: Wrench },
+        { id: 'servicios', label: t("menu.servicios"), icon: Package },
         { id: 'productos', label: t("menu.productos"), icon: Wrench },
     ], [t]);
 
@@ -239,29 +284,31 @@ function AdminPage() {
                             <div className="relative w-full h-64 bg-base-200 rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center overflow-hidden">
                                 <ImageIcon size={48} className="text-base-content/40" />
                                 <span className="text-xs font-medium mt-2">{t("servicios.upload")}</span>
-                                <input type="file" name="imagen" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" required />
+                                <input type="file" name="image" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" required />
                             </div>
                         </div>
                         <div className="space-y-4">
                             <div className="form-control">
                                 <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{t("servicios.titulo")}</label>
-                                <input type="text" name="titulo" className="input input-bordered w-full" required />
+                                <input type="text" name="name" className="input input-bordered w-full" required />
                             </div>
                             <div className="form-control">
                                 <label className="label text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{t("servicios.dificultad")}</label>
-                                <select name="dificultad" className="select select-bordered w-full" required>
+                                <select name="difficulty" className="select select-bordered w-full" required>
                                     <option value="baja">{t("servicios.dificultad_baja")}</option>
                                     <option value="media">{t("servicios.dificultad_media")}</option>
                                     <option value="alta">{t("servicios.dificultad_alta")}</option>
                                 </select>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <input type="text" name="tiempo" placeholder={t("servicios.tiempo")} className="input input-bordered" required />
-                                <input type="number" name="precio" placeholder={t("servicios.precio")} className="input input-bordered" required />
+                                <input type="text" name="duration" placeholder={t("servicios.tiempo")} className="input input-bordered" required />
+                                <input type="number" name="base_price" placeholder={t("servicios.precio")} className="input input-bordered" required />
                             </div>
+
                         </div>
+
                     </div>
-                    <textarea name="descripcion" className="textarea textarea-bordered w-full" placeholder={t("servicios.descripcion")}></textarea>
+                    <textarea name="description" className="textarea textarea-bordered w-full" placeholder={t("servicios.descripcion")}></textarea>
                     <div className="flex justify-end pt-4">
                         <button type="submit" className="btn btn-primary">{t("servicios.guardar")}</button>
                     </div>
@@ -273,7 +320,7 @@ function AdminPage() {
     const renderContent = () => {
         switch (activeTab) {
             case 'reservas': return <RenderReservas />;
-            case 'servicios': return <RenderActualizacionServicios />;
+            case 'servicios': return <RenderServicios />;
             case 'productos': return <RenderActualizacionProducto />;
             case 'stock': return <RenderStock />;
             case 'notificaciones': return <AdminNotifications />;

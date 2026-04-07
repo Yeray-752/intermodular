@@ -27,7 +27,7 @@ function TableProducts({ search, categoriaId, productos }) {
                         {/* Contenedor de Imagen (Igual que servicios) */}
                         <div className="relative mb-4">
                             <img
-                                src={item.image_url}
+                                src={`${import.meta.env.VITE_API_URL}${item.image_url}`}
                                 alt={item.name}
                                 className="h-44 w-full object-contain bg-base-300-100 rounded-xl group-hover:scale-105 transition-transform duration-500"
                             />

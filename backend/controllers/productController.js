@@ -1,25 +1,21 @@
 import db from "../db.js";
-import {createNotification} from "./notificationsController.js";
+import { createNotification } from "./notificationsController.js";
 
 export const createProduct = async (req, res) => {
   const lang = req.lang;
-  const { category_id, image_url, price, stock, name, description } = req.body;
+  const { category_id, price, stock, name, description } = req.body;
+  const image_url = req.file 
+  ? `/uploads/products/${req.file.filename}` 
+  : null;
 
   if (!name) return res.status(400).json({ message: "El nombre del producto es obligatorio" });
 
   try {
     // 1. Insertar datos técnicos (Quitamos duration)
-    const productQuery = `
-      INSERT INTO products (category_id, image_url, price, stock) 
-      VALUES (?, ?, ?, ?)
-    `;
-
-    const [productResult] = await db.execute(productQuery, [
-      category_id,
-      image_url,
-      price,
-      stock
-    ]);
+    const [productResult] = await db.execute(
+      `INSERT INTO products (category_id, image_url, price, stock) VALUES (?, ?, ?, ?)`,
+      [category_id, image_url, price, stock]
+    );
 
     const newProductId = productResult.insertId;
 
@@ -30,8 +26,8 @@ export const createProduct = async (req, res) => {
     );
 
     // 3. Notificación al Admin
-    await createNotification(req.user.id, 'producto_nuevo', 'admin', { 
-        producto: name 
+    await createNotification(req.user.id, 'producto_nuevo', 'admin', {
+      producto: name
     });
 
     res.status(201).json({ message: "Producto creado con éxito", productId: newProductId });
@@ -66,7 +62,7 @@ export const getProducts = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ message: "No se encontraron productos para este idioma." });
     }
-    console.log("Datos que salen del backend:", rows[0]);
+    console.log("Datos que salen del backend:", rows[2]);
     res.json(rows);
   } catch (error) {
     console.error("Error al obtener productos:", error);
@@ -111,53 +107,107 @@ export const getProductsById = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const lang = req.lang;
-  const { category_id, image_url, price, stock, name, description } = req.body;
 
   const connection = await db.getConnection();
 
   try {
-    // Obtener datos actuales para comparar cambios
+    // 🔥 Validación básica (puedes meter Zod aquí si quieres)
+    const {
+      category_id,
+      price,
+      stock,
+      name,
+      description
+    } = req.body;
+
+    // 📸 Imagen opcional
+    const image_url = req.file 
+    ? `/uploads/products/${req.file.filename}` 
+    : null;
+
+
+    // 🔍 Obtener datos antiguos (para comparar y notificar)
     const [old] = await connection.query(
-      "SELECT p.price, p.stock, t.name FROM products p JOIN product_translations t ON p.id = t.product_id WHERE p.id = ? AND t.language_code = ?",
+      `SELECT p.price, p.stock, t.name 
+       FROM products p 
+       JOIN product_translations t 
+       ON p.id = t.product_id 
+       WHERE p.id = ? AND t.language_code = ?`,
       [id, lang]
     );
 
+    if (old.length === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
     await connection.beginTransaction();
 
-    // 1. Actualizar tabla principal
+    // 🧱 UPDATE principal (solo actualiza lo que viene)
     await connection.execute(
-      "UPDATE products SET category_id = ?, image_url = ?, price = ?, stock = ? WHERE id = ?",
-      [category_id, image_url, price, stock, id]
+      `UPDATE products SET 
+        category_id = COALESCE(?, category_id),
+        image_url = COALESCE(?, image_url),
+        price = COALESCE(?, price),
+        stock = COALESCE(?, stock)
+       WHERE id = ?`,
+      [
+        category_id || null,
+        image_url,
+        price || null,
+        stock || null,
+        id
+      ]
     );
 
-    // 2. Actualizar traducción
+    // 🌍 Traducciones
     await connection.execute(
-      `INSERT INTO product_translations (product_id, language_code, name, description)
+      `INSERT INTO product_translations 
+        (product_id, language_code, name, description)
        VALUES (?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)`,
-      [id, lang, name, description]
+       ON DUPLICATE KEY UPDATE 
+        name = COALESCE(VALUES(name), name),
+        description = COALESCE(VALUES(description), description)`,
+      [
+        id,
+        lang,
+        name || null,
+        description || null
+      ]
     );
 
-    // 3. Notificación consolidada
-    if (old.length > 0) {
-        const cambios = [];
-        if (parseFloat(old[0].price) !== parseFloat(price)) cambios.push(`precio: ${price}€`);
-        if (parseInt(old[0].stock) !== parseInt(stock)) cambios.push(`stock: ${stock}`);
-        if (old[0].name !== name) cambios.push(`nombre: ${name}`);
+    // 🔔 Notificaciones inteligentes
+    const cambios = [];
 
-        if (cambios.length > 0) {
-            await createNotification(req.user.id, 'producto_actualizado', 'admin', {
-                nombre_original: old[0].name,
-                cambios: cambios
-            });
-        }
+    if (price && parseFloat(old[0].price) !== parseFloat(price)) {
+      cambios.push(`precio: ${price}€`);
+    }
+
+    if (stock && parseInt(old[0].stock) !== parseInt(stock)) {
+      cambios.push(`stock: ${stock}`);
+    }
+
+    if (name && old[0].name !== name) {
+      cambios.push(`nombre: ${name}`);
+    }
+
+    if (image_url) {
+      cambios.push(`imagen actualizada`);
+    }
+
+    if (cambios.length > 0) {
+      await createNotification(req.user.id, 'producto_actualizado', 'admin', {
+        nombre_original: old[0].name,
+        cambios
+      });
     }
 
     await connection.commit();
+
     res.json({ message: "Producto actualizado correctamente" });
 
   } catch (error) {
     await connection.rollback();
+    console.error(error);
     res.status(500).json({ error: "Error al actualizar el producto" });
   } finally {
     connection.release();

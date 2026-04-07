@@ -10,7 +10,7 @@ export const getServices = async (req, res) => {
                 s.id, 
                 s.category_id, 
                 s.image_url, 
-                s.base_price as price, 
+                s.base_price,
                 s.duration, 
                 s.difficulty,
                 st.name, 

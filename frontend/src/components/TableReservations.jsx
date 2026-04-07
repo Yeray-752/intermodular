@@ -142,7 +142,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                     </span>
                                 </p> */}
                                 <div className="flex items-center justify-between pt-4 border-t-2 border-primary">
-                                    <span className="text-2xl font-extrabold text-secondary">{servicio.price}€</span>
+                                    <span className="text-2xl font-extrabold text-secondary">{servicio.base_price}€</span>
                                     <button className="btn btn-primary btn-sm text-base-100 text-lg rounded-full px-6" onClick={() => abrirModal(servicio)}>{t('book')}</button>
                                 </div>
                             </div>

@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-const EstadoCita = z.enum(['pendiente','procesando','completada','cancelada']);
+const EstadoCita = z.enum(['pendiente', 'procesando', 'completada', 'cancelada']);
 
-import { z } from "zod";
 
 export const validateService = (data) => {
   const schema = z.object({
@@ -17,11 +16,24 @@ export const validateService = (data) => {
   return schema.safeParse(data);
 };
 
+export const validateCita = (data) => {
+  const schema = z.object({
+    servicio: z.string().min(1),
+    comentarios: z.string().max(255).optional(),
+    vehiculoSeleccionado: z.string().min(1),
+    fechaCita: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Fecha inválida",
+    }),
+  });
+
+  return schema.safeParse(data);
+};
+
 export const validaUpdate = (data) => {
   const schema = z.object({
-    
+
     vehiculoSeleccionado: z.string().min(1, "Debes seleccionar un vehículo"),
-    
+
     fechaCita: z.string().refine((val) => !isNaN(Date.parse(val)), {
       message: "Fecha inválida",
     }),
@@ -37,7 +49,7 @@ export const validateUpdateEstadoCita = (data) => {
   const schema = z.object({
     id: z.coerce.number().int().positive(),
     estado: EstadoCita
-    
+
   });
   return schema.safeParse(data);
 };

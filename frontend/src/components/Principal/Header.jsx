@@ -215,7 +215,7 @@ useEffect(() => {
                                 return (
                                     <div key={item.id_producto} className={`flex flex-col bg-base-200 p-3 rounded-xl border-2 transition-colors ${sinStock ? 'border-error/50 bg-error/5' : 'border-transparent'}`}>
                                         <div className="flex gap-4 items-center">
-                                            <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                            <img src={`${import.meta.env.VITE_API_URL}${item.image_url}`} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
                                             <div className="flex-1">
                                                 <p className="font-bold text-sm leading-tight">{item.name}</p>
                                                 <p className="text-xs opacity-70 mt-1">
