@@ -121,7 +121,7 @@ function Checkout() {
             <Header />
         <div className="min-h-screen bg-base-300 p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
-                <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2 mb-6">
+                <button onClick={() => navigate(-1)} className="btn btn-ghost hover:bg-info gap-2 mb-6">
                     <ArrowLeft size={20} /> {t('formulario:back')}
                 </button>
 
@@ -150,7 +150,7 @@ function Checkout() {
                                         <p className="text-base-content/60">{item.precio_unitario} € / ud</p>
 
                                         <div className="card-actions justify-between items-center mt-4">
-                                            <div className="badge badge-ghost badge-lg gap-2">
+                                            <div className="badge border-none bg-base-300 badge-lg gap-2">
                                                 Cantidad: <span className="font-bold">{item.cantidad}</span>
                                             </div>
                                             {item.cantidad > item.stock && (

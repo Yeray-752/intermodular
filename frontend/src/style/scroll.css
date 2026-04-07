@@ -6,3 +6,14 @@
   -ms-overflow-style: none;  /* IE y Edge */
   scrollbar-width: none;  /* Firefox */
 }
+::-webkit-scrollbar-button{
+  background-color: red !important;
+
+}
+::-webkit-scrollbar-corner{
+  color: red !important;
+}
+::-webkit-scrollbar-track-piece{
+  color: red !important;
+  background-color: red !important;
+}

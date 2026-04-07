@@ -33,9 +33,9 @@ export const actualizarCita = async (req, res) => {
     console.log(fechaSQL)
     if (!fechaCita) {
         return res.status(400).json({ error: "La nueva fecha es obligatoria" });
-    }
 
-    try {
+    }else{
+        try {
         const query = `
             UPDATE cita 
             SET fecha_cita = ?
@@ -51,6 +51,7 @@ export const actualizarCita = async (req, res) => {
         res.status(200).json({ message: "Hora confirmada con éxito" });
     } catch (error) {
         res.status(500).json({ error: "Error al actualizar la hora" });
+    }
     }
 };
 
@@ -200,33 +201,53 @@ export const cancelarCita = async (req, res) => {
 };
 
 export const actualizarEstadoCita = async (req, res) => {
-    const { id, estado } = req.params; // Asegúrate de que tu ruta sea /:id/:estado
+    const { id, estado } = req.params;
+    // Extraemos los nuevos datos del cuerpo de la petición
+    const { precio, justificacion } = req.body; 
 
     try {
-        // Primero necesitamos saber a quién pertenece la cita para notificarle
+        // 1. Verificar si la cita existe
         const [citaData] = await db.execute('SELECT id_usuario, fecha_cita FROM cita WHERE id = ?', [id]);
         
         if (citaData.length === 0) {
             return res.status(404).json({ message: "Cita no encontrada" });
         }
 
-        const query = 'UPDATE cita SET estado = ? WHERE id = ?';
-        await db.execute(query, [estado, id]);
+        // 2. Preparar la consulta de actualización
+        // Si el estado es 'completado', actualizamos también precio y justificación
+        let query;
+        let params;
 
-        // Ahora sí tenemos los datos para la notificación
+        if (estado === 'completado') {
+            query = 'UPDATE cita SET estado = ?, precio = ?, justificacion = ? WHERE id = ?';
+            params = [estado, precio, justificacion, id];
+        } else {
+            // Para otros estados (procesando, cancelado, etc.) solo cambiamos el estado
+            query = 'UPDATE cita SET estado = ? WHERE id = ?';
+            params = [estado, id];
+        }
+
+        await db.execute(query, params);
+
+        // 3. Notificar al cliente
         await createNotification(
             citaData[0].id_usuario,
             'cita_estado',
             'cliente',
             {
                 fecha: citaData[0].fecha_cita,
-                estado: estado
+                estado: estado,
+                precio_final: precio // Opcional: enviar el precio en la notificación
             }
         );
 
-        res.json({ message: "Estado actualizado y cliente notificado" });
+        res.json({ 
+            message: "Estado actualizado y cliente notificado",
+            datos_actualizados: estado === 'completado' ? { precio, justificacion } : null
+        });
+
     } catch (error) {
-        console.error(error);
+        console.error("Error en actualizarEstadoCita:", error);
         res.status(500).json({ error: error.message });
     }
 };

@@ -37,12 +37,12 @@ const StockTable = ({ productos, categorias }) => {
   };
 
   return (
-    <div className="w-full bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="w-full bg-base-300 rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <div className="flex justify-between items-center p-4">
         <button className="btn bg-slate-900 hover:bg-slate-800 text-white border-none normal-case flex gap-2 rounded-xl px-6">
           <Plus size={18} /> Filtros
         </button>
-        <span className="text-xs font-semibold text-slate-500 uppercase">
+        <span className="text-xs font-semibold text-base-content uppercase">
           Mostrando {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, listaProductos.length)} de {listaProductos.length}
         </span>
       </div>
@@ -60,22 +60,22 @@ const StockTable = ({ productos, categorias }) => {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {currentItems.map((prod) => (
-            <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
+            <tr key={prod.id}>
               <td className="p-3 border-b border-l">
                 <img
                   src={prod.image_url}
                   alt={prod.nombre}
-                  className="w-10 h-10 rounded-lg object-cover border border-slate-100 mx-auto"
+                  className="w-10 h-10 rounded-lg object-cover mx-auto"
                 />
               </td>
               <td className="p-3 border-b text-center">
-                <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase">
+                <span className="px-2 py-0.5 rounded-full  text-base-content text-[10px] font-bold uppercase">
                   {prod.name}
                 </span>
               </td>
               <td className="p-3 text-center border-b">
                 <div className="flex flex-col items-center">
-                  <span className={`text-sm font-mono font-bold ${prod.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
+                  <span className={`text-sm font-mono font-bold ${prod.stock < 10 ? 'text-rose-500' : 'text-base-content'}`}>
                     {prod.stock}
                   </span>
                   <div className="w-12 h-1 bg-slate-100 rounded-full mt-1 overflow-hidden">
@@ -86,7 +86,7 @@ const StockTable = ({ productos, categorias }) => {
                   </div>
                 </div>
               </td>
-              <td className="p-3 border-b font-mono text-sm font-bold text-center text-slate-600">
+              <td className="p-3 border-b font-mono text-sm font-bold text-center text-base-content">
                 {prod.price}€
               </td>
               <td className="p-3 border-b">
@@ -109,7 +109,7 @@ const StockTable = ({ productos, categorias }) => {
         </tbody>
       </table>
 
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200">
+      <div className="flex items-center justify-between px-4 py-3 bg-300 border-t">
         <div className="flex flex-1 justify-between sm:hidden">
           <button
             onClick={() => paginate(currentPage - 1)}
@@ -126,9 +126,9 @@ const StockTable = ({ productos, categorias }) => {
             Siguiente
           </button>
         </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div className="hidden text-base-content sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-slate-700">
+            <p className="text-sm">
               Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span>
             </p>
           </div>

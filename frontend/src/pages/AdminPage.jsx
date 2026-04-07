@@ -188,7 +188,17 @@ function AdminPage() {
 
     }, [activeTab]);
 
-
+    const [workOrder, setWorkOrder] = useState({
+    id: "FAC-2024-001",
+    clientName: "Carlos Gómez",
+    clientDni: "44555666R",
+    carModel: "Volkswagen Golf GTI",
+    plate: "5588-KBC",
+    items: [
+      { desc: "Cambio Pastillas Freno", qty: 1, price: 85.00 },
+      { desc: "Líquido de frenos", qty: 1, price: 15.50 }
+    ]
+  });
 
 
     const menuItems = useMemo(() => [
@@ -196,6 +206,7 @@ function AdminPage() {
         { id: 'metricas', label: 'Estadisticas', icon: LayoutDashboard },
         { id: 'reservas', label: 'Gestión de Reservas', icon: ClipboardList },
         { id: 'stock', label: 'Stock de Productos', icon: Package },
+        { id: 'listaServicios', label: 'Lista de Servicios', icon: ClipboardList},
         { id: 'servicios', label: 'Servicios', icon: Wrench },
         { id: 'productos', label: 'Productos', icon: Wrench },
     ], []);
@@ -301,8 +312,8 @@ function AdminPage() {
         <div>
             <div className="flex justify-between items-end mb-8">
                 <div>
-                    <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Stock</h2>
-                    <p className="text-slate-500 text-sm">Administración de precios y existencias.</p>
+                    <h2 className="text-3xl font-black mb-2 text-base-content tracking-tight">Stock</h2>
+                    <p className="text-base-content text-sm">Administración de precios y existencias.</p>
                 </div>
 
             </div>
@@ -398,13 +409,21 @@ function AdminPage() {
             </form>
         </div>
     );
+    const RenderListaServicios = () => (
+        <div>
+            <div className="mb-8">
+                <h2 className="text-3xl font-black mb-2 text-base-content tracking-tight">Servicios</h2>
+            </div>
+        </div>
+    );
 
     const renderContent = () => {
         switch (activeTab) {
             case 'reservas': return <RenderReservas />;
             case 'servicios': return <RenderActualilzacionServicios />;
             case 'productos': return <RenderActualilzacionProducto />;
-            case 'stock': return <RenderStock />
+            case 'stock': return <RenderStock />;
+            case 'listaServicios': return <RenderListaServicios />;
             case 'metricas': return (
                 <div>
                     {activeTab === 'metricas' && (

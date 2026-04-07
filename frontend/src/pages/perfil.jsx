@@ -9,6 +9,9 @@ import AdminButton from '../components/AdminComponents/AdminBoton'
 import { useTranslation } from 'react-i18next';
 import { workshopSchema } from '../schemas/perfilGeneralSchemas';
 import SelectorCanarias from '../components/perfil/selectorCanarias';
+import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import InvoicePDF from '../components/AdminComponents/PdfRender';
+import { usePDF } from '@react-pdf/renderer';
 
 
 function Perfil() {
@@ -50,6 +53,33 @@ function Perfil() {
     const [datos, setDatos] = useState({
         marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
     });
+
+    const [invoiceData, setInvoiceData] = useState({
+        id: 'PRE-2026-001',
+        clientName: 'Alex Martínez',
+        plate: '1234-BBB',
+        carModel: 'Toyota Corolla',
+        items: [
+            { desc: 'Cambio de Aceite', qty: 1, price: 50 },
+            { desc: 'Filtro Aire', qty: 1, price: 20 }
+        ]
+    });
+
+    // Este Hook genera el documento y nos da una 'url'
+    const [instance, updateInstance] = usePDF({
+        document: <InvoicePDF data={invoiceData} />
+    });
+
+    // Cada vez que cambien los datos, actualizamos el PDF
+    useEffect(() => {
+        updateInstance(<InvoicePDF data={invoiceData} />);
+    }, [invoiceData, updateInstance]);
+
+    const handlePreview = () => {
+        if (instance.url) {
+            window.open(instance.url, '_blank');
+        }
+    };
 
     // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
     useEffect(() => {
@@ -1005,6 +1035,70 @@ function Perfil() {
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        {/* posdfdsonfsdonfsod`nfosd */}
+                        <div className="min-h-screen bg-base-200 p-8">
+                            <div className="max-w-4xl mx-auto card bg-base-100 shadow-2xl">
+                                <div className="card-body">
+                                    <h1 className="text-2xl font-bold text-primary mb-6">Generador de Documentos</h1>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* INPUTS DE EJEMPLO */}
+                                        <div className="form-control">
+                                            <label className="label font-semibold">Cliente</label>
+                                            <input
+                                                type="text"
+                                                className="input input-bordered"
+                                                value={invoiceData.clientName}
+                                                onChange={(e) => setInvoiceData({ ...invoiceData, clientName: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-control">
+                                            <label className="label font-semibold">Matrícula</label>
+                                            <input
+                                                type="text"
+                                                className="input input-bordered"
+                                                value={invoiceData.plate}
+                                                onChange={(e) => setInvoiceData({ ...invoiceData, plate: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="divider my-8">Acciones del PDF</div>
+
+                                    <div className="flex flex-col md:flex-row gap-4 justify-center">
+
+                                        {/* BOTÓN VISTA PREVIA (ABRE PESTAÑA NUEVA) */}
+                                        <button
+                                            onClick={handlePreview}
+                                            className="btn btn-outline btn-secondary flex-1"
+                                            disabled={instance.loading}
+                                        >
+                                            {instance.loading ? (
+                                                <span className="loading loading-spinner"></span>
+                                            ) : (
+                                                "🔍 Ver en pestaña nueva"
+                                            )}
+                                        </button>
+
+                                        {/* BOTÓN DESCARGA DIRECTA */}
+                                        <a
+                                            href={instance.url}
+                                            download={`Factura_${invoiceData.plate}.pdf`}
+                                            className={`btn btn-primary flex-1 ${instance.loading ? 'btn-disabled' : ''}`}
+                                        >
+                                            📥 Descargar Factura
+                                        </a>
+
+                                    </div>
+
+                                    {instance.error && (
+                                        <div className="alert alert-error mt-4">
+                                            <span>Error al generar el PDF. Revisa la consola.</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
