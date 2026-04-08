@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#333' },
   header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, borderBottom: 2, borderColor: '#0056b3', paddingBottom: 10 },
   companyInfo: { flexDirection: 'column' },
-  companyName: { fontSize: 18, fontWeight: 'bold', color: '#0056b3' },
+  companyName: { fontSize: 40, fontWeight: 800, color: '#FF6900' },
   invoiceTitle: { fontSize: 22, fontWeight: 'bold', textAlign: 'right' },
   sectionTitle: { fontSize: 12, fontWeight: 'bold', marginTop: 20, marginBottom: 5, backgroundColor: '#f0f0f0', padding: 5 },
   row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 },
@@ -32,7 +32,7 @@ const InvoicePDF = ({ data }) => {
         {/* Cabecera */}
         <View style={styles.header}>
           <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>Akotan</Text>
+            <Text style={styles.companyName}>AKOTAN</Text>
             <Text>Calle Taller, 123, 35600 Puerto del Rosario, España</Text>
             <Text>35600 Puerto del Rosario | CIF: B12345678</Text>
             <Text>Tel: 912 345 678</Text>

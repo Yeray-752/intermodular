@@ -56,7 +56,34 @@ function Perfil() {
 
     const [datosPdf, setDatosPdf] = useState(null)
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+        const token = localStorage.getItem("token");
+        // No hace falta el "if (!token)" aquí porque ProtectedRoute ya lo filtró fuera
 
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUserProfile(data);
+            } else {
+                // Si el servidor dice que el token no vale (expiró)
+                localStorage.removeItem("token");
+                navigate("/login");
+            }
+        } catch (error) {
+            console.error("Error de red:", error);
+        } finally {
+            // CRUCIAL: Esto quita el mensaje de "Cargando..."
+            setLoading(false);
+        }
+    };
+
+    fetchUserData();
+}, [navigate]);
 
     const traerHistorial = async () => {
 
@@ -92,36 +119,6 @@ function Perfil() {
         }
     };
 
-    // 1. CARGAR DATOS DEL PERFIL DESDE EL BACKEND
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                navigate("/login");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserProfile(data);
-                } else {
-                    localStorage.removeItem("token");
-                    navigate("/login");
-                }
-            } catch (error) {
-                console.error("Error al conectar con el servidor:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserData();
-    }, [navigate]);
 
     const traerProductos = async () => {
         try {
@@ -476,7 +473,7 @@ function Perfil() {
         sessionStorage.removeItem("misCitas");
         logout();
         navigate("/");
-        location.reload()
+
     };
 
     const handleSubmit = async (e) => {
@@ -507,7 +504,7 @@ function Perfil() {
             });
 
             if (response.ok) {
-                alert(t('profile:update_success') || "Perfil actualizado correctamente");
+                alert(t('profile:update_success') || " actualizado correctamente");
             } else {
                 alert("Error al actualizar los datos");
             }
@@ -633,12 +630,12 @@ function Perfil() {
                         </div>
 
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 place-self-center-safe">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:w-170 sm:grid-cols-1 lg:w-205 place-self-center-safe">
                             {cocheBuscado && cocheBuscado.length > 0 ? (
                                 cocheBuscado.map((coche) => (
                                     <div key={coche.matricula} className="p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
 
-                                        <div className="flex mb-6">
+                                        <div key={coche.matricula} className="flex mb-6">
                                             <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">
                                                 <Car className="text-[#ff5a1f]" size={26} />
                                             </div>
@@ -1088,20 +1085,17 @@ function Perfil() {
                                                                 {/* BOTÓN PARA VISUALIZAR */}
                                                                 <button
                                                                     onClick={() => window.open(instance.url, '_blank')}
-                                                                    className="btn btn-circle btn-ghost btn-xs text-info"
+                                                                    className="btn text-sm"        
                                                                     title="Visualizar PDF"
                                                                 >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                                    </svg>
+                                                                    Ver
                                                                 </button>
 
                                                                 {/* BOTÓN PARA DESCARGAR */}
                                                                 <a
                                                                     href={instance.url}
                                                                     download={`Factura_${cita.id}.pdf`}
-                                                                    className="btn btn-primary btn-xs text-white"
+                                                                    className="btn h-full btn-primary btn-xs text-base-100 items-center"
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 12 12 16.5m0 0L16.5 12M12 16.5V3" />
@@ -1210,7 +1204,7 @@ function Perfil() {
                         </div>
                     </aside>
 
-                    <section className='bg-info flex-1 p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg max-h-[620px] overflow-y-auto custom-scrollbar'>
+                    <section className='bg-info flex-1 p-6 md:p-8 lg:p-10 w-220 rounded-2xl shadow-lg max-h-155 overflow-y-auto custom-scrollbar'>
                         {renderContent()}
                     </section>
                 </div>

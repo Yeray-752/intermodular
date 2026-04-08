@@ -18,6 +18,8 @@ function Header() {
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: "", tipo: "success" });
     const noStock = datosCarrito.items?.some(item => item.cantidad > item.stock);
 
+    
+
     // Cambiado: text-base-content asegura que el texto cambie según el tema
     const hoverLink = 'text-base-100 hover:text-primary transition-colors duration-300 font-medium';
 

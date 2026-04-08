@@ -22,6 +22,7 @@ import { ThemeProvider } from "../context/ThemeContext.jsx";
 
 import { BrowserRouter, Routes, Route } from 'react-router'
 import ReactDOM from "react-dom/client"
+import ProtectedRoute from './ProtectedRoute.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId="132089921537-h1ijgechji2s3tbh51j1su0g49n1gf38.apps.googleusercontent.com">
@@ -34,15 +35,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/reservas' element={<Reservas />} />
             <Route path='/productos' element={<Market />} />
             <Route path="/producto/:id" element={<Producto />} />
-            <Route path='/checkout' element={<Checkout />} />
-
             <Route path='/registro' element={<SignUp />} />
             <Route path='/sobre-nosotros' element={<About />} />
-            <Route path='/perfil' element={<Perfil />} />
             <Route path='/Aviso-legal' element={<Texto />} />
             <Route path='*' element={<Error />} />
 
-            <Route path='/admin/dashboard' element={<AdminPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path='/checkout' element={<Checkout />} />
+              <Route path='/admin/dashboard' element={<AdminPage />} />
+              <Route path='/perfil' element={<Perfil />} />
+            </Route>
 
           </Routes>
         </BrowserRouter>
