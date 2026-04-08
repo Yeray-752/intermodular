@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -18,22 +18,23 @@ const EventTooltip = ({ info, position }) => {
   const vehiculo = info.extendedProps?.vehiculo || 'No hay vehiculo';
 
 
+
   return (
     <div
-      className="absolute z-9999 p-4 bg-white border border-gray-200 rounded-lg shadow-xl pointer-events-none w-72"
+      className="absolute z-9999 p-4 bg-info text-base-content border border-gray-200 rounded-lg shadow-xl pointer-events-none w-72"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: 'translate(15px, -50%)',
       }}
     >
-      <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-l border-b border-gray-200 rotate-45"></div>
+      <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-base-300 border-l border-b text-base-content+ rotate-45"></div>
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-          <h3 className="text-lg font-bold text-gray-900 leading-tight">{title}</h3>
+          <h3 className="text-lg font-bold leading-tight">{title}</h3>
         </div>
-        <p className="text-sm text-gray-600 mb-1 font-medium italic">{vehiculo}</p>
+        <p className="text-sm mb-1 font-medium italic">{vehiculo}</p>
         <div className="bg-gray-50 p-2.5 rounded border border-gray-100">
           <p className="text-xs text-gray-500">{descripcion}</p>
         </div>
@@ -52,14 +53,18 @@ const CalendarioSemanalTailwind = ({ initialEvents }) => {
   const [justificacion, setJustificacion] = useState("");
   const [selectedEventId, setSelectedEventId] = useState(null);
 
+  let cuerpo = {
+    precio: nuevoPrecio,
+    justificacion: justificacion
+  };
+
   const servicioTerminado = async (id, estado) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const cuerpo = {
-      precio: nuevoPrecio,
-      justificacion: justificacion
-    };
+
+
+
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/actualizar/${id}/${estado}`, {
@@ -136,8 +141,8 @@ const CalendarioSemanalTailwind = ({ initialEvents }) => {
   };
 
   return (
-    <div className="mt-6 bg-base-100 border-3 border-neutral rounded-2xl relative">
-      <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+    <div className="mt-6 bg-base-100 border-neutral rounded-2xl relative">
+      <div className="max-w-6xl mx-auto bg-base-300 p-6 rounded-xl shadow-lg">
         <FullCalendar
           plugins={[timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"

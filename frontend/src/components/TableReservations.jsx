@@ -49,8 +49,10 @@ function TableReservations({ search, categoriaId, servicios }) {
                 servicio: String(servicioSeleccionado.name),
                 vehiculoSeleccionado: String(vehiculoMatricula),
                 comentarios: motivo || "",
-                fechaCita: fechaSQL // Enviamos el formato limpio
+                fechaCita: fechaSQL, 
+                precio: servicioSeleccionado.price
             };
+            console.log(servicioSeleccionado.price + 'holas precio')
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates`, {
                 method: "POST",
@@ -152,11 +154,11 @@ function TableReservations({ search, categoriaId, servicios }) {
             </div>
 
             <dialog id="modal_reserva_unico" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
-                <div className="modal-box max-w-lg p-0 max-h-[90vh] rounded-2xl bg-base-100 text-base-content shadow-2xl flex flex-col overflow-hidden">
+                <div className="modal-box max-w-lg p-0 max-h-[90vh] rounded-2xl bg-base-300 text-base-content shadow-2xl flex flex-col overflow-hidden">
                     {servicioSeleccionado ? (
                         <div className="flex flex-col h-full overflow-hidden">
                             {/* Header del Modal */}
-                            <div className="sticky top-0 z-30 header-custom px-6 py-5 border-b border-calendar-divider bg-base-100">
+                            <div className="sticky top-0 z-30 header-custom px-6 py-5 border-calendar-divider">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <h3 className="font-extrabold text-2xl tracking-tight text-calendar-main">{t('bookTitle')}</h3>
@@ -173,7 +175,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 {/* SECCIÓN DE VEHÍCULOS DINÁMICA */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold mb-3 text-calendar-main">{t('vehicleQuestion')}</span>
+                                        <span className="label-text text-base-content font-bold mb-3 text-calendar-main">{t('vehicleQuestion')}</span>
                                     </label>
                                     <select
                                         onChange={(e) => {
@@ -187,11 +189,11 @@ function TableReservations({ search, categoriaId, servicios }) {
                                         className="input-custom w-full"
                                         defaultValue={0}
                                     >
-                                        <option disabled value={0}>{t('selectVehicle')}</option>
+                                        <option className='text-base-content' disabled value={0}>{t('selectVehicle')}</option>
 
                                         {/* Iteramos sobre los vehículos reales de tu tabla MariaDB */}
                                         {misVehiculos.map((v) => (
-                                            <option key={v.matricula} value={v.matricula}>
+                                            <option className='text-base-content' key={v.matricula} value={v.matricula}>
                                                 {v.marca} {v.modelo} - {v.matricula}
                                             </option>
                                         ))}
@@ -205,7 +207,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                                 {/* Motivo y Calendario... (Igual que antes) */}
                                 <div className="form-control w-full">
                                     <label className="label">
-                                        <span className="label-text font-bold mb-3 text-calendar-main">{t('motivo')}</span>
+                                        <span className="label-text font-bold mb-3 text-base-content">{t('motivo')}</span>
                                     </label>
                                     <textarea
                                         placeholder={t('descripcion')}
@@ -231,7 +233,7 @@ function TableReservations({ search, categoriaId, servicios }) {
                             </div>
 
                             {/* Footer del Modal */}
-                            <div className="sticky bottom-0 z-30 header-custom p-6 border-t border-calendar-divider bg-base-100">
+                            <div className="sticky bottom-0 z-30 header-custom p-6 border-calendar-divider">
                                 <div className="flex gap-3 w-full">
                                     <button className="btn btn-ghost flex-1 font-bold text-calendar-muted" onClick={cerrarModal}>
                                         {t('cancel')}

@@ -19,6 +19,7 @@ export const validateCita = (data) => {
 
     // Estado con valor por defecto si no se envía
     estado: EstadoCita.default('pendiente'),
+    precio: z.string()
   });
   return schema.safeParse(data);
 };

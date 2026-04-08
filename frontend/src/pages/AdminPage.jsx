@@ -43,7 +43,12 @@ function AdminPage() {
         if (!token) return;
 
         // Confirmación amistosa antes de borrar
-        if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
+        if(estado == 'cancelada'){
+
+            if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
+        }else{
+            if (!confirm("¿Estás seguro de que deseas confirmar esta cita?")) return;
+        }
 
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/actualizar/${id}/${estado}`, {
@@ -117,6 +122,7 @@ function AdminPage() {
         });
         if (res.ok) {
             const data = await res.json();
+            console.log(data)
 
             const format = data.map(c => {
                 // Si la fecha viene como "2026-02-16T23:00:00.000Z"
@@ -133,6 +139,8 @@ function AdminPage() {
                     // Añadimos una hora de fin para que el bloque tenga cuerpo en la vista de semana
                     end: `${c.fecha_cita}`,
                     vehiculo: `${c.vehiculo_seleccionado}`,
+                    precio_estimado: `${c.precio_estimado}`,
+                    
                     backgroundColor: '#10b981', // Verde esmeralda para citas en proceso
                     borderColor: '#059669',
                     allDay: false
@@ -228,26 +236,26 @@ function AdminPage() {
                 <h2 className="text-3xl font-black mb-2 text-base-content tracking-tight">Reservas</h2>
             </div>
 
-            <div className="overflow-x-auto bg-white rounded-2xl border-3 border-neutral shadow-sm">
+            <div className="overflow-x-auto bg-base-300 rounded-2xl text-base-content border-neutral shadow-sm">
                 <table className="table w-full border-collapse">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                        <tr className="text-slate-400 uppercase text-[10px] tracking-widest text-center">
-                            <th className="p-4 font-bold text-base-200">Cliente</th>
-                            <th className="p-4 font-bold text-base-200">Servicio</th>
-                            <th className="p-4 font-bold text-base-200">Vehiculo</th>
-                            <th className="p-4 font-bold text-base-200">Dia</th>
-                            <th className="p-4 font-bold text-base-200">Estado</th>
-                            <th className="p-4 font-bold text-base-200 text-center">Gestión</th>
+                    <thead className=" border-b border-slate-200">
+                        <tr className=" uppercase text-[10px] tracking-widest text-center">
+                            <th className="p-4 font-bold text-base-content">Cliente</th>
+                            <th className="p-4 font-bold text-base-content">Servicio</th>
+                            <th className="p-4 font-bold text-base-content">Vehiculo</th>
+                            <th className="p-4 font-bold text-base-content">Dia</th>
+                            <th className="p-4 font-bold text-base-content">Estado</th>
+                            <th className="p-4 font-bold text-base-content text-center">Gestión</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {reservas.map((res) => (
                             <tr key={res.id} className="text-center">
-                                <td className="p-4 font-bold text-base-200">{res.nombre_cliente}</td>
-                                <td className="p-4 font-bold text-base-200">{res.servicio}</td>
-                                <td className="p-4 font-bold text-base-200">{res.vehiculo_seleccionado}</td>
-                                <td className="p-4 font-bold font-mono text-base-200">{res.fecha_cita.split('T')[0].split('-').reverse().join('/')}</td>
-                                <td className="p-4 font-bold text-base-200">{res.estado}</td>
+                                <td className="p-4 font-bold text-base-content">{res.nombre_cliente}</td>
+                                <td className="p-4 font-bold text-base-content">{res.servicio}</td>
+                                <td className="p-4 font-bold text-base-content">{res.vehiculo_seleccionado}</td>
+                                <td className="p-4 font-bold font-mono text-base-content">{res.fecha_cita.split('T')[0].split('-').reverse().join('/')}</td>
+                                <td className="p-4 font-bold text-base-content">{res.estado}</td>
                                 <td className="p-4">
                                     <div className="flex justify-center gap-3">
                                         <button onClick={() => ActualizarCitas(res.id, 'procesando')} className="text-emerald-300 hover:text-emerald-500 transition-colors">

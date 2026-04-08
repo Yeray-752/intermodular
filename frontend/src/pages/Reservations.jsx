@@ -73,7 +73,7 @@ function App() {
 
             <nav className='space-x-1.5 mt-4 mb-5 w-full'>
               <div className='relative group w-92 md:w-175 lg:w-225 xl:w-5xl 2xl:w-330 mx-auto px-10'>
-                <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+                <button onClick={() => scroll(-200)} className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300 rounded-full shadow-sm hover:bg-primary hover:text-white shadow-base-content transition-all text-base-content">
                   <ChevronLeft size={24} />
                 </button>
 
@@ -94,7 +94,7 @@ function App() {
                   ))}
                 </div>
 
-                <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300-content rounded-full shadow-md hover:bg-primary hover:text-white transition-all text-gray-800">
+                <button onClick={() => scroll(200)} className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-base-300 rounded-full shadow-sm hover:bg-primary hover:text-white transition-all text-base-content shadow-base-content">
                   <ChevronRight size={24} />
                 </button>
               </div>

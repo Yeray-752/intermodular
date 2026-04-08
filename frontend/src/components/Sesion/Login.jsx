@@ -64,7 +64,6 @@ function Login() {
 
             const destino = location.state?.from?.pathname || "/";
             navigate(destino, { replace: true });
-            location.reload()
         } catch (error) {
             console.error("Error de conexión:", error);
             setErrors({ general: ["No se pudo conectar con el servidor"] });

@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
 
 const InvoicePDF = ({ data }) => {
   const subtotal = data.items.reduce((acc, item) => acc + (item.qty * item.price), 0);
-  const iva = subtotal * 0.21;
-  const total = subtotal + iva;
+  const igic = subtotal * 0.07;
+  const total = subtotal + igic;
 
   return (
     <Document>
@@ -32,14 +32,14 @@ const InvoicePDF = ({ data }) => {
         {/* Cabecera */}
         <View style={styles.header}>
           <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>MOTOR TECH PRO</Text>
-            <Text>Calle de la Mecánica, 123</Text>
-            <Text>28001 Madrid | CIF: B12345678</Text>
+            <Text style={styles.companyName}>Akotan</Text>
+            <Text>Calle Taller, 123, 35600 Puerto del Rosario, España</Text>
+            <Text>35600 Puerto del Rosario | CIF: B12345678</Text>
             <Text>Tel: 912 345 678</Text>
           </View>
           <View>
-            <Text style={styles.invoiceTitle}>PRESUPUESTO</Text>
-            <Text style={{ textAlign: 'right' }}>Nº: {data.id}</Text>
+            <Text style={styles.invoiceTitle}>FACTURA</Text>
+            <Text style={{ textAlign: 'right' }}>Nº: PRE-2026-{data.id}</Text>
             <Text style={{ textAlign: 'right' }}>Fecha: {new Date().toLocaleDateString()}</Text>
           </View>
         </View>
@@ -61,8 +61,7 @@ const InvoicePDF = ({ data }) => {
         {/* Tabla de Servicios */}
         <View style={{ marginTop: 20 }}>
           <View style={styles.tableHeader}>
-            <Text style={styles.colDesc}>Descripción del Servicio / Repuesto</Text>
-            <Text style={styles.colQty}>Cant.</Text>
+            <Text style={styles.colDesc}>Servicio</Text>  
             <Text style={styles.colPrice}>Precio</Text>
             <Text style={styles.colTotal}>Total</Text>
           </View>
@@ -70,7 +69,6 @@ const InvoicePDF = ({ data }) => {
           {data.items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.colDesc}>{item.desc}</Text>
-              <Text style={styles.colQty}>{item.qty}</Text>
               <Text style={styles.colPrice}>{item.price.toFixed(2)}€</Text>
               <Text style={styles.colTotal}>{(item.qty * item.price).toFixed(2)}€</Text>
             </View>
@@ -85,8 +83,8 @@ const InvoicePDF = ({ data }) => {
               <Text>{subtotal.toFixed(2)}€</Text>
             </View>
             <View style={styles.row}>
-              <Text>IVA (21%):</Text>
-              <Text>{iva.toFixed(2)}€</Text>
+              <Text>IGIC (7%):</Text>
+              <Text>{igic.toFixed(2)}€</Text>
             </View>
             <View style={[styles.row, styles.grandTotal]}>
               <Text>TOTAL:</Text>

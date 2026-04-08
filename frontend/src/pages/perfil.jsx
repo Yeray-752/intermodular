@@ -54,26 +54,37 @@ function Perfil() {
         marca: '', modelo: '', anio: '', motor: '', combustible: '', matricula: ''
     });
 
-    const [invoiceData, setInvoiceData] = useState({
-        id: 'PRE-2026-001',
-        clientName: 'Alex Martínez',
-        plate: '1234-BBB',
-        carModel: 'Toyota Corolla',
-        items: [
-            { desc: 'Cambio de Aceite', qty: 1, price: 50 },
-            { desc: 'Filtro Aire', qty: 1, price: 20 }
-        ]
-    });
+    const [datosPdf, setDatosPdf] = useState(null)
+
+
+
+    const traerHistorial = async () => {
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/date`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setDatosPdf(data)
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
 
     // Este Hook genera el documento y nos da una 'url'
     const [instance, updateInstance] = usePDF({
-        document: <InvoicePDF data={invoiceData} />
+        document: datosPdf ? <InvoicePDF data={datosPdf} /> : <div />
     });
 
     // Cada vez que cambien los datos, actualizamos el PDF
     useEffect(() => {
-        updateInstance(<InvoicePDF data={invoiceData} />);
-    }, [invoiceData, updateInstance]);
+        if (datosPdf) {
+            updateInstance(<InvoicePDF data={datosPdf} />);
+        }
+    }, [datosPdf, updateInstance]);
 
     const handlePreview = () => {
         if (instance.url) {
@@ -408,6 +419,9 @@ function Perfil() {
         if (activeTab === 'vehiculos') {
             cocheUsuario()
         }
+        if (activeTab === 'historial') {
+            traerHistorial();
+        }
     }, [activeTab]);
 
     const eliminarCitas = async (id) => {
@@ -525,7 +539,30 @@ function Perfil() {
     `;
 
 
+    const descargarFactura = (cita) => {
+        // Tomamos el precio base y el precio final de tu tabla 'dates' (imagen 1)
+        const precioBase = parseFloat(cita.precio_estimado || 0);
+        const precioFinal = parseFloat(cita.precio_final || 0);
+        const diferencia = precioFinal - precioBase;
 
+        const items = [{ desc: cita.servicio, qty: 1, price: precioBase }];
+
+        if (diferencia > 0) {
+            items.push({
+                desc: `Cargo adicional: ${cita.justificacion_mecanico || 'Ajuste de taller'}`,
+                qty: 1,
+                price: diferencia
+            });
+        }
+
+        setDatosPdf({
+            id: cita.id,
+            clientName: userProfile?.nombre || "Cliente",
+            plate: cita.vehiculo_seleccionado,
+            items: items,
+            fecha: cita.fecha_cita
+        });
+    };
 
     const renderContent = () => {
         if (loading) return <div className="py-20 text-center font-bold">{t('profile:loadingProfileData')}</div>;
@@ -596,19 +633,16 @@ function Perfil() {
                         </div>
 
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 place-self-center-safe">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 place-self-center-safe">
                             {cocheBuscado && cocheBuscado.length > 0 ? (
                                 cocheBuscado.map((coche) => (
-                                    <div key={coche.matricula} className="mr-5 p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
-                                        <div className="absolute top-0 right-0 p-4 opacity-50 transition-opacity">
-                                            <Car size={80} className="text-[#ff5a1f]" />
-                                        </div>
+                                    <div key={coche.matricula} className="p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
 
-                                        <div className="flex items-center gap-5 mb-6">
+                                        <div className="flex mb-6">
                                             <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">
                                                 <Car className="text-[#ff5a1f]" size={26} />
                                             </div>
-                                            <div>
+                                            <div className='w-full'>
                                                 <h2 className="text-xl font-black text-accent leading-tight uppercase">
                                                     {coche.marca}{" "}
                                                     <span className="text-[#ff5a1f]">{coche.modelo}</span>
@@ -1009,7 +1043,7 @@ function Perfil() {
                 );
             case 'historial':
                 return (
-                    <div>
+                    <div className="animate-in fade-in duration-500">
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:history')}</h2>
                             <p className="text-base-content/70 text-sm">{t('profile:pastServicesHistory')}</p>
@@ -1017,88 +1051,74 @@ function Perfil() {
 
                         <div className="overflow-x-auto">
                             <table className="table w-full border-separate border-spacing-y-2">
-                                <thead className='border-2'>
-                                    <tr className="text-base-content/50  uppercase text-[10px] tracking-widest">
-                                        <th>{t('profile:service')}</th>
-                                        <th>{t('profile:date')}</th>
-                                        <th>{t('profile:status')}</th>
+                                <thead>
+                                    <tr className="text-base-content/50 text-[10px] uppercase tracking-widest">
+                                        <th className="bg-transparent">Servicio</th>
+                                        <th className="bg-transparent">Fecha</th>
+                                        <th className="bg-transparent">Vehículo</th>
+                                        <th className="bg-transparent">Estado</th>
+                                        <th className="bg-transparent text-right">Documentos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className="bg-base-300 hover:bg-base-200 transition-colors rounded-xl">
-                                        <td className="font-bold rounded-l-xl">Revisión General</td>
-                                        <td className="text-sm">10/01/2026</td>
-                                        <td><div className="badge badge-success badge-outline font-bold text-[10px]">COMPLETADA</div></td>
-                                        <td className="text-right rounded-r-xl">
-                                            <button className="btn btn-ghost btn-xs text-primary underline font-bold">PDF</button>
-                                        </td>
-                                    </tr>
+                                    {citas.filter(c => c.estado === 'completada').length > 0 ? (
+                                        citas.filter(c => c.estado === 'completada').map((cita) => (
+                                            <tr key={cita.id} className="bg-base-300 transition-colors rounded-xl">
+                                                <td className="font-bold rounded-l-xl">{cita.servicio}</td>
+                                                <td className="text-sm">{new Date(cita.fecha_cita).toLocaleDateString()}</td>
+                                                <td className="text-xs">{cita.vehiculo_seleccionado}</td>
+                                                <td>
+                                                    <div className="badge badge-success badge-outline font-bold text-[10px] uppercase">
+                                                        {cita.estado}
+                                                    </div>
+                                                </td>
+                                                <td className="text-right rounded-r-xl">
+                                                    <div className="flex justify-end gap-3 items-center">
+                                                        {/* Paso 1: Generar los datos */}
+                                                        <button
+                                                            onClick={() => descargarFactura(cita)}
+                                                            className={`btn btn-ghost btn-xs underline ${datosPdf?.id === cita.id ? 'text-success' : 'text-primary'}`}
+                                                        >
+                                                            {datosPdf?.id === cita.id ? '✓ Datos listos' : 'Generar Factura'}
+                                                        </button>
+
+                                                        {/* Paso 2: Acciones cuando el PDF está listo */}
+                                                        {datosPdf?.id === cita.id && instance.url && (
+                                                            <div className="flex gap-2 animate-in zoom-in duration-300">
+                                                                {/* BOTÓN PARA VISUALIZAR */}
+                                                                <button
+                                                                    onClick={() => window.open(instance.url, '_blank')}
+                                                                    className="btn btn-circle btn-ghost btn-xs text-info"
+                                                                    title="Visualizar PDF"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    </svg>
+                                                                </button>
+
+                                                                {/* BOTÓN PARA DESCARGAR */}
+                                                                <a
+                                                                    href={instance.url}
+                                                                    download={`Factura_${cita.id}.pdf`}
+                                                                    className="btn btn-primary btn-xs text-white"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 12 12 16.5m0 0L16.5 12M12 16.5V3" />
+                                                                    </svg>
+                                                                    Descargar
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr><td colSpan="5" className="text-center py-10 opacity-50">No hay citas completadas.</td></tr>
+                                    )}
                                 </tbody>
                             </table>
-                        </div>
-                        {/* posdfdsonfsdonfsod`nfosd */}
-                        <div className="min-h-screen bg-base-200 p-8">
-                            <div className="max-w-4xl mx-auto card bg-base-100 shadow-2xl">
-                                <div className="card-body">
-                                    <h1 className="text-2xl font-bold text-primary mb-6">Generador de Documentos</h1>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* INPUTS DE EJEMPLO */}
-                                        <div className="form-control">
-                                            <label className="label font-semibold">Cliente</label>
-                                            <input
-                                                type="text"
-                                                className="input input-bordered"
-                                                value={invoiceData.clientName}
-                                                onChange={(e) => setInvoiceData({ ...invoiceData, clientName: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label font-semibold">Matrícula</label>
-                                            <input
-                                                type="text"
-                                                className="input input-bordered"
-                                                value={invoiceData.plate}
-                                                onChange={(e) => setInvoiceData({ ...invoiceData, plate: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="divider my-8">Acciones del PDF</div>
-
-                                    <div className="flex flex-col md:flex-row gap-4 justify-center">
-
-                                        {/* BOTÓN VISTA PREVIA (ABRE PESTAÑA NUEVA) */}
-                                        <button
-                                            onClick={handlePreview}
-                                            className="btn btn-outline btn-secondary flex-1"
-                                            disabled={instance.loading}
-                                        >
-                                            {instance.loading ? (
-                                                <span className="loading loading-spinner"></span>
-                                            ) : (
-                                                "🔍 Ver en pestaña nueva"
-                                            )}
-                                        </button>
-
-                                        {/* BOTÓN DESCARGA DIRECTA */}
-                                        <a
-                                            href={instance.url}
-                                            download={`Factura_${invoiceData.plate}.pdf`}
-                                            className={`btn btn-primary flex-1 ${instance.loading ? 'btn-disabled' : ''}`}
-                                        >
-                                            📥 Descargar Factura
-                                        </a>
-
-                                    </div>
-
-                                    {instance.error && (
-                                        <div className="alert alert-error mt-4">
-                                            <span>Error al generar el PDF. Revisa la consola.</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 );

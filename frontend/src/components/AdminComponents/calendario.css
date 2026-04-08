@@ -17,15 +17,13 @@
 }
 
 /* 1. Formato de la cabecera (lunes 12) */
-.fc .fc-col-header-cell {
-  background-color: #f8fafc; /* Fondo sutil para la cabecera */
-}
+
 
 .fc .fc-col-header-cell-cushion {
   text-transform: capitalize;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #1e40af; /* Azul oscuro para los nombres de los días */
+  color: var(--color-base-content); /* Azul oscuro para los nombres de los días */
   text-decoration: none !important;
   padding: 10px 0 !important;
 }
@@ -34,7 +32,13 @@
 .fc .fc-timegrid-slot {
   height: 1.5rem !important;
 }
-
+.fc .fc-day-today {
+  /* Usamos tu naranja con una opacidad muy baja (0.05 o 0.1) 
+     para que sea un resaltado elegante */
+  background-color: var(--color-base-400)!important;
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: -1px;
+}
 /* 3. Letra de las horas (Eje izquierdo) */
 .fc .fc-timegrid-slot-label-cushion {
   font-size: 0.75rem;
@@ -61,7 +65,7 @@
 .fc .fc-toolbar-title {
   font-size: 1.1rem !important;
   font-weight: 800;
-  color: #1e3a8a; /* Azul marino */
+  color: var(--color-base-content); /* Azul marino */
 }
 
 .fc .fc-button {
@@ -75,18 +79,25 @@
 /* Estilo para resaltar el número de día hoy si aparece */
 .fc .fc-day-today .fc-col-header-cell-cushion {
   color: #0051ff !important;
+  
 }
 
 /* 1. Líneas de los días (verticales) y de las horas (horizontales) */
 .fc-theme-standard td, 
 .fc-theme-standard th,
 .fc-theme-standard .fc-scrollgrid {
-    border: 1px solid #cbd5e1 !important; /* Grosor aumentado a 2px y color slate-300 */
+    border: 1px solid #cbd5e1 !important;
+    color: var(--color-base-content);
 }
+
 
 /* 2. Líneas divisorias de las celdas de tiempo internas */
 .fc .fc-timegrid-slot {
-    border-bottom: 0px solid #e2e8f0 !important; /* Líneas horizontales internas */
+    border-bottom: 0px solid #e2e8f0 !important;
+    color: var(--color-base-content); /* Líneas horizontales internas */
+}
+.fc-timegrid-slot-label-cushion{
+  color: var(--color-base-content) !important;
 }
 
 /* 3. Línea divisoria entre la cabecera (Lunes 16...) y el cuerpo */

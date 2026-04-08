@@ -127,14 +127,12 @@ export const crearCita = async (req, res) => {
     console.log('parte 2')
 
     const id_user = req.user.id;
-    const { servicio,
-        vehiculoSeleccionado,
-        comentarios,
-        fechaCita } = req.body;
+    const { servicio, vehiculoSeleccionado, comentarios, fechaCita, precio } = req.body;
+    console.log(precio + 'este es el precio')
 
     try {
-        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?)`;
-        const [dbResult] = await db.execute(query, [id_user, servicio, comentarios, vehiculoSeleccionado, fechaCita, estado_inicial]);
+        const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, precio_estimado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const [dbResult] = await db.execute(query, [id_user, servicio, comentarios, vehiculoSeleccionado, precio, fechaCita, estado_inicial]);
 
         console.log('Cita insertada, creando notificación...');
 
@@ -203,7 +201,7 @@ export const cancelarCita = async (req, res) => {
 export const actualizarEstadoCita = async (req, res) => {
     const { id, estado } = req.params;
     // Extraemos los nuevos datos del cuerpo de la petición
-    const { precio, justificacion } = req.body; 
+   
 
     try {
         // 1. Verificar si la cita existe
@@ -218,9 +216,18 @@ export const actualizarEstadoCita = async (req, res) => {
         let query;
         let params;
 
-        if (estado === 'completado') {
-            query = 'UPDATE cita SET estado = ?, precio = ?, justificacion = ? WHERE id = ?';
+        if (estado === 'completada') {
+             const { precio, justificacion } = req.body; 
+             if(!precio){
+                return 'falta el precio'
+             }
+             if(!justificacion){
+                return 'falta la justificacion'
+             }
+
+            query = 'UPDATE cita SET estado = ?, precio_final = ?, justificacion_mecanico = ? WHERE id = ?';
             params = [estado, precio, justificacion, id];
+            console.log(params)
         } else {
             // Para otros estados (procesando, cancelado, etc.) solo cambiamos el estado
             query = 'UPDATE cita SET estado = ? WHERE id = ?';
@@ -236,8 +243,8 @@ export const actualizarEstadoCita = async (req, res) => {
             'cliente',
             {
                 fecha: citaData[0].fecha_cita,
-                estado: estado,
-                precio_final: precio // Opcional: enviar el precio en la notificación
+                estado: estado
+               // Opcional: enviar el precio en la notificación
             }
         );
 

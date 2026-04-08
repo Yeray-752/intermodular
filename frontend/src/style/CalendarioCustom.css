@@ -1,30 +1,31 @@
 /* =================================================
-   VARIABLES DE TEMA (Basadas en data-theme)
+   VARIABLES DE TEMA (Sincronizadas con DaisyUI)
    ================================================= */
 :root, [data-theme="si"] {
-  --cal-bg: #f5f3f3;
-  --cal-text: #374151;
-  --cal-text-muted: #9ca3af;
+  --cal-bg: var(--color-base-300);
+  --cal-text: var(--color-base-content);
+  --cal-text-muted: #6B7280; 
   --cal-shadow: rgba(0, 0, 0, 0.05);
-  --cal-hover: #f3f4f6;
-  --cal-now-border: #3b82f6;
-  --cal-active-bg: #4b5563;
-  --cal-active-text: #ffffff;
-  --cal-neighbor: #d1d5db;
-  --cal-nav-btn-bg: #f3f4f6; /* Fondo suave para el botón central en light */
+  --cal-hover: var(--color-base-300);
+  --cal-now-border: var(--color-primary); /* Tu naranja #FF6900 */
+  --cal-active-bg: var(--color-primary);
+  --cal-active-text: var(--color-primary-content);
+  --cal-neighbor: #D1D5DB;
+  --cal-nav-btn-bg: var(--color-base-300);
 }
 
 [data-theme="no"] {
-  --cal-bg: #1f2937;          
-  --cal-text: #f9fafb;        
-  --cal-text-muted: #9ca3af;  
+  /* En el tema oscuro usamos base-200 para el fondo del calendario */
+  --cal-bg: var(--color-base-300); 
+  --cal-text: var(--color-base-content);
+  --cal-text-muted: #9CA3AF;
   --cal-shadow: rgba(0, 0, 0, 0.4);
-  --cal-hover: #374151;       
-  --cal-now-border: #60a5fa;  
-  --cal-active-bg: #f3f4f6;   
-  --cal-active-text: #111827; 
-  --cal-neighbor: #4b5563;
-  --cal-nav-btn-bg: #2d3748; /* Fondo oscuro para el botón central en dark */
+  --cal-hover: var(--color-base-300);
+  --cal-now-border: var(--color-primary);
+  --cal-active-bg: var(--color-primary);
+  --cal-active-text: var(--color-primary-content);
+  --cal-neighbor: #4B5563;
+  --cal-nav-btn-bg: var(--color-base-300);
 }
 
 /* ================================
@@ -34,11 +35,11 @@
   width: 100% !important;
   max-width: 350px;
   border: none !important;
-  background: var(--cal-bg) !important;
+  background-color: var(--cal-bg) !important;
   color: var(--cal-text) !important;
-  font-family: sans-serif;
+  font-family: inherit;
   padding: 1rem;
-  border-radius: 25px;
+  border-radius: var(--radius-box); /* Usando tu radio de DaisyUI */
   box-shadow: 0 4px 20px var(--cal-shadow);
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -60,15 +61,14 @@
   border: none;
   cursor: pointer;
   color: var(--cal-text) !important;
-  border-radius: 12px;
+  border-radius: var(--radius-field);
   transition: all 0.2s ease;
 }
 
-/* SOLUCIÓN AL BOTÓN CLARO: Quitamos el gris por defecto de React Calendar */
 .react-calendar__navigation button:disabled {
   background-color: var(--cal-nav-btn-bg) !important;
   color: var(--cal-text) !important;
-  cursor: default;
+  opacity: 0.5;
 }
 
 .react-calendar__navigation button:enabled:hover,
@@ -77,7 +77,7 @@
 }
 
 /* ================================
-   DÍAS DE LA SEMANA (LUN, MAR...)
+   DÍAS DE LA SEMANA
 ================================ */
 .react-calendar__month-view__weekdays {
   text-transform: uppercase;
@@ -85,61 +85,6 @@
   font-size: 0.7rem;
   color: var(--cal-text-muted) !important;
   text-align: center;
-}
-.modal-custom-container {
-  background-color: var(--cal-bg);
-  color: var(--cal-text);
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.header-custom {
-  background-color: var(--cal-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.text-calendar-main { color: var(--cal-text); }
-.text-calendar-muted { color: var(--cal-text-muted); }
-.border-calendar-divider { border-color: var(--cal-neighbor); }
-
-.bg-calendar-inner { background-color: var(--cal-bg); }
-.bg-calendar-card { background-color: var(--cal-nav-btn-bg); }
-
-/* Inputs y Selects */
-.input-custom {
-  background-color: var(--cal-bg);
-  color: var(--cal-text);
-  border: 1px solid var(--cal-neighbor);
-  padding: 0.75rem;
-  border-radius: 12px;
-}
-
-.input-custom:focus {
-  outline: 2px solid var(--cal-now-border);
-  border-color: transparent;
-}
-
-/* Badge personalizado */
-.badge-custom {
-  background-color: transparent;
-  border: 1px solid var(--cal-now-border);
-  color: var(--cal-now-border);
-  border-radius: 999px;
-  font-size: 0.75rem;
-}
-
-/* Botón Primario basado en el color activo del calendario */
-.btn-primary-custom {
-  background-color: var(--cal-now-border);
-  color: #ffffff; /* Texto blanco para legibilidad */
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  transition: opacity 0.2s;
-}
-
-.btn-primary-custom:hover {
-  opacity: 0.9;
 }
 
 .react-calendar__month-view__weekdays abbr {
@@ -157,15 +102,14 @@
 }
 
 .react-calendar__tile {
-  width: 34px !important; 
-  height: 34px !important;
-  max-width: 34px !important;
+  width: 38px !important; 
+  height: 38px !important;
   padding: 0 !important;
   margin: 2px !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 500;
   border-radius: 50% !important;
   background: transparent;
@@ -180,13 +124,12 @@
 }
 
 /* ================================
-   FINES DE SEMANA (ROJOS)
+   FINES DE SEMANA
 ================================ */
 .react-calendar__month-view__days__day--weekend {
-  color: #ef4444 !important;
+  color: var(--color-error) !important; /* Usamos tu color de error para fines de semana */
 }
 
-/* Evitar que el rojo pise al texto cuando el día está seleccionado */
 .react-calendar__tile--active.react-calendar__month-view__days__day--weekend {
   color: var(--cal-active-text) !important;
 }
@@ -197,58 +140,51 @@
 
 /* Día Actual */
 .react-calendar__tile--now {
-  border: 1.5px solid var(--cal-now-border) !important;
+  border: 2px solid var(--cal-now-border) !important;
   color: var(--cal-now-border) !important;
   background: transparent !important;
+  font-weight: 800;
 }
 
 /* Día Seleccionado */
 .react-calendar__tile--active {
   background: var(--cal-active-bg) !important;
   color: var(--cal-active-text) !important;
+  box-shadow: 0 4px 10px rgba(255, 105, 0, 0.3); /* Sombra naranja suave */
 }
-
-/* Círculos de colores personalizados */
-.dia-rojo { background-color: #ef4444 !important; color: white !important; }
-.dia-amarillo { background-color: #fbbf24 !important; color: #374151 !important; }
-.dia-verde { background-color: #22c55e !important; color: white !important; }
 
 /* Días de meses vecinos */
 .react-calendar__month-view__days__day--neighboringMonth {
   color: var(--cal-neighbor) !important;
+  opacity: 0.5;
 }
 
-/* Animación de entrada */
-.react-calendar__tile {
-  animation: fadeIn 0.3s ease-out;
+/* ================================
+   COMPONENTES DE MODAL / INPUTS
+================================ */
+.modal-custom-container {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border-radius: var(--radius-box);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-/* Efecto de elevación y cambio de color en hover */
-.fc-event {
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
-    border-radius: 4px !important;
-    padding: 2px 4px !important;
+.input-custom {
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border: 1px solid var(--cal-hover);
+  padding: 0.75rem;
+  border-radius: var(--radius-field);
 }
 
-/* Efecto hover sobre el evento en sí */
-.fc-event:hover {
-    cursor: pointer;
-    filter: brightness(90%); /* Oscurece el color de fondo sutilmente */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    z-index: 50 !important;
+.input-custom:focus {
+  outline: 2px solid var(--color-primary);
+  border-color: transparent;
 }
 
-/* Mejora la legibilidad del texto dentro del evento */
-.fc-event-title {
-    font-weight: 600 !important;
-    font-size: 0.85rem !important;
-}
-
-.fc-event-time {
-    font-size: 0.8rem !important;
-    opacity: 0.9;
+.btn-primary-custom {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-field);
+  font-weight: 600;
 }

@@ -1,14 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-/* const data = [
-  { name: 'Lun', ventas: 12 },
-  { name: 'Mar', ventas: 19 },
-  { name: 'Mié', ventas: 15 },
-  { name: 'Jue', ventas: 82 },
-  { name: 'Vie', ventas: 30 },
-  { name: 'Sáb', ventas: 25 },
-  { name: 'Dom', ventas: 18 },
-]; */
+
+
 
 export const VentasChart = ({data}) => (
   <div className="h-80 w-full bg-base-300 text-base-content p-4 rounded-xl shadow-xl mt-6">
