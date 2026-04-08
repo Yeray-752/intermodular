@@ -6,6 +6,7 @@ import { registerSchema } from "../../schemas/registerSchema";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { GoogleLogin } from '@react-oauth/google';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ function SignUp() {
     }
 
     try {
-      // 2. Enviar a la API (Ruta que creamos con transacción)
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,13 +43,12 @@ function SignUp() {
           nombre: data.nombre,
           apellidos: data.apellidos,
           direccion: data.direccion || "",
-          captchaToken  // ← lo enviamos al backend
+          captchaToken
         }),
       });
 
       const json = await response.json();
       if (response.ok) {
-        // Igual que hace el login
         localStorage.setItem("token", json.token);
         localStorage.setItem("rol", json.rol);
         login(json.token);
@@ -66,13 +65,13 @@ function SignUp() {
 
   return (
     <div
-      className="w-screen h-screen flex justify-center items-center bg-cover bg-center relative"
+      className="w-screen min-h-screen flex justify-center items-center bg-cover bg-center relative"
       style={{ backgroundImage: `url(${fondo})` }}
     >
       <div className="absolute inset-0 backdrop-blur-md bg-black/30" />
       <div className="relative z-10">
         <form className="fieldset bg-base-100 rounded-box w-md border-2 p-4 flex flex-col gap-4" onSubmit={handleRegistration}>
-          
+
           {errors.general && (
             <div className="alert alert-error text-sm py-2">{errors.general[0]}</div>
           )}
@@ -108,10 +107,55 @@ function SignUp() {
               <span className="text-error text-xs mt-1">{errors.password[0]}</span>
             ) : (
               <span className="text-base-content text-[10px] leading-tight mt-1">
-                Min. 8 caracteres, una mayúscula, un número.
+                {t("signup.all_pass_req")}
               </span>
             )}
           </fieldset>
+
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              sitekey="6LdVslcsAAAAAMbtWa8wBnuaYVmhM4O7h9mz7RMk"
+              onChange={(token) => setCaptchaToken(token)}
+              onExpired={() => setCaptchaToken(null)}
+            />
+          </div>
+          <div className="flex flex-col items-center gap-2 mt-3">
+            <div className="divider uppercase text-xs">{t("signup.enterWith")}</div>
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/google-login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idToken: credentialResponse.credential }),
+                  });
+
+                  const json = await response.json();
+
+                  if (response.ok) {
+                    // 1. Guardar en localStorage
+                    localStorage.setItem("token", json.token);
+                    localStorage.setItem("rol", json.rol);
+
+                    // 2. ACTUALIZAR EL CONTEXTO (si tu función login espera el token)
+                    login(json.token);
+
+                    // 3. Redirigir (usando tu lógica de destino previo)
+                    const destino = location.state?.from?.pathname || "/";
+                    navigate(destino, { replace: true });
+                  } else {
+                    setErrors({ general: [json.error || "Error con Google"] });
+                  }
+                } catch (error) {
+                  console.error("Error de red:", error);
+                  setErrors({ general: ["No se pudo conectar con el servidor"] });
+                }
+              }}
+              onError={() => console.log('Error en Google Login')}
+              theme="filled_blue"
+              shape="circle"
+            />
+          </div>
 
           <button type="submit" className="btn btn-primary text-base-100 mt-4">
             {t("signup.btn_submit")}

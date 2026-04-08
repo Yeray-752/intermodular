@@ -67,10 +67,10 @@ const AdminNotifications = () => {
                 <div>
                     <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
                         <Bell className="text-primary" size={32} />
-                        Centro de Control
+                        {t("notificaciones.centro_de_control")}
                     </h2>
                     <p className="text-base-content/50 text-sm font-medium">
-                        Alertas del sistema y cambios en el inventario.
+                        {t("notificaciones.alertas")}.
                     </p>
                 </div>
 
@@ -79,7 +79,7 @@ const AdminNotifications = () => {
                         onClick={marcarTodasComoLeidas}
                         className="btn btn-ghost btn-sm text-primary font-black hover:bg-primary/10 rounded-xl transition-all gap-2"
                     >
-                        <CheckCheck size={16} /> Marcar todo como visto
+                        <CheckCheck size={16} /> {t("notificaciones.marcar_leido")}
                     </button>
                 )}
             </div>
@@ -151,7 +151,7 @@ const AdminNotifications = () => {
                 ) : (
                     <div className="bg-base-200/30 border-2 border-dashed border-base-300 rounded-[3rem] py-24 text-center">
                         <Bell size={48} className="mx-auto mb-4 opacity-10" />
-                        <p className="text-base-content/40 text-lg font-black italic">Sin actividad reciente</p>
+                        <p className="text-base-content/40 text-lg font-black italic">{t("notificaciones.nada")}</p>
                     </div>
                 )}
             </div>

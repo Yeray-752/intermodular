@@ -7,6 +7,12 @@
       "servicios": "Servicios",
       "productos": "Productos"
     },
+    "notificaciones": {
+      "centro_de_control": "Centro de control",
+      "alertas": "Alertas del sistema y cambios en el inventario.",
+      "marcar_leido": "Marcar todo como visto",
+      "nada": "Sin actividad reciente"
+    },
     "reservas": {
       "title": "Reservas",
       "cliente": "Cliente",
@@ -51,6 +57,7 @@
       "error_connection": "Error de conexión"
     },
     "metricas": {
+      "flujo_ventas": "Flujo de ventas",
       "ventas_hoy": "Ventas Hoy",
       "citas_pendientes": "Citas Pendientes",
       "cierre_mensual": "Cierre Mensual"
@@ -60,6 +67,10 @@
     },
     "stock_table": {
       "btn_filters": "Filtros",
+      "all": "Todos",
+      "stock": "En Stock",
+      "low": "Bajo Stock",
+      "sold_out": "Agotados",
       "showing": "Mostrando",
       "of": "de",
       "th_img": "Img",
@@ -73,7 +84,24 @@
       "page": "Página",
       "edit_title": "Editar Producto",
       "delete_title": "Eliminar Producto",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "search": "Buscar pieza o descripción...",
+      "category": "Categoría",
+      "img": "Imagen",
+      "description": "Descripción",
+      "save": "Guardar Datos"
+    },
+    "services_table": {
+      "title": "Gestión de servicios",
+      "editTittle": "Cambio de servicio",
+      "description": "Descripción",
+      "search": "Buscar servicio o descripción",
+      "image": "Imagen",
+      "service": "Servicio",
+      "inicialPrice": "Precio base",
+      "duration": "Duración",
+      "difficulty": "Dificultad",
+      "actions": "Acciones"
     }
   },
   "en": {
@@ -84,6 +112,12 @@
       "servicios": "Services",
       "productos": "Products"
     },
+    "notificaciones": {
+      "centro_de_control": "Control center",
+      "alertas": "System alerts and inventory changes.",
+      "marcar_leido": "Mark all as seen",
+      "nada": "No activity"
+    },
     "reservas": {
       "title": "Reservations",
       "cliente": "Client",
@@ -91,7 +125,7 @@
       "vehiculo": "Vehicle",
       "dia": "Day",
       "estado": "Status",
-      "gestion": "Management",
+      "": "Management",
       "confirm_cancel": "Are you sure you want to cancel this appointment?",
       "error_cancel": "Error cancelling the appointment",
       "error_server": "Could not connect to the server"
@@ -128,6 +162,7 @@
       "error_connection": "Connection error"
     },
     "metricas": {
+      "flujo_ventas": "Sales Flow",
       "ventas_hoy": "Today's Sales",
       "citas_pendientes": "Pending Appointments",
       "cierre_mensual": "Monthly Closing"
@@ -137,6 +172,10 @@
     },
     "stock_table": {
       "btn_filters": "Filters",
+      "all": "All",
+      "stock": "In Stock",
+      "low": "Low Stock",
+      "sold_out": "Sold out",
       "showing": "Showing",
       "of": "of",
       "th_img": "Img",
@@ -150,7 +189,24 @@
       "page": "Page",
       "edit_title": "Edit Product",
       "delete_title": "Delete Product",
-      "close": "Close"
+      "close": "Close",
+      "search": "Search piece or description...",
+      "category": "Category",
+      "img": "IMG",
+      "description": "Description",
+      "save": "Save Data"
+    },
+    "services_table": {
+      "title": "Service gestion",
+      "editTittle": "Service changes",
+      "search": "Search service or description...",
+      "description": "Description",
+      "image": "IMG",
+      "service": "Service",
+      "inicialPrice": "Base price",
+      "duration": "Duration",
+      "difficulty": "Difficulty",
+      "actions": "Actions"
     }
   }
 }

@@ -27,7 +27,11 @@
       "cvv": "CVV",
       "confirmButton": "Añadir al carrito pago de ",
       "errorValidation": "Por favor, corrige los errores en el formulario",
-      "success": "¡Compra realizada con éxito!"
+      "success": "¡Compra realizada con éxito!",
+      "cityOrder":"Ciudad de entrega",
+      "citySelect":"Seleccione su Ciudad",
+      "information":"Información de pago",
+      "pay":"Pagar"
     },
     "back": "Volver",
     "noToken": "Inicie sesión para comprar"
@@ -60,7 +64,11 @@
       "cvv": "CVV",
       "confirmButton": "Add to cart payment of ",
       "errorValidation": "Please correct the errors in the form",
-      "success": "Purchase completed successfully!"
+      "success": "Purchase completed successfully!",
+      "cityOrder":"City of destiny",
+      "citySelect":"Select your city",
+      "information":"Order information",
+      "pay":"Pay"
     },
     "back": "Go Back",
     "noToken": "Log in to buy"

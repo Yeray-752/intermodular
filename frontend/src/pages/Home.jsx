@@ -3,8 +3,11 @@ import Footer from "../components/Principal/Footer";
 import Header from "../components/Principal/Header";
 import { useState } from 'react';
 import ImagenPrincipal from "/img/web/taller.jpg";
+import { useNavigate } from "react-router";
+
 
 export default function Home() {
+  const navigate = useNavigate();
   const { t } = useTranslation("home");
   const [theme] = useState(
     localStorage.getItem("theme") || "blanco"
@@ -84,7 +87,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-400 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100" onClick={() => navigate('/reservas')}>
                   {t("bookNow")}
                 </button>
               </div>
@@ -102,7 +105,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-400 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100" onClick={() => navigate('/reservas')}>
                   {t("bookNow")}
                 </button>
               </div>
@@ -120,7 +123,7 @@ export default function Home() {
                     {t("offerVATIncluded")}
                   </span>
                 </div>
-                <button className="w-full py-3 btn btn-base-400 text-base-100">
+                <button className="w-full py-3 btn btn-base-400 text-base-100" onClick={() => navigate('/reservas')}>
                   {t("bookNow")}
                 </button>
               </div>

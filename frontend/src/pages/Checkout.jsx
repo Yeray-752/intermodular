@@ -5,7 +5,7 @@ import { ShoppingBag, CreditCard, MapPin, AlertCircle, ArrowLeft, Trash2 } from 
 
 function Checkout() {
     const navigate = useNavigate();
-    const { t } = useTranslation(['market', 'formulario']);
+    const { t } = useTranslation(['market', 'formulario','checkout']);
     const token = localStorage.getItem("token");
 
     // Estados de datos
@@ -125,12 +125,12 @@ function Checkout() {
                     {/* CARRITO GIGANTE */}
                     <div className="lg:col-span-2 space-y-4">
                         <h2 className="text-4xl font-black flex items-center gap-4 mb-8">
-                            <ShoppingBag className="text-primary" size={40} /> {t('market:cartTitle') || 'Tu Carrito'}
+                            <ShoppingBag className="text-primary" size={40} /> {t('checkout:cartTitle') || 'Tu Carrito'}
                         </h2>
 
                         {cart.items.length === 0 ? (
                             <div className="text-center py-20 bg-base-100 rounded-2xl shadow">
-                                <p className="text-xl opacity-50">El carrito está vacío</p>
+                                <p className="text-xl opacity-50">{t('checkout:emptyCart')}</p>
                             </div>
                         ) : (
                             cart.items.map((item) => (
@@ -147,11 +147,11 @@ function Checkout() {
 
                                         <div className="card-actions justify-between items-center mt-4">
                                             <div className="badge badge-ghost badge-lg gap-2">
-                                                Cantidad: <span className="font-bold">{item.cantidad}</span>
+                                                {t('checkout:amount')} <span className="font-bold">{item.cantidad}</span>
                                             </div>
                                             {item.cantidad > item.stock && (
                                                 <div className="text-error flex items-center gap-1 font-bold animate-pulse">
-                                                    <AlertCircle size={18} /> Solo {item.stock} en stock
+                                                    <AlertCircle size={18} /> {t('checkout:just')} {item.stock} {t('checkout:in stock')}
                                                 </div>
                                             )}
                                         </div>
@@ -161,13 +161,12 @@ function Checkout() {
                         )}
                     </div>
 
-                    {/* RESUMEN sticky */}
                     <div className="lg:col-span-1">
                         <div className="card bg-base-100 shadow-2xl sticky top-24">
                             <div className="card-body">
-                                <h3 className="font-bold text-xl border-b pb-2">Resumen</h3>
+                                <h3 className="font-bold text-xl border-b pb-2">{t('checkout:amount')}</h3>
                                 <div className="flex justify-between py-6 text-3xl font-black">
-                                    <span>Total</span>
+                                    <span>{t('checkout:total')}</span>
                                     <span className="text-primary">{cart.totalCarrito}€</span>
                                 </div>
 
@@ -176,7 +175,7 @@ function Checkout() {
                                     onClick={() => setShowModal(true)}
                                     className="btn btn-primary btn-block btn-lg shadow-lg text-white"
                                 >
-                                    {hayErroresStock ? 'Ajustar Stock' : 'Confirmar Pedido'}
+                                    {hayErroresStock ? t('checkout:ajustOrder') : t('checkout:confirmOrder')}
                                 </button>
                             </div>
                         </div>
@@ -184,7 +183,6 @@ function Checkout() {
                 </div>
             </div>
 
-            {/* MODAL DE PAGO (Replica la estética de tu Product.jsx) */}
             {showModal && (
                 <div className="modal modal-open modal-bottom sm:modal-middle">
                     <div className="modal-box max-w-2xl bg-base-100 rounded-2xl border border-base-300">
@@ -195,10 +193,9 @@ function Checkout() {
                                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                                     <CreditCard className="text-primary" />
                                 </div>
-                                <h3 className="text-2xl font-bold">Finalizar Pedido</h3>
+                                <h3 className="text-2xl font-bold">{t('checkout:finalizeOrder')}</h3>
                             </div>
 
-                            {/* TIPO DE ENTREGA */}
                             <section>
                                 <label className="label font-semibold">{t('formulario:checkout.deliveryType')}</label>
                                 <select
@@ -213,10 +210,9 @@ function Checkout() {
                                 </select>
                             </section>
 
-                            {/* CIUDAD (Solo si es domicilio) */}
                             {tipoEntrega === "domicilio" && (
                                 <section className="animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <label className="label font-semibold">Ciudad de entrega</label>
+                                    <label className="label font-semibold">{t('formulario:checkout.cityOrder')}</label>
                                     <select
                                         className={`select select-bordered w-full ${!ciudadValida ? 'select-error' : ''}`}
                                         value={ciudad}
@@ -226,7 +222,7 @@ function Checkout() {
                                         }}
                                         required
                                     >
-                                        <option value="" disabled>Selecciona tu ciudad</option>
+                                        <option value="" disabled>{t('formulario:checkout.citySelect')}</option>
                                         {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </section>
@@ -235,7 +231,7 @@ function Checkout() {
                             {/* DATOS DE TARJETA (Solo si eligió entrega) */}
                             {tipoEntrega && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4">
-                                    <div className="divider text-xs opacity-50 uppercase">Información de Pago</div>
+                                    <div className="divider text-xs opacity-50 uppercase">{t('formulario:checkout.information')}</div>
 
                                     <input
                                         required
@@ -284,7 +280,7 @@ function Checkout() {
                                     </div>
 
                                     <button type="submit" className="btn btn-primary btn-block btn-lg mt-6 shadow-xl text-white">
-                                        Pagar {cart.totalCarrito}€
+                                        {t('formulario:checkout.pay')} {cart.totalCarrito}€
                                     </button>
                                 </div>
                             )}

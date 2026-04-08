@@ -18,7 +18,8 @@ import ratingData from '../assets/data/rating.json';
 import marketData from '../assets/data/market.json';
 import notificationsData from '../assets/data/notifications.json';
 import islandData from '../assets/data/canaryIslands.json';
-import adminData from '../assets/data/admin.json'
+import adminData from '../assets/data/admin.json';
+import checkoutData from '../assets/data/checkout.json';
 
 // Configuración de los recursos de traducción
 
@@ -39,7 +40,8 @@ const resources = {
     market: marketData.en,
     notifications: notificationsData.en,
     island: islandData.en,
-    admin: adminData.en
+    admin: adminData.en,
+    checkout: checkoutData.en
 
   },
   es: {
@@ -58,7 +60,8 @@ const resources = {
     market: marketData.es,
     notifications: notificationsData.es,
     island: islandData.es,
-    admin: adminData.es
+    admin: adminData.es,
+    checkout: checkoutData.es
   }
 };
 
@@ -78,7 +81,7 @@ i18n
     // Namespaces (archivos virtuales de traducción)
   ns: ['home','header', 'footer', 'profile', 'error', 'formulario', 
     'servicios','legales','signup','login','about', 'rating','market',
-    'notifications','island','admin'],
+    'notifications','island','admin','checkout'],
     defaultNS: 'home',
 
     interpolation: {

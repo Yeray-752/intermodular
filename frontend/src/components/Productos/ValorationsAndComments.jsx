@@ -39,7 +39,6 @@ export default function RatingSystem({ id_producto, userid_producto }) {
         const productIdNum = Number(id_producto);
 
         if (!productIdNum || isNaN(productIdNum)) {
-            alert("Error: No se ha detectado el producto actual.");
             setLoading(false);
             return;
         }
@@ -59,14 +58,11 @@ export default function RatingSystem({ id_producto, userid_producto }) {
             });
 
             if (res.ok) {
-                alert("¡Opinión enviada!");
                 fetchRatings();
             } else {
                 const data = await res.json();
-                alert("Error del servidor: " + data.error);
             }
         } catch (err) {
-            alert("Error de conexión: " + err.message);
         } finally {
             setLoading(false);
         }

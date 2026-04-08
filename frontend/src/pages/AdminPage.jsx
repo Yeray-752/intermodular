@@ -69,14 +69,9 @@ function AdminPage() {
     }, [activeTab]);
 
     const RenderServicios = () => (
-    <div>
-        <div className="mb-8">
-            <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">Gestión de Servicios</h2>
-            <p className="text-slate-500 text-sm">Catálogo de servicios en tiempo real</p>
-        </div>
+
         <ServicesTable servicios={listaServicios} categorias={categoriasServicios} onUpdate={fetchServicios} />
-    </div>
-);
+    );
 
     // --- LÓGICA DE DATOS ---
     const ActualizarCitas = async (id, estado) => {
@@ -224,7 +219,6 @@ function AdminPage() {
                     <Plus size={18} /> {t("productos.new")}
                 </button>
             </div>
-            {/* Ejemplo estático con traducción */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-800">
                 <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex gap-5 items-center">
                     <div className="w-16 h-16 bg-slate-50 rounded-xl flex items-center justify-center"><Wrench className="text-slate-300" /></div>
@@ -239,13 +233,7 @@ function AdminPage() {
     );
 
     const RenderStock = () => (
-        <div>
-            <div className="mb-8">
-                <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">{t("stock.title")}</h2>
-                <p className="text-slate-500 text-sm">{t("stock.subtitle")}</p>
-            </div>
-            <StockTable productos={listaProductos} categorias={categorias} />
-        </div>
+        <StockTable productos={listaProductos} categorias={categorias} />
     );
 
     const RenderActualizacionServicios = () => {
