@@ -1,19 +1,85 @@
-import { Edit3, Trash2,Package, FileText, Tag, DollarSign, Box, Image as ImageIcon, X, Save, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Search, Filter } from 'lucide-react';
+import { Edit3, Trash2, Plus, Package, FileText, Tag, DollarSign, Box, Image as ImageIcon, X, Save, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Search, Filter } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from "react-i18next";
 
-const StockTable = ({ productos, categorias }) => {
+const StockTable = ({ productos, categorias, onUpdate }) => {
 
   const { t } = useTranslation("admin");
   const [selectedProd, setSelectedProd] = useState(null);
   const { i18n } = useTranslation();
 
+  const [langTab, setLangTab] = useState('es');
   const [preview, setPreview] = useState(null);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [filtro, setFiltro] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [translations, setTranslations] = useState({ es: {}, en: {} });
+
+  const [creatingProd, setCreatingProd] = useState(false);
+  const [createLangTab, setCreateLangTab] = useState('es');
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setCreatingProd(true);
+    const formData = new FormData(e.target);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          'x-lang': i18n.language
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        document.getElementById('create_product_modal').close();
+        e.target.reset();
+        setCreateLangTab('es');
+        await onUpdate();
+      } else {
+        const err = await response.json();
+        console.error(err);
+      }
+    } catch (error) {
+      console.error("Error al crear:", error);
+    } finally {
+      setCreatingProd(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      if (response.ok) {
+        document.getElementById(`deleteProduct${id}`).close();
+        if (onUpdate) await onUpdate();
+      }
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+    }
+  };
+
+  const fetchTranslations = async (productId) => {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${productId}/translations`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem("token")}` }
+    });
+    if (res.ok) {
+      const data = await res.json(); // [{ language_code, name, description }, ...]
+      const map = {};
+      data.forEach(t => map[t.language_code] = t);
+      setTranslations(map);
+    }
+  };
 
   const productosFiltrados = productos.filter(prod => {
     const coincideBusqueda =
@@ -94,19 +160,34 @@ const StockTable = ({ productos, categorias }) => {
           <div>
             <h2 className="text-2xl font-black flex items-center gap-3 italic">
               <Package className="text-primary" size={28} />
-              {t("productos.title", "GESTIÓN DE STOCK")}
+              {t("stock_table.title")}
             </h2>
+            <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Inventario en tiempo real</p>
           </div>
 
-          <div className="relative w-full lg:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input
-              type="text"
-              placeholder={t("stock_table.search")}
-              className="input input-bordered w-full pl-12 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-              value={busqueda}
-              onChange={(e) => { setBusqueda(e.target.value); setCurrentPage(1); }}
-            />
+          <div className="flex items-center gap-4 w-full lg:w-auto">
+            {/* Botón nuevo producto */}
+            <button
+              onClick={() => {
+                setCreateLangTab('es');
+                document.getElementById('create_product_modal').showModal();
+              }}
+              className="btn btn-primary gap-2 rounded-2xl shrink-0"
+            >
+              <Plus size={18} /> Nuevo producto
+            </button>
+
+            {/* Buscador */}
+            <div className="relative w-full lg:w-96">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Buscar pieza o descripción..."
+                className="input input-bordered w-full pl-12 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                value={busqueda}
+                onChange={(e) => { setBusqueda(e.target.value); setCurrentPage(1); }}
+              />
+            </div>
           </div>
         </div>
 
@@ -184,6 +265,8 @@ const StockTable = ({ productos, categorias }) => {
                         onClick={() => {
                           setSelectedProd(prod);
                           setPreview(prod.image_url);
+                          setLangTab('es');
+                          fetchTranslations(prod.id); // ← añade esto
                           document.getElementById('edit_product_modal').showModal();
                         }}
                       >
@@ -197,10 +280,13 @@ const StockTable = ({ productos, categorias }) => {
                       <dialog id={`deleteProduct${prod.id}`} className="modal text-left">
                         <div className="modal-box">
                           <h3 className="font-bold text-lg text-rose-600">{t("stock_table.delete_title")}</h3>
-                          <p className="py-4">ID: {prod.id} - {prod.name}</p>
+                          <p className="py-4">Se eliminará: <strong>{prod.name}</strong></p>
                           <div className="modal-action">
+                            <button className="btn btn-error" onClick={() => handleDelete(prod.id)}>
+                              Eliminar
+                            </button>
                             <form method="dialog">
-                              <button className="btn">{t("stock_table.close")}</button>
+                              <button className="btn">Cancelar</button>
                             </form>
                           </div>
                         </div>
@@ -242,11 +328,26 @@ const StockTable = ({ productos, categorias }) => {
                   </button>
                 </div>
 
-                <form onSubmit={handleUpdate} className="p-6 space-y-6">
+                <form key={`${selectedProd.id}-${translations.es?.name}`} onSubmit={handleUpdate} className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     {/* COLUMNA IZQUIERDA: Identidad */}
                     <div className="space-y-5">
+                      {/* Pestañas ES/EN */}
+                      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+                        {['es', 'en'].map(lang => (
+                          <button
+                            key={lang}
+                            type="button"
+                            onClick={() => setLangTab(lang)}
+                            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${langTab === lang ? 'bg-white shadow text-primary' : 'text-slate-400 hover:text-slate-600'
+                              }`}
+                          >
+                            {lang === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                          </button>
+                        ))}
+                      </div>
+
                       <div className="form-control">
                         <label className="label gap-2 justify-start">
                           <Package size={14} className="text-primary" />
@@ -254,12 +355,21 @@ const StockTable = ({ productos, categorias }) => {
                             {t("stock_table.th_product")}
                           </span>
                         </label>
+                        {/* ES */}
                         <input
                           type="text"
-                          name="name"
-                          defaultValue={selectedProd.name}
-                          className="input input-bordered focus:input-primary bg-slate-50/50 w-full transition-all"
-                          placeholder="Nombre del producto..."
+                          name="name_es"
+                          defaultValue={translations.es?.name || ''}
+                          className={`input input-bordered focus:input-primary bg-slate-50/50 w-full ${langTab !== 'es' ? 'hidden' : ''}`}
+                          placeholder="Nombre en español..."
+                        />
+                        {/* EN */}
+                        <input
+                          type="text"
+                          name="name_en"
+                          defaultValue={translations.en?.name || ''}
+                          className={`input input-bordered focus:input-primary bg-slate-50/50 w-full ${langTab !== 'en' ? 'hidden' : ''}`}
+                          placeholder="Name in English..."
                         />
                       </div>
 
@@ -270,11 +380,19 @@ const StockTable = ({ productos, categorias }) => {
                             {t("stock_table.description")}
                           </span>
                         </label>
+                        {/* ES */}
                         <textarea
-                          name="description"
-                          defaultValue={selectedProd.description}
-                          className="textarea textarea-bordered focus:textarea-primary bg-slate-50/50 w-full h-32 resize-none"
-                          placeholder="Escribe una descripción detallada..."
+                          name="description_es"
+                          defaultValue={translations.es?.description || ''}
+                          className={`textarea textarea-bordered focus:textarea-primary bg-slate-50/50 w-full h-32 resize-none ${langTab !== 'es' ? 'hidden' : ''}`}
+                          placeholder="Descripción en español..."
+                        />
+                        {/* EN */}
+                        <textarea
+                          name="description_en"
+                          defaultValue={translations.en?.description || ''}
+                          className={`textarea textarea-bordered focus:textarea-primary bg-slate-50/50 w-full h-32 resize-none ${langTab !== 'en' ? 'hidden' : ''}`}
+                          placeholder="Description in English..."
                         />
                       </div>
                     </div>
@@ -412,6 +530,171 @@ const StockTable = ({ productos, categorias }) => {
           </div>
         </div>
       </div>
+      <dialog id="create_product_modal" className="modal modal-bottom sm:modal-middle backdrop-blur-sm">
+        <div className="modal-box max-w-3xl bg-base-100 p-0 overflow-hidden border border-slate-200 shadow-2xl">
+
+          <div className="bg-slate-50 p-6 border-b border-slate-100 flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-xl text-slate-800">Nuevo producto</h3>
+              <p className="text-sm text-slate-500 mt-1">Rellena todos los campos obligatorios</p>
+            </div>
+            <button
+              onClick={() => document.getElementById('create_product_modal').close()}
+              className="btn btn-circle btn-ghost btn-sm"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <form onSubmit={handleCreate} className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+              {/* IZQUIERDA - Traducciones */}
+              <div className="space-y-5">
+                <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+                  {['es', 'en'].map(lang => (
+                    <button
+                      key={lang}
+                      type="button"
+                      onClick={() => setCreateLangTab(lang)}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${createLangTab === lang ? 'bg-white shadow text-primary' : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                    >
+                      {lang === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="form-control">
+                  <label className="label gap-2 justify-start">
+                    <Package size={14} className="text-primary" />
+                    <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                      Nombre <span className="text-rose-400">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name_es"
+                    required
+                    className={`input input-bordered focus:input-primary bg-slate-50/50 w-full ${createLangTab !== 'es' ? 'hidden' : ''}`}
+                    placeholder="Nombre en español..."
+                  />
+                  <input
+                    type="text"
+                    name="name_en"
+                    className={`input input-bordered focus:input-primary bg-slate-50/50 w-full ${createLangTab !== 'en' ? 'hidden' : ''}`}
+                    placeholder="Name in English..."
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label gap-2 justify-start">
+                    <FileText size={14} className="text-primary" />
+                    <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                      Descripción
+                    </span>
+                  </label>
+                  <textarea
+                    name="description_es"
+                    className={`textarea textarea-bordered focus:textarea-primary bg-slate-50/50 w-full h-32 resize-none ${createLangTab !== 'es' ? 'hidden' : ''}`}
+                    placeholder="Descripción en español..."
+                  />
+                  <textarea
+                    name="description_en"
+                    className={`textarea textarea-bordered focus:textarea-primary bg-slate-50/50 w-full h-32 resize-none ${createLangTab !== 'en' ? 'hidden' : ''}`}
+                    placeholder="Description in English..."
+                  />
+                </div>
+              </div>
+
+              {/* DERECHA - Datos técnicos */}
+              <div className="space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="form-control">
+                    <label className="label gap-2 justify-start">
+                      <DollarSign size={14} className="text-primary" />
+                      <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                        Precio <span className="text-rose-400">*</span>
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="price"
+                      required
+                      className="input input-bordered focus:input-primary bg-slate-50/50 w-full"
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label gap-2 justify-start">
+                      <Box size={14} className="text-primary" />
+                      <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                        Stock <span className="text-rose-400">*</span>
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      name="stock"
+                      required
+                      className="input input-bordered focus:input-primary bg-slate-50/50 w-full"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label gap-2 justify-start">
+                    <Tag size={14} className="text-primary" />
+                    <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                      Categoría <span className="text-rose-400">*</span>
+                    </span>
+                  </label>
+                  <select name="category_id" required className="select select-bordered focus:select-primary bg-slate-50/50 w-full">
+                    <option value="">Selecciona una categoría</option>
+                    {categorias?.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-control">
+                  <label className="label gap-2 justify-start">
+                    <ImageIcon size={14} className="text-primary" />
+                    <span className="label-text font-semibold text-slate-600 uppercase text-[11px] tracking-wider">
+                      Imagen <span className="text-rose-400">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    required
+                    className="file-input file-input-bordered file-input-primary file-input-sm w-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-action bg-slate-50 -m-6 mt-6 p-4 border-t border-slate-100">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => document.getElementById('create_product_modal').close()}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary px-10 gap-2 shadow-lg shadow-primary/20">
+                {creatingProd
+                  ? <><span className="loading loading-spinner loading-sm"></span> Creando...</>
+                  : <><Plus size={18} /> Crear producto</>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </dialog>
     </div>
   );
 };

@@ -69,8 +69,11 @@ function AdminPage() {
     }, [activeTab]);
 
     const RenderServicios = () => (
-
-        <ServicesTable servicios={listaServicios} categorias={categoriasServicios} onUpdate={fetchServicios} />
+        <ServicesTable
+            servicios={listaServicios}
+            categorias={categoriasServicios}
+            onUpdate={fetchServicios}
+        />
     );
 
     // --- LÓGICA DE DATOS ---
@@ -233,7 +236,7 @@ function AdminPage() {
     );
 
     const RenderStock = () => (
-        <StockTable productos={listaProductos} categorias={categorias} />
+        <StockTable productos={listaProductos} categorias={categorias} onUpdate={fetchDatos} />
     );
 
     const RenderActualizacionServicios = () => {

@@ -28,105 +28,116 @@ export const getServices = async (req, res) => {
 };
 
 export const createService = async (req, res) => {
-    const connection = await db.getConnection();
+  const connection = await db.getConnection();
+  try {
+    const { category_id, base_price, duration, difficulty, name_es, description_es, name_en, description_en } = req.body;
 
-    try {
-        // 🔥 VALIDACIÓN
-        const result = validateService(req.body);
-        if (!result.success) {
-            return res.status(400).json({
-                errors: result.error.flatten().fieldErrors
-            });
-        }
+    if (!name_es) return res.status(400).json({ error: "El nombre en español es obligatorio" });
+    if (!req.file) return res.status(400).json({ error: "La imagen es obligatoria" });
 
-        const { category_id, base_price, duration, difficulty, name, description } = result.data;
+    const image_url = `/uploads/services/${req.file.filename}`;
 
-        if (!req.file) {
-            return res.status(400).json({ error: "La imagen es obligatoria" });
-        }
+    await connection.beginTransaction();
 
-        const image_url = req.file.path; 
+    const [servResult] = await connection.query(
+      `INSERT INTO services (category_id, image_url, base_price, duration, difficulty) VALUES (?, ?, ?, ?, ?)`,
+      [category_id, image_url, base_price, duration, difficulty]
+    );
 
-        await connection.beginTransaction();
+    const newServiceId = servResult.insertId;
 
-        const [servResult] = await connection.query(
-            `INSERT INTO services 
-            (category_id, image_url, base_price, duration, difficulty) 
-            VALUES (?, ?, ?, ?, ?)`,
-            [category_id, image_url, base_price, duration, difficulty]
-        );
+    // Traducción ES (obligatoria)
+    await connection.query(
+      `INSERT INTO service_translations (service_id, language_code, name, description) VALUES (?, 'es', ?, ?)`,
+      [newServiceId, name_es, description_es || null]
+    );
 
-        await connection.query(
-            `INSERT INTO service_translations 
-            (service_id, language_code, name, description) 
-            VALUES (?, ?, ?, ?)`,
-            [servResult.insertId, 'es', name, description]
-        );
-
-        await createNotification(
-            req.user.id,
-            'servicio_nuevo',
-            'admin',
-            { servicio: name }
-        );
-
-        await connection.commit();
-
-        res.status(201).json({
-            message: "Servicio creado con imagen",
-            id: servResult.insertId
-        });
-
-    } catch (error) {
-        await connection.rollback();
-        console.error(error);
-        res.status(500).json({ error: "Error al crear servicio" });
-    } finally {
-        connection.release();
+    // Traducción EN (opcional)
+    if (name_en) {
+      await connection.query(
+        `INSERT INTO service_translations (service_id, language_code, name, description) VALUES (?, 'en', ?, ?)`,
+        [newServiceId, name_en, description_en || null]
+      );
     }
+
+    await createNotification(req.user.id, 'servicio_nuevo', 'admin', { servicio: name_es });
+
+    await connection.commit();
+    res.status(201).json({ message: "Servicio creado con éxito", id: newServiceId });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.status(500).json({ error: "Error al crear servicio" });
+  } finally {
+    connection.release();
+  }
 };
 
-
+// En serviceController.js
+export const getServiceTranslations = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT language_code, name, description FROM service_translations WHERE service_id = ?`,
+      [id]
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: "Error obteniendo traducciones" });
+  }
+};
 
 export const updateService = async (req, res) => {
-    const { id } = req.params;
-    const { base_price, duration, name, lang, category_id, image_url, difficulty, description } = req.body;
+  const { id } = req.params;
+  const { category_id, base_price, duration, difficulty, name_es, description_es, name_en, description_en } = req.body;
+  const image_url = req.file ? `/uploads/services/${req.file.filename}` : null;
 
-    const connection = await db.getConnection();
-    try {
-        await connection.beginTransaction();
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
 
-        // UPDATE con COALESCE (solo actualiza si viene valor, si no mantiene el actual)
-        await connection.query(
-            `UPDATE services 
-             SET 
-                category_id = COALESCE(?, category_id),
-                image_url = COALESCE(?, image_url),
-                base_price = COALESCE(?, base_price),
-                duration = COALESCE(?, duration),
-                difficulty = COALESCE(?, difficulty)
-             WHERE id = ?`,
-            [category_id, image_url, base_price, duration, difficulty, id]
-        );
+    await connection.query(
+      `UPDATE services SET 
+        category_id = COALESCE(?, category_id),
+        image_url = COALESCE(?, image_url),
+        base_price = COALESCE(?, base_price),
+        duration = COALESCE(?, duration),
+        difficulty = COALESCE(?, difficulty)
+       WHERE id = ?`,
+      [category_id || null, image_url, base_price || null, duration || null, difficulty || null, id]
+    );
 
-        // Traducción (también con COALESCE en el UPDATE implícito)
-        await connection.query(
-            `INSERT INTO service_translations (service_id, language_code, name, description) 
-             VALUES (?, ?, ?, ?) 
-             ON DUPLICATE KEY UPDATE 
-                name = COALESCE(VALUES(name), name),
-                description = COALESCE(VALUES(description), description)`,
-            [id, lang || 'es', name, description]
-        );
+    // Upsert ES
+    await connection.query(
+      `INSERT INTO service_translations (service_id, language_code, name, description)
+       VALUES (?, 'es', ?, ?)
+       ON DUPLICATE KEY UPDATE
+        name = COALESCE(VALUES(name), name),
+        description = COALESCE(VALUES(description), description)`,
+      [id, name_es || null, description_es || null]
+    );
 
-        await connection.commit();
-        res.json({ message: "Servicio actualizado correctamente" });
-    } catch (error) {
-        await connection.rollback();
-        res.status(500).json({ error: "Error al actualizar" });
-    } finally {
-        connection.release();
-    }
+    // Upsert EN
+    await connection.query(
+      `INSERT INTO service_translations (service_id, language_code, name, description)
+       VALUES (?, 'en', ?, ?)
+       ON DUPLICATE KEY UPDATE
+        name = COALESCE(VALUES(name), name),
+        description = COALESCE(VALUES(description), description)`,
+      [id, name_en || null, description_en || null]
+    );
+
+    await connection.commit();
+    res.json({ message: "Servicio actualizado correctamente" });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar" });
+  } finally {
+    connection.release();
+  }
 };
 
 export const deleteService = async (req, res) => {
