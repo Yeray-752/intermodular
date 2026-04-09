@@ -55,7 +55,7 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "http://localhost:3000", "data:", "blob:"], // ← añade esto
+      imgSrc: ["'self'", "http://localhost:3000", "data:", "blob:", "https://yeray.informaticamajada.es", "http://localhost:3000"], // ← añade esto
       scriptSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
