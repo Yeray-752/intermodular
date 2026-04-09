@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useContext } from 'react';
 import { AuthContext } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
-import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Save, Plus, Clock, Bell, CheckCheck, Settings, Zap, Check, ChartNoAxesColumnIcon } from 'lucide-react';
+import { User, Car, Calendar, FileText, Lock, LogOut, Menu, X, Trash2, Save, Plus, Clock, Bell, CheckCheck, Settings, Zap, Check, ChartNoAxesColumnIcon } from 'lucide-react';
 import { data, useNavigate } from 'react-router';
 import Footer from '../components/Principal/Footer'
 import Header from '../components/Principal/Header'
@@ -26,6 +26,13 @@ function Perfil() {
     const [loadingCitas, setLoadingCitas] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [showToast, setShowToast] = useState(false);
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [vehicleToDelete, setVehicleToDelete] = useState(null);
+    const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: 'success' });
+
+    const [seleccionCanarias, setSeleccionCanarias] = useState({ isla: '', municipio: '' });
 
     const { t, i18n } = useTranslation(['profile', 'notifications']);
 
@@ -87,22 +94,7 @@ function Perfil() {
         traerCitas();
     }, [navigate]);
 
-    const traerHistorial = async () => {
-        const tokenSeguro = localStorage.getItem("token");
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/date`, {
-                headers: { "Authorization": `Bearer ${tokenSeguro}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCitas(data)
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
 
     // Este Hook genera el documento y nos da una 'url'
     const [instance, updateInstance] = usePDF({
@@ -413,9 +405,7 @@ function Perfil() {
         if (activeTab === 'vehiculos') {
             cocheUsuario()
         }
-        if (activeTab === 'historial') {
-            traerHistorial();
-        }
+
     }, [activeTab]);
 
     const eliminarCitas = async (id) => {
@@ -476,37 +466,46 @@ function Perfil() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
+        const formValues = Object.fromEntries(formData);
 
-        // Validamos con Zod
-        const result = workshopSchema.safeParse(data);
+        // 1. Construimos el objeto con los datos del formulario + los del selector
+        // Usamos el valor del perfil si existe, si no, lo que se haya seleccionado en el componente
+        const payload = {
+            nombre: formValues.nombre,
+            apellidos: formValues.apellidos,
+            direccion: formValues.direccion,
+            isla: userProfile?.isla || seleccionCanarias.isla,
+            municipio: userProfile?.municipio || seleccionCanarias.municipio
+        };
 
-        if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
-            setErrors(fieldErrors);
-            return;
-        }
+        console.log('Enviando datos:', payload);
 
         setErrors({});
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/update`, {
-                method: "PUT",
+            // Asegúrate de que la URL y el método coincidan con tu backend (PUT o PATCH)
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
+                method: "PUT", // Cambiado a PATCH para que coincida con tu router.patch
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(result.data)
+                body: JSON.stringify(payload) // Enviamos el payload directamente
             });
 
             if (response.ok) {
-                alert(t('profile:update_success') || " actualizado correctamente");
+                alert(t('profile:update_success') || "Perfil actualizado correctamente");
+
+                // Refrescamos los datos para que desaparezca el selector y aparezcan los campos fijos
+                window.location.reload();
             } else {
-                alert("Error al actualizar los datos");
+                const errorData = await response.json();
+                alert(errorData.error || "Error al actualizar los datos");
             }
         } catch (error) {
             console.error("Error en el envío:", error);
+            alert("Error de conexión con el servidor");
         }
     };
 
@@ -514,8 +513,6 @@ function Perfil() {
         { name: "nombre", label: t('profile:name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
         { name: "apellidos", label: t('profile:lastName') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
         { name: "direccion", label: t('profile:location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
-        { name: "isla", label: "isla", type: "text", value: userProfile?.isla || ""},
-        { name: "municipio", label: "municipio", type: "text", value: userProfile?.municipio || ""},
 
     ], [userProfile, t]);
 
@@ -559,6 +556,42 @@ function Perfil() {
             items: items,
             fecha: cita.fecha_cita
         });
+    };
+
+    // Al hacer clic en la papelera
+    const confirmDelete = (matricula) => {
+        setVehicleToDelete(matricula);
+        setIsDeleteModalOpen(true);
+    };
+
+    // La función que se ejecuta al darle a "Eliminar" en el modal
+    const handleDeleteVehicle = async () => {
+        if (!vehicleToDelete) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vehicules/${vehicleToDelete}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // Éxito
+                setToastConfig({ show: true, message: "Vehículo borrado correctamente", type: 'success' });
+                setCocheBuscado(prev => prev.filter(c => c.matricula !== vehicleToDelete));
+            } else {
+                // Error de respuesta
+                setToastConfig({ show: true, message: "No se pudo borrar el vehículo", type: 'error' });
+            }
+        } catch (error) {
+            // Error de red
+            setToastConfig({ show: true, message: "Error de conexión con el servidor", type: 'error' });
+        } finally {
+            setIsDeleteModalOpen(false);
+            setVehicleToDelete(null);
+            // Ocultar toast tras 3 seg
+            setTimeout(() => setToastConfig({ ...toastConfig, show: false }), 3000);
+        }
     };
 
     const renderContent = () => {
@@ -625,25 +658,27 @@ function Perfil() {
                                 ))}
 
                                 {/* Renderizado Condicional de Isla y Municipio */}
+
                                 {(!userProfile?.isla || !userProfile?.municipio) ? (
                                     <div className="md:col-span-2 pt-6 border-t border-base-300/50">
                                         <h3 className="text-sm font-bold text-base-content mb-4 uppercase tracking-widest italic opacity-70">
                                             {t('profile:completeLocation') || "Completa tu ubicación en Canarias"}
                                         </h3>
                                         <div className="bg-base-100 p-4 rounded-2xl border border-base-300 shadow-inner">
-                                            <SelectorCanarias />
+                                            {/* AGREGAMOS onSelect PARA CAPTURAR LOS DATOS */}
+                                            <SelectorCanarias onSelect={(data) => setSeleccionCanarias(data)} />
                                         </div>
                                     </div>
                                 ) : (
                                     <>
-                                        {/* Si ya existen, se muestran como 2 inputs finales para completar el 2-1-2 */}
+                                        {/* Los inputs bloqueados se quedan igual */}
                                         <div className="form-control w-full">
                                             <label className="label"><span className="label-text text-xs font-black uppercase">Isla</span></label>
-                                            <input disabled value={userProfile.isla} className="input input-bordered w-full h-12 rounded-2xl bg-base-200 opacity-60" />
+                                            <input disabled value={userProfile.isla} className="input input-bordered w-full h-12 rounded-2xl bg-base-100 transition-all duration-300 text-neutral font-medium" />
                                         </div>
                                         <div className="form-control w-full">
                                             <label className="label"><span className="label-text text-xs font-black uppercase">Municipio</span></label>
-                                            <input disabled value={userProfile.municipio} className="input input-bordered w-full h-12 rounded-2xl bg-base-200 opacity-60" />
+                                            <input disabled value={userProfile.municipio} className="input input-bordered w-full h-12 rounded-2xl bg-base-100 transition-all duration-300 text-neutral font-medium" />
                                         </div>
                                     </>
                                 )}
@@ -652,6 +687,7 @@ function Perfil() {
                             {/* Botón de Acción Principal */}
                             <div className="flex justify-end mt-10">
                                 <button
+
                                     type="submit"
                                     className="btn btn-primary btn-lg h-16 px-10 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all gap-3 border-none text-white"
                                 >
@@ -690,10 +726,16 @@ function Perfil() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:w-170 sm:grid-cols-1 lg:w-205 place-self-center-safe">
                             {cocheBuscado && cocheBuscado.length > 0 ? (
-                                cocheBuscado.map((coche) => (
-                                    <div key={coche.matricula} className="p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
-
-                                        <div key={coche.matricula} className="flex mb-6">
+                                cocheBuscado.map((coche, index) => (
+                                    <div key={`${coche.matricula}-${index}`} className="p-8 bg-base-300 border border-base-300 rounded-[2.5rem] w-100 relative">
+                                        <button
+                                            onClick={() => confirmDelete(coche.matricula)}
+                                            className="absolute top-6 right-6 p-2 text-base-content/20 hover:text-error hover:bg-error/10 rounded-xl transition-all duration-200"
+                                            title="Eliminar vehículo"
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                        <div className="flex mb-6">
                                             <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shadow-sm">
                                                 <Car className="text-[#ff5a1f]" size={26} />
                                             </div>
@@ -892,6 +934,56 @@ function Perfil() {
                                             </>
                                         )}
                                     </div>
+                                </div>
+                            </div>
+                        )}
+                        {showToast && (
+                            <div className="toast toast-end toast-bottom z-[100]">
+                                <div className="alert alert-success shadow-lg border-none rounded-2xl p-4 flex items-center gap-3">
+                                    <div className="bg-white/20 p-2 rounded-full">
+                                        <CheckCheck size={20} className="text-white" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-white tracking-wide">
+                                            {t('profile:delete_success') || "Vehículo eliminado"}
+                                        </span>
+                                        <span className="text-xs text-white/80">
+                                            Los cambios se han aplicado correctamente.
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowToast(false)}
+                                        className="btn btn-ghost btn-xs text-white/50 hover:text-white"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {/* Modal de Confirmación */}
+                        <dialog className={`modal ${isDeleteModalOpen ? 'modal-open' : ''}`}>
+                            <div className="modal-box rounded-[2rem] border border-base-300">
+                                <h3 className="font-black text-lg uppercase flex items-center gap-2">
+                                    <Trash2 className="text-error" size={20} />
+                                    Eliminar Vehículo
+                                </h3>
+                                <p className="py-4 text-base-content/70">
+                                    ¿Estás seguro de que deseas eliminar el vehículo con matrícula <span className="font-bold text-accent">{vehicleToDelete}</span>? Esta acción no se puede deshacer.
+                                </p>
+                                <div className="modal-action">
+                                    <button className="btn btn-ghost rounded-xl" onClick={() => setIsDeleteModalOpen(false)}>Cancelar</button>
+                                    <button className="btn btn-error text-white rounded-xl px-6" onClick={handleDeleteVehicle}>Eliminar</button>
+                                </div>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                                <button onClick={() => setIsDeleteModalOpen(false)}>close</button>
+                            </form>
+                        </dialog>
+                        {toastConfig.show && (
+                            <div className="toast toast-top toast-end z-[100] mt-16 mr-4 animate-in fade-in slide-in-from-right duration-300">
+                                <div className={`alert ${toastConfig.type === 'success' ? 'alert-success' : 'alert-error'} shadow-xl border-none rounded-2xl p-4 flex items-center gap-3 text-white`}>
+                                    {toastConfig.type === 'success' ? <CheckCheck size={20} /> : <X size={20} />}
+                                    <span className="font-bold tracking-wide">{toastConfig.message}</span>
                                 </div>
                             </div>
                         )}
@@ -1165,21 +1257,22 @@ function Perfil() {
                             <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:security')}</h2>
                             <p className="text-base-content/70 text-sm">{t('profile:updatePasswordInfo')}</p>
                         </div>
-
-                        <div className="max-w-md space-y-6">
-                            <div className="form-control w-full">
-                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:currentPassword')}</label>
-                                <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
+                        <form>
+                            <div className="max-w-md space-y-6">
+                                <div className="form-control w-full">
+                                    <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:currentPassword')}</label>
+                                    <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
+                                </div>
+                                <div className="form-control w-full">
+                                    <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:newPassword')}</label>
+                                    <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
+                                </div>
+                                <button className="btn bg-primary text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
+                                    <Lock size={18} />
+                                    {t('profile:updatePassword')}
+                                </button>
                             </div>
-                            <div className="form-control w-full">
-                                <label className="label uppercase text-[10px] font-bold text-base-content/60">{t('profile:newPassword')}</label>
-                                <input type="password" placeholder="••••••••" className="input input-bordered focus:input-primary w-full bg-base-100" />
-                            </div>
-                            <button className="btn bg-primary text-base-100 border-0 shadow-lg shadow-primary/20 gap-2">
-                                <Lock size={18} />
-                                {t('profile:updatePassword')}
-                            </button>
-                        </div>
+                        </form>
                     </div>
                 );
             // Otros casos (citas, historial, password) omitidos por brevedad pero se mantienen igual que en tu lógica original

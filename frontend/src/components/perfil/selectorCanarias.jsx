@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
     
 const datosCanarias = {
@@ -11,11 +11,17 @@ const datosCanarias = {
   "El Hierro": ["El Pinar de El Hierro", "La Frontera", "Valverde"]
 };
 
-const SelectorCanarias = () => {
+const SelectorCanarias = ({onSelect}) => {
   const [isla, setIsla] = useState("");
   const [municipio, setMunicipio] = useState("");
-
   const {t} = useTranslation(['island']);
+
+  // 2. Cada vez que isla o municipio cambien, enviamos los datos al padre
+  useEffect(() => {
+    if (onSelect) {
+      onSelect({ isla, municipio });
+    }
+  }, [isla, municipio, onSelect]);
 
   const handleIslaChange = (e) => {
     setIsla(e.target.value);

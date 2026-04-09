@@ -25,6 +25,11 @@ function AdminPage() {
     const [reservas, setReservas] = useState([]);
     const [listaServicios, setListaServicios] = useState([]);
     const [categoriasServicios, setCategoriasServicios] = useState([]);
+    const [modalConfirmacion, setModalConfirmacion] = useState({
+        show: false,
+        id: null,
+        estado: null
+    });
 
     const { t, i18n } = useTranslation("admin");
 
@@ -81,11 +86,18 @@ function AdminPage() {
     );
 
     // --- LÓGICA DE DATOS ---
-    const ActualizarCitas = async (id, estado) => {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+    const abrirConfirmacion = (id, estado) => {
+        setModalConfirmacion({ show: true, id, estado });
+    };
 
-        if (!confirm(t("reservas.confirm_cancel"))) return;
+    const ejecutarActualizacion = async () => {
+        const { id, estado } = modalConfirmacion;
+        const token = localStorage.getItem("token");
+
+        if (!id || !estado) return;
+
+        // Cerramos el modal inmediatamente
+        setModalConfirmacion({ show: false, id: null, estado: null });
 
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/actualizar/${id}/${estado}`, {
@@ -99,15 +111,14 @@ function AdminPage() {
             if (response.ok) {
                 setReservas(prev => prev.filter(res => res.id !== id));
                 if (estado === 'procesando') cargarEventosCalendario();
+                setToastConfig({ show: true, message: t("reservas.success_update"), type: 'success' });
             } else {
-                const errorData = await response.json();
-                alert(errorData.error || t("reservas.error_cancel"));
+                setToastConfig({ show: true, message: t("reservas.error_cancel"), type: 'error' });
             }
         } catch (err) {
-            alert(t("reservas.error_server"));
+            setToastConfig({ show: true, message: t("reservas.error_server"), type: 'error' });
         }
     };
-
     const trearCitas = async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -158,7 +169,7 @@ function AdminPage() {
                     end: `${c.fecha_cita}`,
                     vehiculo: `${c.vehiculo_seleccionado}`,
                     precio_estimado: `${c.precio_estimado}`,
-                    
+
                     backgroundColor: '#10b981', // Verde esmeralda para citas en proceso
                     borderColor: '#059669',
                     allDay: false
@@ -167,7 +178,7 @@ function AdminPage() {
             setEventos(format);
         }
     };
-/* quitar */
+    /* quitar */
     /* const fetchDatos = async () => {
         try {
 
@@ -251,8 +262,8 @@ function AdminPage() {
                                 <td className="p-4 font-bold font-mono text-base-200">{res.fecha_cita.split('T')[0].split('-').reverse().join('/')}</td>
                                 <td className="p-4 font-bold text-base-200">{res.estado}</td>
                                 <td className="p-4 flex justify-center gap-3">
-                                    <button onClick={() => ActualizarCitas(res.id, 'procesando')} className="text-emerald-300 hover:text-emerald-500"><CheckCircle size={20} /></button>
-                                    <button onClick={() => ActualizarCitas(res.id, 'cancelada')} className="text-rose-200 hover:text-rose-600"><XCircle size={20} /></button>
+                                    <button onClick={() => abrirConfirmacion(res.id, 'procesando')} className="text-emerald-300 hover:text-emerald-500"><CheckCircle size={20} /></button>
+                                    <button onClick={() => abrirConfirmacion(res.id, 'cancelada')} className="text-rose-200 hover:text-rose-600"><XCircle size={20} /></button>
                                 </td>
                             </tr>
                         ))}
@@ -262,6 +273,34 @@ function AdminPage() {
             <div className="mt-8">
                 <Calendario key={eventos.length} initialEvents={eventos} />
             </div>
+            {modalConfirmacion.show && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+                        <h3 className="text-lg font-bold mb-4">
+                            Confirmar
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            {modalConfirmacion.estado === 'cancelada'
+                                ? 'Estas seguro de cancelar la cita'
+                                : 'Estas seguro de aceptar la cita'}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setModalConfirmacion({ show: false, id: null, estado: null })}
+                                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded"
+                            >
+                               Cancelar
+                            </button>
+                            <button
+                                onClick={ejecutarActualizacion}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 

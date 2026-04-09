@@ -35,17 +35,30 @@ export const getVehiculos = async (req, res) => {
 };
 export const eliminarVehiculo = async (req, res) => {
     const { matricula } = req.params;
+    const userId = req.user.id; // Obtenido del token
 
     try {
-        // OJO: Si hay citas asociadas a esta matrícula, fallará por integridad referencial
-        // a menos que uses ON DELETE CASCADE en tu base de datos.
-        const [result] = await db.execute('DELETE FROM Vehiculo WHERE matricula = ?', [matricula]);
+        // Añadimos 'id_usuario = ?' para que solo el dueño pueda borrarlo
+        const [result] = await db.execute(
+            'DELETE FROM Vehiculo WHERE matricula = ? AND id_usuario = ?', 
+            [matricula, userId]
+        );
 
-        if (result.affectedRows === 0) return res.status(404).json({ message: "Vehículo no encontrado" });
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                message: "Vehículo no encontrado o no tienes permiso para eliminarlo" 
+            });
+        }
         
         res.json({ message: "Vehículo eliminado correctamente" });
     } catch (error) {
-        res.status(500).json({ error: "No se puede eliminar: tiene citas asociadas" });
+        // Si el error es por integridad referencial (código 1451 en MySQL)
+        if (error.errno === 1451) {
+            return res.status(400).json({ 
+                error: "No se puede eliminar: este vehículo tiene citas de taller registradas." 
+            });
+        }
+        res.status(500).json({ error: "Error interno al eliminar el vehículo" });
     }
 };
 export const actualizarVehiculo = async (req, res) => {

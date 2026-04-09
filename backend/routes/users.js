@@ -14,7 +14,7 @@ router.post("/google-login", googleLogin);
 
 // --- Rutas Privadas ---
 router.get("/profile/me", verifyToken, getClientProfile);
-router.patch("/profile/me", verifyToken, validateSchema(updateProfileSchema), updateClientProfile);
+router.put("/profile/me", verifyToken, validateSchema(updateProfileSchema), updateClientProfile);
 router.patch("/profile/password", verifyToken, validateSchema(changePasswordSchema), changePassword);
 
 export default router;

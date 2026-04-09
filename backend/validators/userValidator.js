@@ -29,9 +29,11 @@ export const workshopSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-    nombre: z.string().min(2).trim().optional(),
-    apellidos: z.string().trim().optional(),
-    direccion: z.string().min(5).trim().optional(),
+    nombre: z.string().min(2).optional(),
+    apellidos: z.string().min(2).optional(),
+    direccion: z.string().min(5).optional(),
+    isla: z.string().optional().nullable(),      // Permitir que sea opcional o nulo
+    municipio: z.string().optional().nullable() // Permitir que sea opcional o nulo
 });
 
 export const changePasswordSchema = z.object({

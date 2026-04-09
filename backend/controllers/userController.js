@@ -140,7 +140,8 @@ export const getClientProfile = async (req, res) => {
 };
 
 export const updateClientProfile = async (req, res) => {
-    const { nombre, apellidos, direccion } = req.body;
+    // 1. Recogemos los nuevos campos del cuerpo de la petición
+    const { nombre, apellidos, direccion, isla, municipio } = req.body;
     const userId = req.user.id;
 
     if (Object.keys(req.body).length === 0) {
@@ -148,13 +149,16 @@ export const updateClientProfile = async (req, res) => {
     }
 
     try {
+        // 2. Actualizamos la consulta incluyendo isla y municipio
         const [result] = await db.query(`
             UPDATE Cliente 
             SET nombre = COALESCE(?, nombre), 
                 apellidos = COALESCE(?, apellidos), 
-                direccion = COALESCE(?, direccion)
+                direccion = COALESCE(?, direccion),
+                isla = COALESCE(?, isla),
+                municipio = COALESCE(?, municipio)
             WHERE id_usuario = ?
-        `, [nombre, apellidos, direccion, userId]);
+        `, [nombre, apellidos, direccion, isla, municipio, userId]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "No se pudo encontrar el perfil para actualizar" });
@@ -162,10 +166,10 @@ export const updateClientProfile = async (req, res) => {
 
         res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
+        console.error("Error en SQL:", error);
         res.status(500).json({ error: "Error al actualizar el perfil" });
     }
 };
-
 export const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;

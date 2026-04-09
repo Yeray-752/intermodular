@@ -127,12 +127,12 @@ export const crearCita = async (req, res) => {
     console.log('parte 2')
 
     const id_user = req.user.id;
-    const { servicio, vehiculoSeleccionado, comentarios, fechaCita, precio } = req.body;
-    console.log(precio + 'este es el precio')
+    const { servicio, vehiculoSeleccionado, comentarios, fechaCita, base_price } = req.body;
+   
 
     try {
         const query = `INSERT INTO cita (id_usuario, servicio, comentarios, vehiculo_seleccionado, precio_estimado, fecha_cita, estado) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const [dbResult] = await db.execute(query, [id_user, servicio, comentarios, vehiculoSeleccionado, precio, fechaCita, estado_inicial]);
+        const [dbResult] = await db.execute(query, [id_user, servicio, comentarios, vehiculoSeleccionado, base_price, fechaCita, estado_inicial]);
 
         console.log('Cita insertada, creando notificación...');
 

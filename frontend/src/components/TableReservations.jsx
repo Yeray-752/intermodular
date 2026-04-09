@@ -13,6 +13,8 @@ function TableReservations({ search, categoriaId, servicios }) {
     const navigate = useNavigate();
     const lang = i18n.language?.split('-')[0] || 'es';
 
+    const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: 'success' });
+
 
 
     const [misVehiculos, setMisVehiculos] = useState([]);
@@ -40,19 +42,30 @@ function TableReservations({ search, categoriaId, servicios }) {
             const año = fecha.getFullYear();
             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
             const dia = String(fecha.getDate()).padStart(2, '0');
-
-            // Formato SQL estándar: YYYY-MM-DD HH:mm:ss
-            // Quitamos la 'Z' y preferiblemente usamos un espacio en lugar de la 'T'
             const fechaSQL = `${año}-${mes}-${dia} 12:00:00`;
+            console.log(servicioSeleccionado.difficulty)
 
+            const dificultadMapeada =
+                servicioSeleccionado.difficulty?.toLowerCase() === 'low' ? 'baja' :
+                    servicioSeleccionado.difficulty?.toLowerCase() === 'medium' ? 'media' :
+                        servicioSeleccionado.difficulty?.toLowerCase() === 'high' ? 'alta' : 'baja';
+
+            // EL SECRETO: El objeto debe tener los nombres que espera el Schema de Zod
             const datosReserva = {
-                servicio: String(servicioSeleccionado.name),
+                // Campos requeridos por el Schema de Zod
+                category_id: Number(servicioSeleccionado.category_id),
+                base_price: Number(servicioSeleccionado.base_price).toFixed(2),
+                duration: String(servicioSeleccionado.duration),
+                difficulty: String(dificultadMapeada || 'baja').toLowerCase(),
+                servicio: String(servicioSeleccionado.name), // ESTE ya identifica al servicio
+                description: String(servicioSeleccionado.description || ""),
+
+                // Campos específicos de la cita (lógica de negocio)
                 vehiculoSeleccionado: String(vehiculoMatricula),
                 comentarios: motivo || "",
-                fechaCita: fechaSQL, 
-                precio: servicioSeleccionado.price
+                fechaCita: fechaSQL,
+                // precio: String(servicioSeleccionado.base_price) <-- Si el esquema pide base_price como número, este sobra
             };
-            console.log(servicioSeleccionado.price + 'holas precio')
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates`, {
                 method: "POST",
@@ -64,11 +77,15 @@ function TableReservations({ search, categoriaId, servicios }) {
             });
 
             if (response.ok) {
+                setToastConfig({ show: true, message: "¡Reserva confirmada!", type: 'success' });
                 cerrarModal();
+            } else {
+                setToastConfig({ show: true, message: "Error en los datos de reserva", type: 'error' });
             }
         } catch (error) {
-            console.error("Error:", error);
+            setToastConfig({ show: true, message: "Error de conexión", type: 'error' });
         }
+
     };
 
     // Función para manejar el cambio de select y la redirección

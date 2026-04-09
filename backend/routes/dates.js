@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { obtenerCitasID,actualizarEstadoCita, actualizarCita, crearCita, obtenerCitasAdmin, obtenerCitasTerminadas, obtenerCitasEnProceso, cancelarCita } from '../controllers/datesController.js';
 import { verifyToken, isAdmin } from '../middlewares/auth.js';
-import { validateService, validateUpdateEstadoCita, validateIdParam } from '../validators/dateValidator.js';
+import { validateCita, validateUpdateEstadoCita, validateIdParam } from '../validators/dateValidator.js';
 import { upload } from "../middlewares/upload.js";
 import { processImage } from "../middlewares/processImage.js";
 
@@ -12,9 +12,9 @@ router.get('/terminada', verifyToken, obtenerCitasTerminadas);
 router.get('/admin/pendientes', verifyToken, isAdmin, obtenerCitasAdmin);
 router.get('/admin/procesando', verifyToken, isAdmin, obtenerCitasEnProceso);
 
-router.post("/",verifyToken,isAdmin,upload.single("imagen"),processImage("servicios"),
+router.post("/",verifyToken,upload.single("imagen"),processImage("servicios"),
   (req, res, next) => {
-    const result = validateService(req.body);
+    const result = validateCita(req.body);
     if (!result.success) {
       return res.status(400).json({
         errors: result.error.flatten().fieldErrors

@@ -69,7 +69,7 @@ const AdminNotifications = () => {
                         <Bell className="text-primary" size={32} />
                         {t("notificaciones.centro_de_control")}
                     </h2>
-                    <p className="text-base-content/50 text-sm font-medium">
+                    <p className="text-base-content text-sm font-medium">
                         {t("notificaciones.alertas")}.
                     </p>
                 </div>

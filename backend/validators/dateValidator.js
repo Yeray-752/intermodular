@@ -27,7 +27,13 @@ export const validateCita = (data) => {
 
     // Estado con valor por defecto si no se envía
     estado: EstadoCita.default('pendiente'),
-    precio: z.string()
+    base_price: z.preprocess((val) => {
+      // Si llega un número, lo convierte a string con .00
+      if (typeof val === 'number') return val.toFixed(2);
+      // Si llega un string, intenta asegurar que tenga formato decimal
+      if (typeof val === 'string') return parseFloat(val).toFixed(2);
+      return val;
+    }, z.string().min(1))
   });
 
   return schema.safeParse(data);
