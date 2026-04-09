@@ -37,7 +37,7 @@ async function scrapeAutodoc(plate) {
     console.log("[Vehicle] Cargando autodoc.es...");
     await page.goto("https://www.autodoc.es", {
       waitUntil: "networkidle2",
-      timeout: 30000,
+      timeout: 90000,
     });
 
     // ── Paso 2: Aceptar cookies ───────────────────────────────
