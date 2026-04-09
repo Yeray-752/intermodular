@@ -38,11 +38,7 @@ app.use(express.json());
 app.use(autoSanitize);
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', (req, res, next) => {
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    next();
-}, express.static(path.join(__dirname, 'public', 'uploads')));
-
+app.use('/uploads', express.static('public/uploads'));
 app.use(languageMiddleware);
 
 const limiter = rateLimit({
@@ -55,7 +51,10 @@ const limiter = rateLimit({
 
 // ✅ Sirve estáticos CON los headers correctos, ANTES de Helmet
 
-
+app.use('/uploads', (req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+}, express.static('public/uploads'));
 // ✅ Helmet sin bloquear imágenes
 app.use(
     helmet({
