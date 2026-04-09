@@ -144,8 +144,11 @@ const StockTable = ({ productos, categorias, onUpdate }) => {
         body: formData
       });
 
+      // En handleUpdate — línea 148
       if (response.ok) {
-        document.getElementById(`editProduct${id}`).close();
+        const modal = document.getElementById('edit_product_modal');
+        if (modal) modal.close();  // ← añade el guard
+        await onUpdate();
       }
     } catch (error) {
       console.error("Error al actualizar:", error);

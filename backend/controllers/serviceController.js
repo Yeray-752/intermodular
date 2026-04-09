@@ -1,11 +1,11 @@
 import db from "../db.js";
-import {createNotification} from "./notificationsController.js";
+import { createNotification } from "./notificationsController.js";
 
 export const getServices = async (req, res) => {
-    const lang = req.lang || 'es'; // Extraído por tu middleware de idioma
+  const lang = req.lang || 'es'; // Extraído por tu middleware de idioma
 
-    try {
-        const query = `
+  try {
+    const query = `
             SELECT 
                 s.id, 
                 s.category_id, 
@@ -19,12 +19,12 @@ export const getServices = async (req, res) => {
             JOIN service_translations st ON s.id = st.service_id
             WHERE st.language_code = ?
         `;
-        const [rows] = await db.query(query, [lang]);
-        res.json(rows);
-    } catch (error) {
-        console.error("Error al obtener servicios:", error);
-        res.status(500).json({ error: "Error en el servidor" });
-    }
+    const [rows] = await db.query(query, [lang]);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error al obtener servicios:", error);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
 };
 
 export const createService = async (req, res) => {
@@ -119,14 +119,17 @@ export const updateService = async (req, res) => {
     );
 
     // Upsert EN
-    await connection.query(
-      `INSERT INTO service_translations (service_id, language_code, name, description)
-       VALUES (?, 'en', ?, ?)
-       ON DUPLICATE KEY UPDATE
-        name = COALESCE(VALUES(name), name),
-        description = COALESCE(VALUES(description), description)`,
-      [id, name_en || null, description_en || null]
-    );
+    // En updateService — reemplaza el bloque Upsert EN
+    if (name_en || description_en) {
+      await connection.query(
+        `INSERT INTO service_translations (service_id, language_code, name, description)
+         VALUES (?, 'en', ?, ?)
+         ON DUPLICATE KEY UPDATE
+          name = COALESCE(VALUES(name), name),
+          description = COALESCE(VALUES(description), description)`,
+        [id, name_en || null, description_en || null]
+      );
+    }
 
     await connection.commit();
     res.json({ message: "Servicio actualizado correctamente" });
@@ -141,44 +144,44 @@ export const updateService = async (req, res) => {
 };
 
 export const deleteService = async (req, res) => {
-    const { id } = req.params;
-    const connection = await db.getConnection();
+  const { id } = req.params;
+  const connection = await db.getConnection();
 
-    try {
-        await connection.beginTransaction();
+  try {
+    await connection.beginTransaction();
 
-        const [serviceData] = await connection.query(`
+    const [serviceData] = await connection.query(`
             SELECT s.base_price, s.duration, st.name 
             FROM services s
             JOIN service_translations st ON s.id = st.service_id
-            WHERE s.id = ? AND st.language_code = 'es'`, 
-            [id]
-        );
+            WHERE s.id = ? AND st.language_code = 'es'`,
+      [id]
+    );
 
-        if (serviceData.length === 0) {
-            return res.status(404).json({ message: "Servicio no encontrado" });
-        }
-
-        const { name, base_price, duration } = serviceData[0];
-
-        await connection.query("DELETE FROM service_translations WHERE service_id = ?", [id]);
-        await connection.query("DELETE FROM services WHERE id = ?", [id]);
-
-
-        await createNotification(req.user.id, 'servicio_eliminado', 'admin', { 
-            nombre: name,
-            precio: base_price,
-            duracion: duration
-        });
-
-        await connection.commit();
-        res.json({ message: "Servicio eliminado correctamente y registro guardado" });
-
-    } catch (error) {
-        await connection.rollback();
-        console.error(error);
-        res.status(500).json({ error: "Error al eliminar el servicio" });
-    } finally {
-        connection.release();
+    if (serviceData.length === 0) {
+      return res.status(404).json({ message: "Servicio no encontrado" });
     }
+
+    const { name, base_price, duration } = serviceData[0];
+
+    await connection.query("DELETE FROM service_translations WHERE service_id = ?", [id]);
+    await connection.query("DELETE FROM services WHERE id = ?", [id]);
+
+
+    await createNotification(req.user.id, 'servicio_eliminado', 'admin', {
+      nombre: name,
+      precio: base_price,
+      duracion: duration
+    });
+
+    await connection.commit();
+    res.json({ message: "Servicio eliminado correctamente y registro guardado" });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar el servicio" });
+  } finally {
+    connection.release();
+  }
 };

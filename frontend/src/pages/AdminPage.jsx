@@ -161,7 +161,6 @@ function AdminPage() {
         { id: 'notificaciones', label: "Notificaciones", icon: Bell },
         { id: 'stock', label: t("menu.stock"), icon: Package },
         { id: 'servicios', label: t("menu.servicios"), icon: Package },
-        { id: 'productos', label: t("menu.productos"), icon: Wrench },
     ], [t]);
 
     const menuBtnStyle = (tab) => `

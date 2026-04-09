@@ -32,7 +32,10 @@ export const createProduct = async (req, res) => {
       );
     }
 
-    await createNotification(req.user.id, 'producto_nuevo', 'admin', { producto: name_es });
+    await createNotification(req.user.id, 'producto_creado', 'admin', {
+      nombre: name_es,
+      stock: stock
+    });
 
     await connection.commit();
     res.status(201).json({ message: "Producto creado con éxito", productId: newProductId });
@@ -166,14 +169,17 @@ export const updateProduct = async (req, res) => {
     );
 
     // Upsert EN
-    await connection.execute(
-      `INSERT INTO product_translations (product_id, language_code, name, description)
-       VALUES (?, 'en', ?, ?)
-       ON DUPLICATE KEY UPDATE 
-        name = COALESCE(VALUES(name), name),
-        description = COALESCE(VALUES(description), description)`,
-      [id, name_en || null, description_en || null]
-    );
+    // En updateProduct — reemplaza el bloque Upsert EN
+    if (name_en || description_en) {
+      await connection.execute(
+        `INSERT INTO product_translations (product_id, language_code, name, description)
+         VALUES (?, 'en', ?, ?)
+         ON DUPLICATE KEY UPDATE 
+          name = COALESCE(VALUES(name), name),
+          description = COALESCE(VALUES(description), description)`,
+        [id, name_en || null, description_en || null]
+      );
+    }
 
     // Notificaciones
     const cambios = [];
@@ -185,7 +191,7 @@ export const updateProduct = async (req, res) => {
     if (cambios.length > 0) {
       await createNotification(req.user.id, 'producto_actualizado', 'admin', {
         nombre_original: old[0].name,
-        cambios
+        cambios: cambios.join(', ')
       });
     }
 

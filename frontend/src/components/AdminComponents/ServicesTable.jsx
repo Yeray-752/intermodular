@@ -99,7 +99,7 @@ const ServicesTable = ({ servicios, categorias, onUpdate }) => {
 
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/services/${id}/update`, {
-                method: 'POST', // Usar POST con _method PUT si tienes problemas con archivos en PUT puro
+                method: 'PUT', // Usar POST con _method PUT si tienes problemas con archivos en PUT puro
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem("token")}`,
                     'x-lang': i18n.language

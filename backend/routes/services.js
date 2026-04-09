@@ -13,7 +13,7 @@ router.get('/',getServices);
 // En routes/services.js
 router.get("/:id/translations", verifyToken, isAdmin, getServiceTranslations);
 
-router.put('/:id/update',verifyToken,isAdmin,upload.single("imagen"),processImage("services"),updateService);
+router.put('/:id/update', verifyToken, isAdmin, upload.single("image"), processImage("services"), updateService);
 
 router.delete('/:id/delete',verifyToken,isAdmin,deleteService);
 

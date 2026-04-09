@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Clock, Check, CheckCheck, Package, AlertTriangle, Info } from 'lucide-react';
+import { Bell, Clock, Check, CheckCheck, Package, AlertTriangle, Info, Wrench, ShoppingCart, CalendarCheck } from 'lucide-react';
 import { useTranslation } from "react-i18next";
 
 const AdminNotifications = () => {
@@ -11,27 +11,27 @@ const AdminNotifications = () => {
     const tt = (rol, tipo) => t(`notifications:${rol}.titles.${tipo}`);
 
     const fetchNotifications = async () => {
-    try {
-        const token = localStorage.getItem("token");
-        
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/admin`, {
-            headers: { 
-                'accept-language': i18n.language,
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        try {
+            const token = localStorage.getItem("token");
 
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/admin`, {
+                headers: {
+                    'accept-language': i18n.language,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        const data = await response.json();
-        setNotificaciones(data);
-    } catch (error) {
-        console.error("Error cargando notificaciones de admin:", error);
-    } finally {
-        setLoading(false);
-    }
-};
+            if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+            const data = await response.json();
+            setNotificaciones(data);
+        } catch (error) {
+            console.error("Error cargando notificaciones de admin:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => { fetchNotifications(); }, [i18n.language]);
 
@@ -90,11 +90,13 @@ const AdminNotifications = () => {
                     notificaciones.map((noti) => {
                         const params = typeof noti.parametros === 'string' ? JSON.parse(noti.parametros) : noti.parametros;
                         const estaLeida = !!noti.leido;
-                        
+
                         // Icono dinámico según el tipo de acción
                         const getIcon = () => {
-                            if (noti.tipo === 'producto_nuevo') return <Package size={24} />;
-                            if (noti.tipo === 'producto_actualizado') return <Info size={24} />;
+                            if (noti.tipo.includes('producto')) return <Package size={24} />;
+                            if (noti.tipo.includes('servicio')) return <Wrench size={24} />;
+                            if (noti.tipo.includes('venta') || noti.tipo.includes('compra')) return <ShoppingCart size={24} />;
+                            if (noti.tipo.includes('cita')) return <CalendarCheck size={24} />;
                             return <AlertTriangle size={24} />;
                         };
 
@@ -106,7 +108,7 @@ const AdminNotifications = () => {
                             >
                                 <div className="flex items-center gap-5">
                                     {/* Indicador de lectura */}
-                                    <div 
+                                    <div
                                         onClick={() => !estaLeida && marcarLeida(noti.id)}
                                         className={`w-4 h-4 rounded-full border-2 cursor-pointer transition-all ${estaLeida ? 'bg-success border-success' : 'bg-transparent border-primary animate-pulse'}`}
                                     />
@@ -124,9 +126,9 @@ const AdminNotifications = () => {
                                         </h4>
                                         <p className="text-sm font-medium text-base-content/60 max-w-2xl">
                                             {/* Aquí inyectamos el nombre del producto que viene del JOIN o de los parámetros */}
-                                            {tn(noti.rol, noti.tipo, { 
-                                                ...params, 
-                                                producto: noti.producto_nombre || params.producto || params.nombre_original 
+                                            {tn(noti.rol, noti.tipo, {
+                                                ...params,
+                                                producto: noti.producto_nombre || params.producto || params.nombre_original
                                             })}
                                         </p>
                                         <div className="flex items-center gap-2 mt-2 font-bold text-[10px] text-base-content/30 uppercase tracking-widest">
@@ -138,7 +140,7 @@ const AdminNotifications = () => {
 
                                 {/* Botón Acción Rápida */}
                                 {!estaLeida && (
-                                    <button 
+                                    <button
                                         onClick={() => marcarLeida(noti.id)}
                                         className="btn btn-circle btn-ghost btn-sm text-base-content/20 hover:text-success"
                                     >
