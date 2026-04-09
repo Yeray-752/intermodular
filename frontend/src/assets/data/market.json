@@ -1,6 +1,7 @@
 {
     "es": {
         "price": "Precio",
+        "subtitle":"Encuentra y pide entre todas nuestra variedad de piezas para su vehiculo",
         "stock": "Unidades disponibles",
         "outOfStock": "Agotado",
         "back": "Volver",
@@ -12,6 +13,7 @@
     },
     "en": {
         "price": "Price",
+        "subtitle":"Find and order from our entire variety of parts for your vehicle",
         "stock": "Units available",
         "outOfStock": "Out of stock",
         "back": "Back",

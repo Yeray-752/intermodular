@@ -128,7 +128,7 @@ function Login() {
                             />
                         </div>
                         <div className="flex flex-col items-center gap-4 mt-6">
-                            <div className="text-accent divider uppercase before:bg-accent after:bg-accent text-xs">O entra con</div>
+                            <div className="divider uppercase text-xs">{t("enterWith")}</div>
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {

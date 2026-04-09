@@ -1,12 +1,212 @@
 {
-  "en": {
-    "title": "Page not found",
-    "subtitle": "Sorry, we couldn’t find the page you’re looking for.",
-    "button": "Go back home"
-  },
   "es": {
-    "title": "Página no encontrada",
-    "subtitle": "Lo sentimos, no pudimos encontrar la página que estás buscando.",
-    "button": "Volver al inicio"
+    "menu": {
+      "metricas": "Estadísticas",
+      "reservas": "Gestión de Reservas",
+      "stock": "Stock de Productos",
+      "servicios": "Servicios",
+      "productos": "Productos"
+    },
+    "notificaciones": {
+      "centro_de_control": "Centro de control",
+      "alertas": "Alertas del sistema y cambios en el inventario.",
+      "marcar_leido": "Marcar todo como visto",
+      "nada": "Sin actividad reciente"
+    },
+    "reservas": {
+      "title": "Reservas",
+      "cliente": "Cliente",
+      "servicio": "Servicio",
+      "vehiculo": "Vehículo",
+      "dia": "Día",
+      "estado": "Estado",
+      "gestion": "Gestión",
+      "confirm_cancel": "¿Estás seguro de que deseas cancelar esta cita?",
+      "error_cancel": "Error al cancelar la cita",
+      "error_server": "No se pudo conectar con el servidor"
+    },
+    "stock": {
+      "title": "Stock",
+      "subtitle": "Administración de precios y existencias."
+    },
+    "productos": {
+      "title": "Catálogo Taller",
+      "subtitle": "Administración de precios y existencias.",
+      "new": "Nuevo Registro",
+      "aceite": "Cambio de Aceite y Filtro",
+      "dificultad_baja": "Dificultad Baja",
+      "frenos": "Kit de Frenos Cerámicos",
+      "stock_unidades": "Stock"
+    },
+    "servicios": {
+      "title": "Crear Nuevo Servicio",
+      "subtitle": "Rellena los detalles para añadir un nuevo servicio al catálogo del taller.",
+      "foto": "Foto del Servicio",
+      "upload": "Click para subir imagen",
+      "titulo": "Título del Servicio",
+      "dificultad": "Dificultad",
+      "dificultad_baja": "Baja",
+      "dificultad_media": "Media",
+      "dificultad_alta": "Alta",
+      "tiempo": "Tiempo",
+      "precio": "Precio",
+      "descripcion": "Describe el servicio...",
+      "guardar": "Guardar Servicio",
+      "success": "Servicio creado correctamente",
+      "error": "Error al crear servicio",
+      "error_connection": "Error de conexión"
+    },
+    "metricas": {
+      "flujo_ventas": "Flujo de ventas",
+      "ventas_hoy": "Ventas Hoy",
+      "citas_pendientes": "Citas Pendientes",
+      "cierre_mensual": "Cierre Mensual"
+    },
+    "general": {
+      "panel": "Panel de Control General"
+    },
+    "stock_table": {
+      "btn_filters": "Filtros",
+      "all": "Todos",
+      "stock": "En Stock",
+      "low": "Bajo Stock",
+      "sold_out": "Agotados",
+      "showing": "Mostrando",
+      "of": "de",
+      "th_img": "Img",
+      "th_product": "Producto",
+      "th_stock": "Stock",
+      "th_price": "Precio",
+      "th_rating": "Rating",
+      "th_actions": "Acciones",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "page": "Página",
+      "edit_title": "Editar Producto",
+      "delete_title": "Eliminar Producto",
+      "close": "Cerrar",
+      "search": "Buscar pieza o descripción...",
+      "category": "Categoría",
+      "img": "Imagen",
+      "description": "Descripción",
+      "save": "Guardar Datos"
+    },
+    "services_table": {
+      "title": "Gestión de servicios",
+      "editTittle": "Cambio de servicio",
+      "description": "Descripción",
+      "search": "Buscar servicio o descripción",
+      "image": "Imagen",
+      "service": "Servicio",
+      "inicialPrice": "Precio base",
+      "duration": "Duración",
+      "difficulty": "Dificultad",
+      "actions": "Acciones"
+    }
+  },
+  "en": {
+    "menu": {
+      "metricas": "Statistics",
+      "reservas": "Reservations Management",
+      "stock": "Product Stock",
+      "servicios": "Services",
+      "productos": "Products"
+    },
+    "notificaciones": {
+      "centro_de_control": "Control center",
+      "alertas": "System alerts and inventory changes.",
+      "marcar_leido": "Mark all as seen",
+      "nada": "No activity"
+    },
+    "reservas": {
+      "title": "Reservations",
+      "cliente": "Client",
+      "servicio": "Service",
+      "vehiculo": "Vehicle",
+      "dia": "Day",
+      "estado": "Status",
+      "": "Management",
+      "confirm_cancel": "Are you sure you want to cancel this appointment?",
+      "error_cancel": "Error cancelling the appointment",
+      "error_server": "Could not connect to the server"
+    },
+    "stock": {
+      "title": "Stock",
+      "subtitle": "Price and inventory management."
+    },
+    "productos": {
+      "title": "Workshop Catalog",
+      "subtitle": "Price and inventory management.",
+      "new": "New Record",
+      "aceite": "Oil and Filter Change",
+      "dificultad_baja": "Low Difficulty",
+      "frenos": "Ceramic Brake Kit",
+      "stock_unidades": "Stock"
+    },
+    "servicios": {
+      "title": "Create New Service",
+      "subtitle": "Fill in the details to add a new service to the workshop catalog.",
+      "foto": "Service Image",
+      "upload": "Click to upload image",
+      "titulo": "Service Title",
+      "dificultad": "Difficulty",
+      "dificultad_baja": "Low",
+      "dificultad_media": "Medium",
+      "dificultad_alta": "High",
+      "tiempo": "Time",
+      "precio": "Price",
+      "descripcion": "Describe the service...",
+      "guardar": "Save Service",
+      "success": "Service created successfully",
+      "error": "Error creating service",
+      "error_connection": "Connection error"
+    },
+    "metricas": {
+      "flujo_ventas": "Sales Flow",
+      "ventas_hoy": "Today's Sales",
+      "citas_pendientes": "Pending Appointments",
+      "cierre_mensual": "Monthly Closing"
+    },
+    "general": {
+      "panel": "General Control Panel"
+    },
+    "stock_table": {
+      "btn_filters": "Filters",
+      "all": "All",
+      "stock": "In Stock",
+      "low": "Low Stock",
+      "sold_out": "Sold out",
+      "showing": "Showing",
+      "of": "of",
+      "th_img": "Img",
+      "th_product": "Product",
+      "th_stock": "Stock",
+      "th_price": "Price",
+      "th_rating": "Rating",
+      "th_actions": "Actions",
+      "prev": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "edit_title": "Edit Product",
+      "delete_title": "Delete Product",
+      "close": "Close",
+      "search": "Search piece or description...",
+      "category": "Category",
+      "img": "IMG",
+      "description": "Description",
+      "save": "Save Data"
+    },
+    "services_table": {
+      "title": "Service gestion",
+      "editTittle": "Service changes",
+      "search": "Search service or description...",
+      "description": "Description",
+      "image": "IMG",
+      "service": "Service",
+      "inicialPrice": "Base price",
+      "duration": "Duration",
+      "difficulty": "Difficulty",
+      "actions": "Actions"
+    }
   }
 }

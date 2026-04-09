@@ -1,13 +1,19 @@
 import { Router } from "express";
-import { createProduct, getProducts, getProductsById, updateProduct, deleteProduct,purchaseProduct, getVentas } from "../controllers/productController.js";
+import { createProduct, getProducts, getProductsById, updateProduct, deleteProduct,purchaseProduct, getVentas, getProductTranslations } from "../controllers/productController.js";
+import { verifyToken, isAdmin } from '../middlewares/auth.js';
+import { upload } from '../middlewares/upload.js';
+import { processImage } from '../middlewares/processImage.js';
 
 const router = Router();
 
-router.post("/", createProduct);
+router.post("/",verifyToken, isAdmin, upload.single('image'), processImage('products'), createProduct);
 router.get("/", getProducts);
 router.get("/ventas", getVentas)
 router.get("/:id", getProductsById);
-router.put("/:id/update", updateProduct);
+router.get("/:id/translations", verifyToken, isAdmin, getProductTranslations);
+
+router.put('/:id/update', verifyToken, isAdmin, upload.single('image'), processImage('products'), updateProduct);
+
 router.delete("/:id/delete", deleteProduct);
 
 router.post('/:id/order', purchaseProduct);

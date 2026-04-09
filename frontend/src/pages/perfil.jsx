@@ -175,7 +175,6 @@ function Perfil() {
             if (response.ok) {
                 const data = await response.json();
                 setNotificaciones(data);
-                console.log(data)
             }
         } catch (error) {
             console.error("Error al cargar notificaciones:", error);
@@ -269,11 +268,9 @@ function Perfil() {
 
     const enviarFormulario = async (e) => {
         e.preventDefault();
-        console.log("Datos enviados:", datos);
         if (modo === 'manual') {
 
             try {
-                console.log(datos);
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vehicules`, {
                     method: 'POST',
                     headers: {
@@ -291,7 +288,6 @@ function Perfil() {
 
         } else {
             buscarCoche(datos.matricula)
-            console.log(datos.matricula)
         }
 
         // Opcional: Cerrar el modal después de la acción
@@ -320,7 +316,6 @@ function Perfil() {
 
             const data = await response.json(); // ¡No olvides convertir la respuesta a JSON!
             setCocheBuscado(await data)
-            console.log(cocheBuscado)
 
         } catch (e) {
             console.error('Error capturado:', e.message);
@@ -332,7 +327,6 @@ function Perfil() {
         /* Toca hacer scraping */
         // Construimos la URL con los parámetros necesarios
         const url = `${import.meta.env.VITE_API_URL}/api/vehicules/matricula/secreta`;
-        console.log('esta es la matricula' + matricula)
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -677,10 +671,10 @@ function Perfil() {
                             <div>
                                 <h2 className="text-3xl font-bold text-accent flex items-center gap-3">
                                     <Car className="text-primary" size={32} />
-                                    {t('profile:myCars') || "Mis Vehículos"}
+                                    {t('profile:myCars')}
                                 </h2>
                                 <p className="text-base-content/60 mt-1">
-                                    {t('profile:manageVehiclesDesc') || "Gestiona los vehículos asociados a tu cuenta para tus citas."}
+                                    {t('profile:manageVehiclesDesc')}
                                 </p>
                             </div>
 
@@ -689,7 +683,7 @@ function Perfil() {
                                 className="btn btn-primary shadow-lg shadow-primary/20 gap-2 rounded-xl text-base-100"
                             >
                                 <Plus size={20} />
-                                {t('profile:addVehicle') || "Añadir Vehículo"}
+                                {t('profile:addVehicle')}
                             </button>
                         </div>
 
@@ -707,7 +701,6 @@ function Perfil() {
                                                 <h2 className="text-xl font-black text-accent leading-tight uppercase">
                                                     {coche.marca}{" "}
                                                     <span className="text-[#ff5a1f]">{coche.modelo}</span>
-
                                                 </h2>
                                                 <p className="text-xs font-bold tracking-[0.2em] text-base-content/40 mt-1">
                                                     {coche.matricula}
@@ -718,51 +711,45 @@ function Perfil() {
                                         <div className="grid grid-cols-3 gap-2 py-4 border-y border-base-200">
                                             <div className="flex flex-col items-center gap-1">
                                                 <Settings size={16} className="text-base-content/30" />
-                                                <span className="text-[10px] font-bold uppercase text-base-content/40">Motor</span>
+                                                <span className="text-[10px] font-bold uppercase text-base-content/40">{t('profile:motor')}</span>
                                                 <span className="text-xs font-bold">{coche.motor}</span>
                                             </div>
                                             <div className="flex flex-col items-center gap-1 border-x border-base-200">
                                                 <Zap size={16} className="text-base-content/30" />
-                                                <span className="text-[10px] font-bold uppercase text-base-content/40">Combustible</span>
+                                                <span className="text-[10px] font-bold uppercase text-base-content/40">{t('profile:fuel')}</span>
                                                 <span className="text-xs font-bold">{coche.combustible}</span>
                                             </div>
                                             <div className="flex flex-col items-center gap-1">
                                                 <Calendar size={16} className="text-base-content/30" />
-                                                <span className="text-[10px] font-bold uppercase text-base-content/40">Año</span>
+                                                <span className="text-[10px] font-bold uppercase text-base-content/40">{t('profile:year')}</span>
                                                 <span className="text-xs font-bold">{coche.año}</span>
                                             </div>
                                         </div>
                                     </div>
                                 ))
-
                             ) : (
                                 <div className="col-span-full bg-base-200/30 border-2 border-dashed border-base-300 rounded-[2.5rem] p-12 text-center">
                                     <div className="bg-base-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                                         <Car size={32} className="text-base-content/20" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-base-content">Tu garaje está vacío</h3>
+                                    <h3 className="text-xl font-bold text-base-content">{t('profile:myCars')}</h3>
                                     <p className="text-base-content/50 max-w-xs mx-auto mt-2">
-                                        Añade tu primer vehículo para poder solicitar servicios y reparaciones.
+                                        {t('profile:manageVehiclesDesc')}
                                     </p>
                                     <button
                                         onClick={() => setOpen(true)}
                                         className="btn btn-primary mt-6 rounded-xl"
                                     >
-                                        Registrar mi primer coche
+                                        {t('profile:addVehicle')}
                                     </button>
                                 </div>
                             )}
-
-
-
-
                         </div>
 
                         {/* MODAL ESTILIZADO */}
                         {open && (
                             <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
                                 <div className="bg-info w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-base-300 animate-in zoom-in duration-300">
-
                                     <button
                                         onClick={() => { setOpen(false); setModo(null); }}
                                         className="absolute top-8 right-8 text-base-content/30 hover:text-accent transition-colors z-10"
@@ -772,12 +759,11 @@ function Perfil() {
 
                                     <div className="p-10">
                                         {!modo ? (
-                                            /* PASO 1: Selección de modo con estilo nuevo */
                                             <div className="py-4 text-center">
                                                 <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                                                     <Car className="text-[#ff5a1f]" size={32} />
                                                 </div>
-                                                <h3 className="text-2xl font-black mb-8 leading-tight">¿Cómo quieres añadir tu vehículo?</h3>
+                                                <h3 className="text-2xl font-black mb-8 leading-tight">{t('profile:howToAdd')}</h3>
                                                 <div className="flex flex-col gap-4">
                                                     <button
                                                         onClick={() => setModo('manual')}
@@ -785,8 +771,8 @@ function Perfil() {
                                                     >
                                                         <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">📝</span>
                                                         <div>
-                                                            <p className="font-bold text-base-content">Entrada Manual</p>
-                                                            <p className="text-xs text-base-content/50">Introduce todos los datos</p>
+                                                            <p className="font-bold text-base-content">{t('profile:manual')}</p>
+                                                            <p className="text-xs text-base-content/50">{t('profile:insertData')}</p>
                                                         </div>
                                                     </button>
 
@@ -796,21 +782,20 @@ function Perfil() {
                                                     >
                                                         <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">🤖</span>
                                                         <div>
-                                                            <p className="font-bold text-base-content">Automático</p>
-                                                            <p className="text-xs text-base-content/50">Solo con tu matrícula</p>
+                                                            <p className="font-bold text-base-content">{t('profile:automatic')}</p>
+                                                            <p className="text-xs text-base-content/50">{t('profile:registrationCar')}</p>
                                                         </div>
                                                     </button>
                                                 </div>
                                             </div>
                                         ) : (
-                                            /* PASO 2: El formulario estilizado */
                                             <>
                                                 <div className="flex flex-col items-center mb-8">
                                                     <button
                                                         onClick={() => setModo(null)}
                                                         className="text-[10px] font-bold uppercase tracking-widest text-[#ff5a1f] mb-2 hover:underline"
                                                     >
-                                                        ← Volver atrás
+                                                        ← {t('profile:goBack')}
                                                     </button>
                                                     <h2 className="text-2xl font-black text-center text-accent leading-tight">
                                                         {modo === 'manual' ? 'Registrar Vehículo' : 'Búsqueda Rápida'}
@@ -818,9 +803,8 @@ function Perfil() {
                                                 </div>
 
                                                 <form onSubmit={enviarFormulario} className="space-y-5">
-                                                    {/* Input Matrícula Principal */}
                                                     <div>
-                                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Matrícula</label>
+                                                        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:registration')}</label>
                                                         <input
                                                             required
                                                             className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] focus:ring-1 focus:ring-[#ff5a1f] outline-none transition-all uppercase tracking-widest font-bold"
@@ -828,15 +812,13 @@ function Perfil() {
                                                             value={datos.matricula}
                                                             name="matricula"
                                                             onChange={manejarCambio}
-
                                                         />
                                                     </div>
 
                                                     {modo === 'manual' && (
                                                         <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-500">
-                                                            {/* MARCA */}
                                                             <div className="col-span-1">
-                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Marca</label>
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:brand')}</label>
                                                                 <input
                                                                     className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
                                                                     value={datos.marca}
@@ -846,9 +828,8 @@ function Perfil() {
                                                                 />
                                                             </div>
 
-                                                            {/* MODELO */}
                                                             <div className="col-span-1">
-                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Modelo</label>
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:model')}</label>
                                                                 <input
                                                                     className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
                                                                     value={datos.modelo}
@@ -858,9 +839,8 @@ function Perfil() {
                                                                 />
                                                             </div>
 
-                                                            {/* AÑO */}
                                                             <div className="col-span-1">
-                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Año</label>
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:year')}</label>
                                                                 <input
                                                                     type="number"
                                                                     placeholder='2020'
@@ -871,9 +851,8 @@ function Perfil() {
                                                                 />
                                                             </div>
 
-                                                            {/* MOTORIZACIÓN (Potencia/Cilindrada) */}
                                                             <div className="col-span-1">
-                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Motor (CV/cc)</label>
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:motor')} (CV/cc)</label>
                                                                 <input
                                                                     placeholder="Ej: 1.8"
                                                                     className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-base-200/30 focus:border-[#ff5a1f] outline-none transition-all"
@@ -883,22 +862,21 @@ function Perfil() {
                                                                 />
                                                             </div>
 
-                                                            {/* COMBUSTIBLE (Selector) */}
                                                             <div className="col-span-2">
-                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">Tipo de Combustible</label>
+                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 ml-1 mb-1 block">{t('profile:kindOfFuel')}</label>
                                                                 <select
                                                                     name="combustible"
-                                                                    className="w-full px-5 py-4 rounded-2xl border  border-base-300 bg-info focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
+                                                                    className="w-full px-5 py-4 rounded-2xl border border-base-300 bg-info focus:border-[#ff5a1f] outline-none transition-all appearance-none cursor-pointer"
                                                                     value={datos.combustible}
                                                                     onChange={manejarCambio}
                                                                 >
-                                                                    <option value="">Seleccionar combustible...</option>
-                                                                    <option value="gasolina">Gasolina</option>
-                                                                    <option value="diesel">Diesel</option>
-                                                                    <option value="electrico">Eléctrico</option>
-                                                                    <option value="hibrido">Híbrido</option>
-                                                                    <option value="glp">GLP</option>
-                                                                    <option value="gnc">GNC</option>
+                                                                    <option value="">{t('profile:selectFuel')}</option>
+                                                                    <option value="gasolina">{t('profile:gas')}</option>
+                                                                    <option value="diesel">{t('profile:diesel')}</option>
+                                                                    <option value="electrico">{t('profile:electric')}</option>
+                                                                    <option value="hibrido">{t('profile:hybrid')}</option>
+                                                                    <option value="glp">{t('profile:glp')}</option>
+                                                                    <option value="gnc">{t('profile:gnc')}</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -908,7 +886,7 @@ function Perfil() {
                                                         type="submit"
                                                         className="w-full bg-primary hover:bg-primary text-white font-black py-5 rounded-2xl mt-6 shadow-xl shadow-orange-200/50 transition-all active:scale-[0.97] uppercase tracking-widest text-sm"
                                                     >
-                                                        {modo === 'manual' ? 'Confirmar Registro' : 'Consultar Matrícula'}
+                                                        {modo === 'manual' ? t('profile:confirmRegistration') : t('profile:consultRegistration')}
                                                     </button>
                                                 </form>
                                             </>

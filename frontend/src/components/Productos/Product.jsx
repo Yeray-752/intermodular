@@ -145,7 +145,7 @@ function Product() {
                         {/* Imagen */}
                         <div className="p-12 flex items-center justify-center">
                             <img
-                                src={producto.image_url}
+                                src={`${import.meta.env.VITE_API_URL}${producto.image_url}`}
                                 alt={producto.name}
                                 className="relative max-h-80 w-full object-contain drop-shadow-2xl"
                             />

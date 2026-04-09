@@ -1,0 +1,28 @@
+{
+  "en": {
+    "cartTitle": "Checkout",
+    "emptyCart": "The cart is empty.",
+    "amount": "Amount:",
+    "just": "Just",
+    "in stock": "in stock.",
+    "button": "Go back home",
+    "inSort":"summary",
+    "total":"Total",
+    "finalizeOrder":"Finalize Order",
+    "confirmOrder":"Confirm order",
+    "ajustOrder":"Ajust stock"
+  },
+  "es": {
+    "cartTitle": "Checkout",
+    "emptyCart": "El carrito se encuentra vacio.",
+    "amount": "Cantidad:",
+    "just": "solo",
+    "in stock": "en stock.",
+    "button": "Volver",
+    "inSort":"Resumen",
+    "total":"Total",
+    "finalizeOrder":"Terminar pedido",
+    "confirmOrder":"Confirmar pedido",
+    "ajustOrder":"Ajustar pedido"
+  }
+}

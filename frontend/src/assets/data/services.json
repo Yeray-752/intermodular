@@ -2,6 +2,7 @@
     "es": {
         "searchPlaceholder": "Buscar servicios...",
         "categories": "Servicios",
+        "subtitle": "Encuentra y agenda el mantenimiento perfecto para tu vehiculo con nuestra tecnologia de diagnóstico avanzado",
         "duration": "Duración",
         "difficulty": "Dificultad",
         "book": "Reservar",
@@ -28,6 +29,7 @@
     "en": {
         "searchPlaceholder": "Search services...",
         "categories": "Services",
+        "subtitle": "Find and schedule the perfect maintenance for your vehicle with our advanced diagnostic technology",
         "duration": "Duration",
         "difficulty": "Difficulty",
         "book": "Book",

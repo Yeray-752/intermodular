@@ -44,20 +44,30 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+// ✅ Sirve estáticos CON los headers correctos, ANTES de Helmet
+app.use('/uploads', (req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+}, express.static('public/uploads'));
+
+// ✅ Helmet sin bloquear imágenes
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://trustedscripts.com"],
+      imgSrc: ["'self'", "http://localhost:3000", "data:", "blob:"], // ← añade esto
+      scriptSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
   })
 );
 
+// ✅ Solo si realmente necesitas COEP (probablemente no lo necesitas)
+// Si no usas SharedArrayBuffer ni Atomics, elimina estas dos líneas
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  // res.setHeader("Cross-Origin-Embedder-Policy", "require-corp"); // ← ELIMINA ESTA LÍNEA
   next();
 });
 
