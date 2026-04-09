@@ -76,8 +76,9 @@ async function scrapeAutodoc(plate) {
     // ── Paso 4: Escribir matrícula ────────────────────────────
     await page.waitForSelector("#kba1", { timeout: 10000 });
     await page.click("#kba1", { clickCount: 3 });
-    await page.type("#kba1", plate.toUpperCase(), { delay: 80 });
+    await page.type("#kba1", plate.toUpperCase(), { delay: 100 });
     console.log("[Vehicle] Matrícula escrita:", plate);
+    
 
     // ── Paso 5: Pulsar botón Buscar ───────────────────────────
     await page.evaluate(() => {

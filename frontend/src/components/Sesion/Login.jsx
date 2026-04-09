@@ -38,7 +38,7 @@ function Login() {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/users/login", {
+            const response = await fetch("https://yeray.informaticamajada.es/api/users/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -135,7 +135,7 @@ function Login() {
                             <GoogleLogin
                                 onSuccess={async (credentialResponse) => {
                                     try {
-                                        const response = await fetch("http://localhost:3000/api/users/google-login", {
+                                        const response = await fetch("https://yeray.informaticamajada.es/api/users/google-login", {
                                             method: "POST",
                                             headers: { "Content-Type": "application/json" },
                                             body: JSON.stringify({ idToken: credentialResponse.credential }),
