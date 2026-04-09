@@ -58,15 +58,18 @@ const limiter = rateLimit({
 
 // ✅ Helmet sin bloquear imágenes
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "http://localhost:3000", "data:", "blob:", "https://yeray.informaticamajada.es", "http://localhost:3000"], // ← añade esto
-      scriptSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  })
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                imgSrc: ["'self'", "data:", "blob:", "https://yeray.informaticamajada.es", "http://localhost:3000"],
+                scriptSrc: ["'self'"],
+                objectSrc: ["'none'"],
+                upgradeInsecureRequests: [],
+            },
+        },
+        crossOriginResourcePolicy: { policy: "cross-origin" }
+    })
 );
 
 // ✅ Solo si realmente necesitas COEP (probablemente no lo necesitas)
