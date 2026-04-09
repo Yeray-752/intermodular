@@ -114,15 +114,27 @@ export const login = async (req, res) => {
 export const getClientProfile = async (req, res) => {
     try {
         const [rows] = await db.query(`
-            SELECT u.email, u.rol, c.nombre, c.apellidos, c.direccion
+            SELECT 
+                u.email, 
+                u.rol, 
+                c.nombre, 
+                c.apellidos, 
+                c.direccion,
+                c.isla,      
+                c.municipio    
             FROM Usuario u
             INNER JOIN Cliente c ON u.id_usuario = c.id_usuario
             WHERE u.id_usuario = ?
         `, [req.user.id]);
 
-        if (rows.length === 0) return res.status(404).json({ error: "Perfil no encontrado" });
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Perfil no encontrado" });
+        }
+
+        // Ahora rows[0] contendrá también isla y municipio
         res.json(rows[0]);
     } catch (error) {
+        console.error("Error en getClientProfile:", error); // Útil para depurar
         res.status(500).json({ error: "Error al obtener perfil" });
     }
 };

@@ -56,45 +56,48 @@ function Perfil() {
 
     const [datosPdf, setDatosPdf] = useState(null)
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-        const token = localStorage.getItem("token");
-        // No hace falta el "if (!token)" aquí porque ProtectedRoute ya lo filtró fuera
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            // No hace falta el "if (!token)" aquí porque ProtectedRoute ya lo filtró fuera
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile/me`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                setUserProfile(data);
-            } else {
-                // Si el servidor dice que el token no vale (expiró)
-                localStorage.removeItem("token");
-                navigate("/login");
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserProfile(data);
+                    console.log(data)
+                } else {
+                    // Si el servidor dice que el token no vale (expiró)
+                    localStorage.removeItem("token");
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error("Error de red:", error);
+            } finally {
+                // CRUCIAL: Esto quita el mensaje de "Cargando..."
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Error de red:", error);
-        } finally {
-            // CRUCIAL: Esto quita el mensaje de "Cargando..."
-            setLoading(false);
-        }
-    };
+        };
 
-    fetchUserData();
-}, [navigate]);
+        fetchUserData();
+        traerCitas();
+    }, [navigate]);
 
     const traerHistorial = async () => {
+        const tokenSeguro = localStorage.getItem("token");
 
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/date`, {
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: { "Authorization": `Bearer ${tokenSeguro}` }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setDatosPdf(data)
+                setCitas(data)
             }
         } catch (error) {
             console.error("Error:", error);
@@ -517,6 +520,9 @@ function Perfil() {
         { name: "nombre", label: t('profile:name') || "Nombre / Taller", type: "text", value: userProfile?.nombre || "" },
         { name: "apellidos", label: t('profile:lastName') || "Apellidos", type: "text", value: userProfile?.apellidos || "" },
         { name: "direccion", label: t('profile:location') || "Dirección", type: "text", value: userProfile?.direccion || "" },
+        { name: "isla", label: "isla", type: "text", value: userProfile?.isla || ""},
+        { name: "municipio", label: "municipio", type: "text", value: userProfile?.municipio || ""},
+
     ], [userProfile, t]);
 
     const menuItems = useMemo(() => [
@@ -567,42 +573,100 @@ function Perfil() {
             case 'informacion':
                 return (
                     <div>
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-bold mb-2 text-base-content">{t('profile:profileInfo')}</h2>
-                            <p className="text-base-content/70 text-sm">{t('profile:updateProfileData')}</p>
+                        {/* Encabezado con Estilo de Perfil */}
+                        <div className="flex flex-col md:flex-row items-center gap-6 mb-10 pb-8 border-b border-secondary-content">
+                            <div className="relative">
+                                <div className="w-24 h-24 rounded-4xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                                    <User size={40} strokeWidth={1.5} />
+                                </div>
+                                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success rounded-full border-4 border-base-100 flex items-center justify-center" title="Cuenta Activa">
+                                    <Check size={14} className="text-white" />
+                                </div>
+                            </div>
+
+                            <div className="text-center md:text-left">
+                                <h2 className="text-3xl mb-2 font-black text-base-content tracking-tight">
+                                    {userProfile?.nombre || t('profile:profileInfo')}
+                                </h2>
+                                <p className="flex items-center justify-center md:justify-start gap-2 mt-1">
+                                    <span className="badge py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-accent text-[10px]">
+                                        {t('profile:updateProfileData')}
+                                    </span>
+                                </p>
+                            </div>
                         </div>
 
-                        <form onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        {/* Formulario Estilizado como Tarjeta */}
+                        <form onSubmit={handleSubmit} className="bg-base-300 p-8 rounded-[2.5rem] border border-base-300 shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
                                 {campos.map((field) => (
-                                    <div className="flex flex-col" key={field.name}>
-                                        <label className="text-xs font-semibold text-base-content/70 uppercase mb-2 tracking-wide">
-                                            {field.label}
-                                        </label>
-                                        <input
-                                            name={field.name}
-                                            type={field.type}
-                                            defaultValue={field.value}
-                                            className={`p-3 border rounded-lg outline-none transition-all bg-base-100 text-neutral 
-                                                ${errors[field.name] ? 'border-error ring-1 ring-error' : 'border-base-300 focus:ring focus:ring-primary/50'}`}
-                                        />
-                                        {errors[field.name] && (
-                                            <span className="text-error text-[10px] mt-1 font-bold uppercase">
-                                                {errors[field.name][0]}
+                                    <div
+                                        key={field.name}
+                                        className={`form-control w-full ${field.name === 'direccion' || field.name === 'calle' ? 'md:col-span-2' : ''
+                                            }`}
+                                    >
+                                        <label className="label">
+                                            <span className="label-text text-xs font-black uppercase text-base-content">
+                                                {field.label}
                                             </span>
-                                        )}
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                name={field.name}
+                                                type={field.type}
+                                                defaultValue={field.value}
+                                                placeholder={`Escribe tu ${field.label.toLowerCase()}...`}
+                                                className={`input input-bordered w-full h-12 rounded-2xl bg-base-100 transition-all duration-300 text-neutral font-medium
+                                ${errors[field.name]
+                                                        ? 'border-error ring-2 ring-error/10'
+                                                        : 'border-base-300 focus:border-primary focus:ring-4 focus:ring-primary/5'}`}
+                                            />
+                                            {errors[field.name] && (
+                                                <div className="flex items-center gap-1 mt-2 ml-1 text-error">
+                                                    <span className="text-[10px] font-bold uppercase">{errors[field.name][0]}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
+
+                                {/* Renderizado Condicional de Isla y Municipio */}
+                                {(!userProfile?.isla || !userProfile?.municipio) ? (
+                                    <div className="md:col-span-2 pt-6 border-t border-base-300/50">
+                                        <h3 className="text-sm font-bold text-base-content mb-4 uppercase tracking-widest italic opacity-70">
+                                            {t('profile:completeLocation') || "Completa tu ubicación en Canarias"}
+                                        </h3>
+                                        <div className="bg-base-100 p-4 rounded-2xl border border-base-300 shadow-inner">
+                                            <SelectorCanarias />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Si ya existen, se muestran como 2 inputs finales para completar el 2-1-2 */}
+                                        <div className="form-control w-full">
+                                            <label className="label"><span className="label-text text-xs font-black uppercase">Isla</span></label>
+                                            <input disabled value={userProfile.isla} className="input input-bordered w-full h-12 rounded-2xl bg-base-200 opacity-60" />
+                                        </div>
+                                        <div className="form-control w-full">
+                                            <label className="label"><span className="label-text text-xs font-black uppercase">Municipio</span></label>
+                                            <input disabled value={userProfile.municipio} className="input input-bordered w-full h-12 rounded-2xl bg-base-200 opacity-60" />
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
-                            <div className="mb-6">
-                                <SelectorCanarias />
+                            {/* Botón de Acción Principal */}
+                            <div className="flex justify-end mt-10">
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary btn-lg h-16 px-10 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all gap-3 border-none text-white"
+                                >
+                                    <Save size={20} />
+                                    <span className="font-bold tracking-wide">
+                                        {t('profile:saveChanges')}
+                                    </span>
+                                </button>
                             </div>
-
-                            <button type="submit" className="mt-4 btn text-base-100 border-0 bg-primary flex items-center gap-2">
-                                <Save size={18} />
-                                {t('profile:saveChanges')}
-                            </button>
                         </form>
                     </div>
                 );
@@ -1074,7 +1138,7 @@ function Perfil() {
                                                         {/* Paso 1: Generar los datos */}
                                                         <button
                                                             onClick={() => descargarFactura(cita)}
-                                                            className={`btn btn-ghost btn-xs underline ${datosPdf?.id === cita.id ? 'text-success' : 'text-primary'}`}
+                                                            className={`btn btn-ghost btn-xs underline ${datosPdf?.id === cita.id ? 'text-success hidden' : 'text-primary'}`}
                                                         >
                                                             {datosPdf?.id === cita.id ? '✓ Datos listos' : 'Generar Factura'}
                                                         </button>
@@ -1085,7 +1149,7 @@ function Perfil() {
                                                                 {/* BOTÓN PARA VISUALIZAR */}
                                                                 <button
                                                                     onClick={() => window.open(instance.url, '_blank')}
-                                                                    className="btn text-sm"        
+                                                                    className="btn h-full btn-primary btn-xs text-base-100 items-center "
                                                                     title="Visualizar PDF"
                                                                 >
                                                                     Ver
