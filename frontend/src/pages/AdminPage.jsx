@@ -109,7 +109,7 @@ function AdminPage() {
         if (!token) return;
         setLoading(true);
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/admin/pendientes`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/dates/admin`, {
                 headers: { "Authorization": `Bearer ${token}` },
             });
             if (response.ok) {
