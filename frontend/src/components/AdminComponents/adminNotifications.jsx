@@ -7,8 +7,9 @@ const AdminNotifications = () => {
     const [notificaciones, setNotificaciones] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const tn = (rol, tipo, params) => t(`notifications:${rol}.messages.${tipo}`, params);
-    const tt = (rol, tipo) => t(`notifications:${rol}.titles.${tipo}`);
+    const tt = (rol, tipo) => t(`notifications:notifications.${rol}.titles.${tipo}`);
+    const tn = (rol, tipo, params) => t(`notifications:notifications.${rol}.messages.${tipo}`, params);
+
 
     const fetchNotifications = async () => {
         try {

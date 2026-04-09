@@ -7,8 +7,7 @@ const router = Router();
 router.use(verifyToken);
 
 router.get('/', getNotificationsByID);
-
-router.get('/admin', getNotificationsByID);
+router.get('/admin', getNotificationsAdmin);
 
 router.patch('/:id/read', markAsRead);
 
